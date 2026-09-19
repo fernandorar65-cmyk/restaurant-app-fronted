@@ -4,23 +4,25 @@ import { RouterLink, useRouter } from 'vue-router'
 
 import PageHeader from '@/components/base/PageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { login } from '@/modules/auth/api'
+import { register as registerAccount } from '@/modules/auth/api'
 import AuthTextField from '@/modules/auth/components/AuthTextField.vue'
-import { validateEmail, validatePassword } from '@/modules/auth/validation'
+import { validateEmail, validateName, validatePassword } from '@/modules/auth/validation'
 import { HttpError } from '@/services/http'
 import { useSessionStore } from '@/stores/session'
 
-usePageTitle('Ingresar')
+usePageTitle('Crear cuenta')
 
 const router = useRouter()
 const session = useSessionStore()
 
 const form = reactive({
+  name: '',
   email: '',
   password: '',
 })
 
 const fieldErrors = reactive({
+  name: undefined as string | undefined,
   email: undefined as string | undefined,
   password: undefined as string | undefined,
 })
@@ -29,10 +31,11 @@ const formError = ref<string | null>(null)
 const isSubmitting = ref(false)
 
 function validateForm(): boolean {
+  fieldErrors.name = validateName(form.name)
   fieldErrors.email = validateEmail(form.email)
   fieldErrors.password = validatePassword(form.password)
 
-  return !fieldErrors.email && !fieldErrors.password
+  return !fieldErrors.name && !fieldErrors.email && !fieldErrors.password
 }
 
 async function onSubmit(): Promise<void> {
@@ -45,7 +48,8 @@ async function onSubmit(): Promise<void> {
   isSubmitting.value = true
 
   try {
-    const authSession = await login({
+    const authSession = await registerAccount({
+      name: form.name.trim(),
       email: form.email.trim(),
       password: form.password,
     })
@@ -54,7 +58,9 @@ async function onSubmit(): Promise<void> {
     await router.push({ name: 'dashboard' })
   } catch (error) {
     formError.value =
-      error instanceof HttpError ? error.message : 'No se pudo iniciar sesión. Inténtalo de nuevo.'
+      error instanceof HttpError
+        ? error.message
+        : 'No se pudo crear la cuenta. Inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
   }
@@ -62,11 +68,7 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <PageHeader title="Ingresar" description="Entra con tu correo para ir al dashboard.">
-    <p class="mt-3 rounded-lg bg-stone-100 px-3 py-2 text-sm text-stone-600">
-      Demo: <span class="font-medium text-stone-800">admin@restaurant.com</span> /
-      <span class="font-medium text-stone-800">admin1234</span>
-    </p>
+  <PageHeader title="Crear cuenta" description="Regístrate para guardar tus pedidos y continuar como usuario.">
     <form class="mt-6 space-y-4" novalidate @submit.prevent="onSubmit">
       <p
         v-if="formError"
@@ -77,7 +79,15 @@ async function onSubmit(): Promise<void> {
       </p>
 
       <AuthTextField
-        id="login-email"
+        id="register-name"
+        v-model="form.name"
+        label="Nombre"
+        autocomplete="name"
+        :error="fieldErrors.name"
+      />
+
+      <AuthTextField
+        id="register-email"
         v-model="form.email"
         label="Correo"
         type="email"
@@ -86,11 +96,11 @@ async function onSubmit(): Promise<void> {
       />
 
       <AuthTextField
-        id="login-password"
+        id="register-password"
         v-model="form.password"
         label="Contraseña"
         type="password"
-        autocomplete="current-password"
+        autocomplete="new-password"
         :error="fieldErrors.password"
       />
 
@@ -99,14 +109,14 @@ async function onSubmit(): Promise<void> {
         class="w-full rounded-lg bg-stone-900 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
         :disabled="isSubmitting"
       >
-        {{ isSubmitting ? 'Ingresando…' : 'Ingresar' }}
+        {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
       </button>
     </form>
 
     <p class="mt-4 text-sm text-stone-600">
-      ¿No tienes cuenta?
-      <RouterLink class="font-medium text-stone-900 underline" :to="{ name: 'register' }">
-        Crear cuenta
+      ¿Ya tienes cuenta?
+      <RouterLink class="font-medium text-stone-900 underline" :to="{ name: 'login' }">
+        Ingresar
       </RouterLink>
     </p>
   </PageHeader>

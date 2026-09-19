@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+
+import { useSessionStore } from '@/stores/session'
 
 const { variant } = defineProps<{
   variant: 'customer' | 'admin'
 }>()
+
+const session = useSessionStore()
+const router = useRouter()
+
+async function logout(): Promise<void> {
+  session.clearAuth()
+  await router.push({ name: 'login' })
+}
 </script>
 
 <template>
   <header class="border-b border-stone-200 bg-white">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
       <RouterLink
-        :to="variant === 'admin' ? { name: 'admin-home' } : { name: 'home' }"
+        :to="variant === 'admin' ? { name: 'dashboard' } : { name: 'home' }"
         class="text-lg font-semibold text-stone-900"
       >
         Restaurant CMR
@@ -27,17 +37,37 @@ const { variant } = defineProps<{
           <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'cart' }">
             Carrito
           </RouterLink>
-          <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'login' }">
-            Ingresar
-          </RouterLink>
+          <template v-if="session.isAuthenticated">
+            <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'dashboard' }">
+              Dashboard
+            </RouterLink>
+            <span class="text-stone-700">{{ session.user?.name }}</span>
+            <button type="button" class="text-stone-600 hover:text-stone-900" @click="logout">
+              Salir
+            </button>
+          </template>
+          <template v-else>
+            <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'login' }">
+              Ingresar
+            </RouterLink>
+            <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'register' }">
+              Crear cuenta
+            </RouterLink>
+          </template>
         </template>
         <template v-else>
-          <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'admin-home' }">
-            Administración
+          <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'dashboard' }">
+            Dashboard
           </RouterLink>
           <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'home' }">
             Vista cliente
           </RouterLink>
+          <template v-if="session.isAuthenticated">
+            <span class="text-stone-700">{{ session.user?.name }}</span>
+            <button type="button" class="text-stone-600 hover:text-stone-900" @click="logout">
+              Salir
+            </button>
+          </template>
         </template>
       </nav>
     </div>

@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteLocationNormalized } from 'vue-router'
 
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import CustomerLayout from '@/layouts/CustomerLayout.vue'
+import { useSessionStore } from '@/stores/session'
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,11 +48,29 @@ export const router = createRouter({
     {
       path: '/auth',
       component: AuthLayout,
+      meta: { guestOnly: true },
       children: [
         {
           path: 'login',
           name: 'login',
           component: () => import('@/modules/auth/views/LoginView.vue'),
+        },
+        {
+          path: 'register',
+          name: 'register',
+          component: () => import('@/modules/auth/views/RegisterView.vue'),
+        },
+      ],
+    },
+    {
+      path: '/dashboard',
+      component: AdminLayout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'dashboard',
+          component: () => import('@/modules/administration/views/DashboardView.vue'),
         },
       ],
     },
@@ -71,4 +91,18 @@ export const router = createRouter({
       component: () => import('@/components/feedback/NotFoundView.vue'),
     },
   ],
+})
+
+router.beforeEach((to: RouteLocationNormalized) => {
+  const session = useSessionStore()
+
+  if (to.meta.requiresAuth && !session.isAuthenticated) {
+    return { name: 'login' }
+  }
+
+  if (to.meta.guestOnly && session.isAuthenticated) {
+    return { name: 'dashboard' }
+  }
+
+  return true
 })
