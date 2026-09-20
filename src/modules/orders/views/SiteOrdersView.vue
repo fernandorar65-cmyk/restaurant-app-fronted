@@ -2,12 +2,20 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
-import SitePortalNav from '@/components/navigation/SitePortalNav.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { fetchKitchenTickets } from '@/modules/orders/api'
 import KitchenTicketCard from '@/modules/orders/components/KitchenTicketCard.vue'
 import KitchenTicketDialog from '@/modules/orders/components/KitchenTicketDialog.vue'
-import { boardColumns, ticketStatusLabel } from '@/modules/orders/ticket-labels'
+import {
+  boardColumns,
+  columnCountClass,
+  columnDotClass,
+  columnHint,
+  columnHintClass,
+  columnShellClass,
+  columnWipLimit,
+  ticketStatusLabel,
+} from '@/modules/orders/ticket-labels'
 import type { KitchenTicket } from '@/modules/orders/types'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
 import type { RestaurantSite } from '@/modules/restaurants/types'
@@ -75,6 +83,7 @@ const boardStats = computed(() => {
   return {
     wip: inProgress.length,
     blocked: blocked.length,
+    blockedTable: blocked[0]?.tableNumber ?? null,
     served: served.length,
     total: all.length,
   }
@@ -153,7 +162,7 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-[1600px] space-y-6 px-6 py-8 lg:px-10">
+  <div class="mx-auto w-full space-y-5 px-3 py-6 lg:px-4">
     <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando pedidos…</p>
     <p
       v-else-if="loadError"
@@ -175,40 +184,82 @@ watch(
           <span class="font-bold text-primary">Pedidos</span>
         </nav>
 
-        <SitePortalNav :restaurant-id="restaurant.id" />
-
         <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
-            <h1 class="font-headline text-2xl font-semibold tracking-tight text-on-surface lg:text-3xl">Pedidos entrantes</h1>
+            <h1 class="font-headline text-2xl font-semibold tracking-tight text-on-surface lg:text-3xl">
+              Pedidos entrantes — tablero de cocina
+            </h1>
             <p class="mt-1 text-sm text-on-surface-variant">
-              Tablero de comandas de {{ restaurant.name }}. Datos de demostración hasta conectar el API.
+              Flujo de comandas de {{ restaurant.name }} por mesa, pase y partida.
             </p>
           </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">En marcha</span>
-          <p class="font-headline mt-1 text-2xl font-semibold text-on-surface">{{ boardStats.wip }}</p>
-          <p class="mt-1 text-[11px] text-secondary">{{ boardStats.total }} comandas en el turno</p>
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <article class="flex items-center justify-between rounded-xl bg-surface p-3">
+          <div>
+            <span class="font-label text-[11px] tracking-wider text-on-surface-variant uppercase">WIP total en marcha</span>
+            <div class="mt-0.5 flex items-baseline gap-2">
+              <p class="font-headline text-2xl font-semibold text-on-surface">{{ boardStats.wip }}</p>
+              <p class="font-label text-[11px] text-secondary">/ {{ boardStats.total }} comandas</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
         </article>
-        <article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Alérgenos</span>
-          <p class="font-headline mt-1 text-2xl font-semibold" :class="boardStats.blocked > 0 ? 'text-error' : 'text-on-surface'">
-            {{ boardStats.blocked }}
-          </p>
-          <p class="mt-1 text-[11px] text-secondary">Protocolos activos</p>
+        <article class="flex items-center justify-between rounded-xl bg-surface p-3">
+          <div>
+            <span class="font-label text-[11px] tracking-wider text-on-surface-variant uppercase">Ocupación de sala</span>
+            <div class="mt-0.5 flex items-baseline gap-2">
+              <p class="font-headline text-2xl font-semibold text-on-surface">{{ restaurant.kpis.occupancyPercent }}%</p>
+              <p class="font-label text-[11px] font-medium text-emerald-700">{{ restaurant.kpis.occupancyHint }}</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-800" aria-hidden="true">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3 1.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
         </article>
-        <article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Servidos</span>
-          <p class="font-headline mt-1 text-2xl font-semibold text-on-surface">{{ boardStats.served }}</p>
-          <p class="mt-1 text-[11px] text-secondary">Cierre en tablero</p>
+        <article class="flex items-center justify-between rounded-xl bg-surface p-3">
+          <div>
+            <span class="font-label text-[11px] tracking-wider text-on-surface-variant uppercase">Bloqueos & alérgenos</span>
+            <div class="mt-0.5 flex items-baseline gap-2">
+              <p class="font-headline text-2xl font-semibold" :class="boardStats.blocked > 0 ? 'text-error' : 'text-on-surface'">
+                {{ boardStats.blocked }}
+              </p>
+              <p class="font-label text-[11px] font-medium" :class="boardStats.blocked > 0 ? 'text-error' : 'text-secondary'">
+                {{ boardStats.blockedTable ? `Mesa ${boardStats.blockedTable} (protocolo activo)` : 'Sin protocolos' }}
+              </p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-error-container text-on-error-container" aria-hidden="true">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+              />
+            </svg>
+          </div>
         </article>
-        <article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Sede</span>
-          <p class="mt-1 text-sm font-semibold text-on-surface">{{ restaurant.code }}</p>
-          <p class="mt-1 text-[11px] text-secondary">{{ restaurant.cuisine }}</p>
+        <article class="flex items-center justify-between rounded-xl bg-surface p-3">
+          <div>
+            <span class="font-label text-[11px] tracking-wider text-on-surface-variant uppercase">Throughput del turno</span>
+            <div class="mt-0.5 flex items-baseline gap-2">
+              <p class="font-headline text-2xl font-semibold text-on-surface">{{ boardStats.served }}</p>
+              <p class="font-label text-[11px] font-medium text-primary">Pases cerrados en tablero</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-tertiary-fixed text-on-tertiary-container" aria-hidden="true">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+          </div>
         </article>
       </div>
 
@@ -231,31 +282,50 @@ watch(
         </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <div class="flex min-w-[980px] items-start gap-4 pb-2">
-          <section
-            v-for="column in ticketsByStatus"
-            :key="column.status"
-            class="flex min-w-[220px] flex-1 flex-col rounded-2xl bg-surface-container-low p-3"
-          >
-            <div class="mb-3 flex items-center justify-between px-1">
-              <h2 class="font-headline text-sm font-semibold tracking-wide text-on-surface uppercase">{{ column.label }}</h2>
-              <span class="rounded bg-surface-container px-2 py-0.5 font-mono text-[11px] font-semibold text-on-surface-variant">
+      <div class="grid w-full grid-cols-5 items-start gap-2 xl:gap-3">
+        <section
+          v-for="column in ticketsByStatus"
+          :key="column.status"
+          class="flex min-h-0 min-w-0 flex-col rounded-2xl p-2 xl:p-3"
+          :class="columnShellClass[column.status]"
+        >
+          <div class="flex flex-col gap-1 px-0.5 pb-2">
+            <div class="flex items-start justify-between gap-1">
+              <h2
+                class="font-headline flex min-w-0 items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase xl:text-sm"
+                :class="column.status === 'served' ? 'text-on-surface-variant' : 'text-on-surface'"
+              >
+                <span class="h-2 w-2 shrink-0 rounded-full xl:h-2.5 xl:w-2.5" :class="columnDotClass[column.status]" aria-hidden="true" />
+                <span class="leading-tight">{{ column.label }}</span>
+              </h2>
+              <span
+                class="shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold xl:text-[11px]"
+                :class="columnCountClass[column.status]"
+              >
                 {{ column.items.length }}
               </span>
             </div>
-            <div class="flex flex-col gap-3">
-              <KitchenTicketCard
-                v-for="ticket in column.items"
-                :key="ticket.id"
-                :ticket="ticket"
-                :selected="selectedTicket?.id === ticket.id"
-                @select="selectTicket(ticket)"
-              />
-              <p v-if="column.items.length === 0" class="px-1 text-xs text-on-surface-variant">Sin comandas.</p>
-            </div>
-          </section>
-        </div>
+            <span
+              class="font-label truncate text-[9px] font-medium tracking-wider uppercase xl:text-[10px]"
+              :class="columnHintClass[column.status]"
+            >
+              <template v-if="columnWipLimit[column.status]">
+                WIP {{ column.items.length }}/{{ columnWipLimit[column.status] }} · {{ columnHint[column.status] }}
+              </template>
+              <template v-else>{{ columnHint[column.status] }}</template>
+            </span>
+          </div>
+          <div class="flex min-w-0 flex-col" :class="column.status === 'served' ? 'gap-2' : 'gap-2.5'">
+            <KitchenTicketCard
+              v-for="ticket in column.items"
+              :key="ticket.id"
+              :ticket="ticket"
+              :selected="selectedTicket?.id === ticket.id"
+              @select="selectTicket(ticket)"
+            />
+            <p v-if="column.items.length === 0" class="px-1 text-xs text-on-surface-variant">Sin comandas.</p>
+          </div>
+        </section>
       </div>
 
       <KitchenTicketDialog

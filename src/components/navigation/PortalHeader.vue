@@ -11,6 +11,10 @@ const router = useRouter()
 const route = useRoute()
 const currentSiteName = ref<string | null>(null)
 
+const emit = defineEmits<{
+  openMenu: []
+}>()
+
 async function loadCurrentSite(): Promise<void> {
   const restaurantId = route.params.restaurantId
   const id = typeof restaurantId === 'string' ? restaurantId : null
@@ -43,8 +47,18 @@ onMounted(() => {
 
 <template>
   <header class="sticky top-0 z-50 w-full border-b border-outline-variant/60 bg-surface/85 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">
-    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
-      <div class="flex items-center gap-5">
+    <div class="flex h-16 items-center justify-between gap-4 px-4 lg:px-8">
+      <div class="flex items-center gap-3 sm:gap-5">
+        <button
+          type="button"
+          class="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface lg:hidden"
+          aria-label="Abrir menú"
+          @click="emit('openMenu')"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
         <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-3">
           <div
             class="flex h-9 w-9 items-center justify-center rounded bg-primary text-on-primary shadow-sm ring-1 ring-blue-700/20"

@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/composables/usePageTitle'
-import SitePortalNav from '@/components/navigation/SitePortalNav.vue'
 import { fetchRestaurantById, fetchSiteOperation } from '@/modules/restaurants/api'
 import SiteFloorTable from '@/modules/restaurants/components/SiteFloorTable.vue'
 import SiteStaffCard from '@/modules/restaurants/components/SiteStaffCard.vue'
@@ -174,8 +173,6 @@ watch(
           <span class="text-outline-variant">/</span>
           <span class="text-tertiary">Sala y equipo</span>
         </nav>
-
-        <SitePortalNav :restaurant-id="restaurant.id" />
 
         <div class="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
           <div class="max-w-3xl space-y-2">
