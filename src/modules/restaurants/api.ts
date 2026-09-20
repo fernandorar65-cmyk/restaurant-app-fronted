@@ -1,5 +1,15 @@
-import { http } from '@/services/http'
-import type { Organization, RestaurantSite } from '@/modules/restaurants/types'
+import { http, HttpError } from '@/services/http'
+import type {
+  LiveTable,
+  Organization,
+  RestaurantSite,
+  SiteOperation,
+  SiteStaffMember,
+  StaffArea,
+  StaffShiftStatus,
+  TableFloorStatus,
+  TableTagTone,
+} from '@/modules/restaurants/types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -86,4 +96,122 @@ export async function fetchRestaurants(): Promise<RestaurantSite[]> {
   }
 
   return payload.filter(isRestaurantSite).map(toRestaurantSite)
+}
+
+export async function fetchRestaurantById(id: string): Promise<RestaurantSite | null> {
+  try {
+    const payload = await http<unknown>(`/restaurants/${id}`)
+    return isRestaurantSite(payload) ? toRestaurantSite(payload) : null
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 404) {
+      return null
+    }
+
+    throw error
+  }
+}
+
+const FLOOR_STATUSES: readonly TableFloorStatus[] = ['occupied', 'available', 'reserved', 'cleaning']
+const TAG_TONES: readonly TableTagTone[] = ['critical', 'neutral', 'alert']
+const STAFF_AREAS: readonly StaffArea[] = ['kitchen', 'floor', 'support']
+const STAFF_STATUSES: readonly StaffShiftStatus[] = ['on-shift', 'break', 'absent']
+
+function isTableFloorStatus(value: unknown): value is TableFloorStatus {
+  return typeof value === 'string' && (FLOOR_STATUSES as readonly string[]).includes(value)
+}
+
+function isTableTagTone(value: unknown): value is TableTagTone {
+  return typeof value === 'string' && (TAG_TONES as readonly string[]).includes(value)
+}
+
+function isStaffArea(value: unknown): value is StaffArea {
+  return typeof value === 'string' && (STAFF_AREAS as readonly string[]).includes(value)
+}
+
+function isStaffShiftStatus(value: unknown): value is StaffShiftStatus {
+  return typeof value === 'string' && (STAFF_STATUSES as readonly string[]).includes(value)
+}
+
+function isLiveTable(value: unknown): value is LiveTable {
+  if (!isRecord(value)) {
+    return false
+  }
+
+  return (
+    typeof value.number === 'string' &&
+    typeof value.seats === 'number' &&
+    typeof value.occupiedSeats === 'number' &&
+    isTableFloorStatus(value.floorStatus) &&
+    typeof value.guests === 'number' &&
+    typeof value.tagLabel === 'string' &&
+    isTableTagTone(value.tagTone) &&
+    typeof value.location === 'string' &&
+    typeof value.staff === 'string' &&
+    typeof value.statusLabel === 'string' &&
+    typeof value.courseLabel === 'string' &&
+    typeof value.dish === 'string' &&
+    typeof value.note === 'string'
+  )
+}
+
+function isSiteStaffMember(value: unknown): value is SiteStaffMember {
+  if (!isRecord(value)) {
+    return false
+  }
+
+  return (
+    (typeof value.id === 'string' || typeof value.id === 'number') &&
+    typeof value.name === 'string' &&
+    typeof value.role === 'string' &&
+    isStaffArea(value.area) &&
+    isStaffShiftStatus(value.status)
+  )
+}
+
+function isSiteOperation(value: unknown): value is SiteOperation {
+  if (!isRecord(value) || !isRecord(value.kpis) || !isRecord(value.quality) || !isRecord(value.cellar) || !isRecord(value.brigade)) {
+    return false
+  }
+
+  return (
+    (typeof value.id === 'string' || typeof value.id === 'number') &&
+    (typeof value.restaurantId === 'string' || typeof value.restaurantId === 'number') &&
+    typeof value.shiftLabel === 'string' &&
+    Array.isArray(value.tables) &&
+    value.tables.every(isLiveTable) &&
+    Array.isArray(value.staff) &&
+    value.staff.every(isSiteStaffMember) &&
+    Array.isArray(value.stations) &&
+    Array.isArray(value.alerts)
+  )
+}
+
+function toSiteOperation(value: SiteOperation): SiteOperation {
+  return {
+    ...value,
+    id: String(value.id),
+    restaurantId: String(value.restaurantId),
+    staff: value.staff.map((member) => ({
+      ...member,
+      id: String(member.id),
+    })),
+  }
+}
+
+export async function fetchSiteOperation(restaurantId: string): Promise<SiteOperation | null> {
+  const payload = await http<unknown>('/siteOperations')
+
+  if (!Array.isArray(payload)) {
+    return null
+  }
+
+  const match = payload.find((item) => {
+    if (!isSiteOperation(item)) {
+      return false
+    }
+
+    return String(item.restaurantId) === restaurantId
+  })
+
+  return match ? toSiteOperation(match) : null
 }

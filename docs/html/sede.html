@@ -1,0 +1,623 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Public+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#094cb2","primary-fixed-dim":"#b1c5ff","secondary-fixed-dim":"#c2c7cc","surface-bright":"#faf9fa","on-tertiary-fixed-variant":"#524600","on-primary":"#ffffff","surface-tint":"#2259bf","on-surface":"#1b1c1d","inverse-surface":"#303031","error":"#ba1a1a","on-surface-variant":"#434653","tertiary-fixed":"#f9e37a","on-tertiary-fixed":"#211b00","primary-container":"#3366cc","secondary":"#5a5f63","on-secondary-container":"#606569","surface":"#faf9fa","outline":"#737784","on-tertiary-container":"#4a3f00","surface-dim":"#dbdadb","background":"#faf9fa","on-secondary":"#ffffff","tertiary-container":"#bfab49","on-secondary-fixed-variant":"#42474b","inverse-on-surface":"#f2f0f1","surface-container-low":"#f5f3f4","error-container":"#ffdad6","on-error-container":"#93000a","primary-fixed":"#d9e2ff","on-primary-fixed":"#001946","secondary-container":"#dfe3e8","surface-container-lowest":"#ffffff","tertiary-fixed-dim":"#dcc661","on-background":"#1b1c1d","surface-container-high":"#e9e8e9","tertiary":"#6d5e00","surface-variant":"#e3e2e3","on-primary-container":"#e7ebff","inverse-primary":"#b1c5ff","on-error":"#ffffff","on-tertiary":"#ffffff","surface-container":"#efedee","secondary-fixed":"#dfe3e8","surface-container-highest":"#e3e2e3","on-secondary-fixed":"#171c20","outline-variant":"#c3c6d5","on-primary-fixed-variant":"#00419d"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{},fontFamily:{"headline":["Noto Serif"],"display":["Noto Serif"],"body":["Inter"],"label":["Public Sans"]},fontSize:{}}}}</script></head><body class="bg-surface font-body text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-6"><div class="flex items-center gap-6"><a class="flex items-center gap-3 group" href="#"><img alt="Restaurant-CMR Emblem" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLdBNW-HwZDFM9zrYHRtjSKmd-KS_faWhxEFGSZzyY5UACafdzc2Zy2vEEQ1pTrESQY1my7sSPdVJ4USxWnGCgwx8vAys-2sXNTWLx0JQrCFTGARJaEydlFLGccn5rSkrW8b6rSXVdRSWIRqqt0bN4xyMv69uBS1MJXF1-JUx9LxJ6e-IOqvZ0dg5XScZ3IjGEWCAvnEb8iHpo0MP8qlcIAVjI6E6pnhrkIlQhVz2y5OaqpPkfoJj2UNM"><div class="flex flex-col leading-tight"><span class="font-headline text-lg font-bold tracking-tight text-on-surface">Restaurant-CMR</span><span class="font-label text-[10px] tracking-widest uppercase text-tertiary font-semibold">Haute Cuisine Suite</span></div></a><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[16px] text-tertiary">workspace_premium</span><div class="flex flex-col text-left"><span class="text-xs font-semibold text-on-surface leading-none">L'Étoile Atelier</span><span class="text-[10px] text-on-surface-variant leading-none mt-0.5">Madrid · 3★ Michelin</span></div><span class="material-symbols-outlined text-[16px] text-on-surface-variant ml-1">expand_more</span></div></div><div class="flex items-center gap-4"><div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span class="font-label text-[11px] font-semibold text-on-surface tracking-wide uppercase">Pase de Noche · En Curso</span></div><button class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[16px]">search</span><span class="text-xs font-label">Buscar reserva, pase...</span><kbd class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container font-mono text-on-surface-variant">⌘K</kbd></button><div class="flex items-center gap-1"><div class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span class="font-label text-[10px] uppercase font-bold tracking-wider text-on-surface">HACCP Cert</span></div><button aria-label="Notificaciones" class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors relative"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary"></span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-3 pl-1"><div class="text-right hidden lg:block"><p class="text-xs font-semibold text-on-surface leading-tight">Chef Dir. General</p><p class="text-[10px] text-on-surface-variant leading-tight">Arzak &amp; Co.</p></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div><div class="w-full bg-surface-container-lowest"><div class="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-start overflow-x-auto"><nav class="flex items-center gap-2 py-2" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a aria-current="page" class="px-3.5 py-1.5 tracking-wide uppercase transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg" data-path="resumen-general" href="#">Dashboard / Resumen</a><a class="px-3.5 py-1.5 text-xs font-label tracking-wide uppercase text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="servicio-en-sala" href="#">Servicio en Sala</a><a class="px-3.5 py-1.5 text-xs font-label tracking-wide uppercase text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="cocina-y-pases" href="#">Cocina &amp; Pases</a><a class="px-3.5 py-1.5 text-xs font-label tracking-wide uppercase text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="bodega-y-cava" href="#">Bodega &amp; Cava</a><a class="px-3.5 py-1.5 text-xs font-label tracking-wide uppercase text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="finanzas-y-pl" href="#">Finanzas &amp; P&amp;L</a><a class="px-3.5 py-1.5 text-xs font-label tracking-wide uppercase text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="equipo-y-turnos" href="#">Equipo &amp; Turnos</a></nav></div></div></header><main class="w-full pt-28 bg-surface"><div class="flex flex-col w-full">
+    <div class="max-w-7xl mx-auto w-full px-6 lg:px-12 py-8 space-y-10">
+    <!-- 1. Header & Hero Bar -->
+    <div class="flex flex-col gap-6">
+    <!-- Breadcrumb / Branch context -->
+    <div class="flex flex-wrap items-center gap-2 font-label text-[11px] font-semibold tracking-widest uppercase text-on-surface-variant">
+    <span class="hover:text-primary transition-colors cursor-pointer">Sedes y Restaurantes</span>
+    <span class="text-outline-variant">/</span>
+    <span class="text-primary font-bold">L'Étoile Atelier (Madrid)</span>
+    <span class="text-outline-variant">/</span>
+    <span class="text-tertiary">Resumen Operativo</span>
+    </div>
+    <!-- Main Title Block & Executive Controls -->
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+    <div class="space-y-2 max-w-3xl">
+    <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-container text-tertiary font-label text-[10px] font-bold tracking-widest uppercase">
+    <span class="material-symbols-outlined text-[14px]">stars</span>
+                Guía Michelin 2025 · 3 Estrellas Confirmadas
+              </div>
+    <h1 class="font-headline text-3xl sm:text-4xl lg:text-[42px] font-normal tracking-tight text-on-surface leading-[1.15]">
+                Mesa de Mando Ejecutiva <span class="italic font-normal text-primary">&amp;</span> Pase Central
+              </h1>
+    <p class="font-body text-sm sm:text-base text-on-surface-variant font-normal leading-relaxed">
+                Control integral de pase en vivo, cadencia de partidas, sumillería patrimonial y balance operativo del turno de noche en curso.
+              </p>
+    </div>
+    <!-- Executive Action Bar -->
+    <div class="flex flex-wrap items-center gap-3">
+    <!-- Turn Selector Badge -->
+    <div class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-surface-container-lowest shadow-sm">
+    <div class="relative flex h-2.5 w-2.5">
+    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+    </div>
+    <div class="flex flex-col">
+    <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Turno Activo</span>
+    <span class="font-label text-xs font-bold text-on-surface">Pase de Noche · 20:30 – 00:30</span>
+    </div>
+    </div>
+    <!-- Quick Actions -->
+    <button class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-dim text-on-surface transition-all duration-200 text-xs font-label font-semibold" type="button">
+    <span class="material-symbols-outlined text-[18px] text-error">report_problem</span>
+    <span>Incidencia Rápida</span>
+    </button>
+    <button class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container text-on-surface transition-all duration-200 text-xs font-label font-semibold shadow-sm" type="button">
+    <span class="material-symbols-outlined text-[18px] text-on-surface-variant">download</span>
+    <span>Exportar Informe</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-container hover:opacity-95 text-on-primary transition-all duration-200 text-xs font-label font-semibold shadow-md" type="button">
+    <span class="material-symbols-outlined text-[18px]">fullscreen</span>
+    <span>Modo Sala Pantalla Completa</span>
+    </button>
+    </div>
+    </div>
+    </div>
+    <!-- 2. Top Tier Metrics (Balanced Executive KPI Matrix) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- KPI 1: Facturación del Turno -->
+    <div class="group relative bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+    <div class="flex items-start justify-between">
+    <div class="space-y-1">
+    <span class="font-label text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">Facturación del Turno</span>
+    <div class="flex items-baseline gap-2 pt-1">
+    <span class="font-headline text-3xl lg:text-4xl font-semibold text-on-surface tracking-tight">18.420 €</span>
+    </div>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+    <span class="material-symbols-outlined text-[22px]">payments</span>
+    </div>
+    </div>
+    <div class="mt-4 pt-4 bg-surface-container-low/50 -mx-6 -mb-6 px-6 py-3.5 rounded-b-2xl">
+    <div class="flex items-center justify-between text-xs">
+    <span class="inline-flex items-center gap-1 font-semibold text-primary font-label">
+    <span class="material-symbols-outlined text-[16px]">trending_up</span>
+                  +14.2% <span class="font-normal text-on-surface-variant">vs obj. (16.1k €)</span>
+    </span>
+    <div class="flex items-center gap-3 font-label text-[11px] text-on-surface-variant">
+    <span>Ticket: <strong class="text-on-surface">245 €</strong></span>
+    <span>·</span>
+    <span>Margen: <strong class="text-on-surface">72.8%</strong></span>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- KPI 2: Ocupación en Sala -->
+    <div class="group relative bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+    <div class="flex items-start justify-between">
+    <div class="space-y-1">
+    <span class="font-label text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">Ocupación en Sala</span>
+    <div class="flex items-baseline gap-2 pt-1">
+    <span class="font-headline text-3xl lg:text-4xl font-semibold text-on-surface tracking-tight">48 <span class="text-xl lg:text-2xl font-normal text-on-surface-variant">/ 52</span></span>
+    </div>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+    <span class="material-symbols-outlined text-[22px]">table_restaurant</span>
+    </div>
+    </div>
+    <div class="mt-4 pt-4 bg-surface-container-low/50 -mx-6 -mb-6 px-6 py-3.5 rounded-b-2xl space-y-2">
+    <!-- Progress bar -->
+    <div class="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden">
+    <div class="h-full bg-primary rounded-full" style="width: 92.3%;"></div>
+    </div>
+    <div class="flex items-center justify-between text-xs font-label text-on-surface-variant">
+    <span>92% Aforo Confirmado (14/16 Mesas)</span>
+    <span class="font-semibold text-tertiary">6 Pax VIP</span>
+    </div>
+    </div>
+    </div>
+    <!-- KPI 3: Cadencia de Pase -->
+    <div class="group relative bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+    <div class="flex items-start justify-between">
+    <div class="space-y-1">
+    <span class="font-label text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">Cadencia Media de Pase</span>
+    <div class="flex items-baseline gap-2 pt-1">
+    <span class="font-headline text-3xl lg:text-4xl font-semibold text-on-surface tracking-tight">14.2 <span class="text-xl lg:text-2xl font-normal text-on-surface-variant">min</span></span>
+    </div>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-tertiary">
+    <span class="material-symbols-outlined text-[22px]">timer</span>
+    </div>
+    </div>
+    <div class="mt-4 pt-4 bg-surface-container-low/50 -mx-6 -mb-6 px-6 py-3.5 rounded-b-2xl">
+    <div class="flex items-center justify-between text-xs font-label">
+    <span class="inline-flex items-center gap-1.5 text-on-surface font-semibold">
+    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                  Cadencia Óptima (<span class="font-normal text-on-surface-variant">&lt;16m</span>)
+                </span>
+    <span class="text-on-surface-variant">68 servidos · <strong class="text-on-surface">12 en marcha</strong></span>
+    </div>
+    </div>
+    </div>
+    <!-- KPI 4: Bodega & Descorches -->
+    <div class="group relative bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+    <div class="flex items-start justify-between">
+    <div class="space-y-1">
+    <span class="font-label text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">Bodega &amp; Cava</span>
+    <div class="flex items-baseline gap-2 pt-1">
+    <span class="font-headline text-3xl lg:text-4xl font-semibold text-on-surface tracking-tight">4.860 €</span>
+    </div>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+    <span class="material-symbols-outlined text-[22px]">wine_bar</span>
+    </div>
+    </div>
+    <div class="mt-4 pt-4 bg-surface-container-low/50 -mx-6 -mb-6 px-6 py-3.5 rounded-b-2xl">
+    <div class="flex items-center justify-between text-xs font-label">
+    <span class="font-semibold text-on-surface">26.4% facturación total</span>
+    <span class="text-on-surface-variant">38 botellas · <span class="text-tertiary font-semibold">12.4°C Cava</span></span>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- 3. Main Central Operational Grid (2-Column Architecture: 60% / 40%) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Left Column: 60% (7 of 12 cols on desktop) -->
+    <div class="lg:col-span-7 space-y-8">
+    <!-- Live Tables Monitor Card -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6">
+    <div>
+    <div class="flex items-center gap-2">
+    <h2 class="font-headline text-xl sm:text-2xl font-normal text-on-surface">Monitor de Pases en Vivo &amp; Mesas Críticas</h2>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant mt-1">Supervisión en tiempo real del menú degustación por comanda.</p>
+    </div>
+    <a class="inline-flex items-center gap-1.5 text-xs font-label font-bold text-primary hover:underline self-start sm:self-auto" href="#">
+    <span>Ver Plano de Sala Dinámico</span>
+    <span class="material-symbols-outlined text-[16px]">north_east</span>
+    </a>
+    </div>
+    <!-- Tables Stack -->
+    <div class="space-y-3.5">
+    <!-- Mesa 04 (High Critical) -->
+    <div class="p-4 sm:p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-200">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+    <span class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center font-headline text-base font-bold shadow-sm">
+                        04
+                      </span>
+    <div>
+    <div class="flex items-center gap-2">
+    <h3 class="font-label text-sm font-bold text-on-surface">Mesa 04 · 4 Pax</h3>
+    <span class="px-2 py-0.5 rounded-md bg-tertiary-container/30 text-on-tertiary-container text-[10px] font-label font-bold tracking-wider uppercase">
+                            ★ Crítico Guía Michelin
+                          </span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant mt-0.5">Ubicación: Sala Principal Central · Camarero: Javier R.</p>
+    </div>
+    </div>
+    <div class="flex items-center gap-3 self-end sm:self-center">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest text-xs font-label font-semibold text-primary shadow-xs">
+    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                        11 min en pase (Óptimo)
+                      </span>
+    <button class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface transition-colors" title="Ver comanda" type="button">
+    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+    </button>
+    </div>
+    </div>
+    <!-- Dish detail -->
+    <div class="mt-4 pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+    <div class="flex items-start sm:items-center gap-2 font-body">
+    <span class="font-label font-semibold text-tertiary text-[11px] uppercase tracking-wider">Pase 5 de 9</span>
+    <span class="text-on-surface-variant hidden sm:inline">|</span>
+    <span class="font-medium text-on-surface">Pichón Asado al Sarmiento, Moras Salvajes y Puré de Chirivía</span>
+    </div>
+    <div class="flex items-center gap-2 font-label text-[11px] text-on-surface-variant">
+    <span class="px-2 py-0.5 rounded bg-surface-container-highest font-medium">Marchando en caliente</span>
+    </div>
+    </div>
+    </div>
+    <!-- Mesa 08 (Reservado Imperial) -->
+    <div class="p-4 sm:p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-200">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+    <span class="w-10 h-10 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-headline text-base font-bold">
+                        08
+                      </span>
+    <div>
+    <div class="flex items-center gap-2">
+    <h3 class="font-label text-sm font-bold text-on-surface">Mesa 08 · 6 Pax</h3>
+    <span class="px-2 py-0.5 rounded-md bg-surface-container-highest text-on-surface-variant text-[10px] font-label font-bold tracking-wider uppercase">
+                            Reservado Imperial
+                          </span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant mt-0.5">Ubicación: Salón Privado Norte · Sommelier: Elena Morales</p>
+    </div>
+    </div>
+    <div class="flex items-center gap-3 self-end sm:self-center">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest text-xs font-label font-semibold text-on-surface shadow-xs">
+    <span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+                        Pase Inminente (3 min)
+                      </span>
+    <button class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface transition-colors" title="Ver comanda" type="button">
+    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+    </button>
+    </div>
+    </div>
+    <!-- Dish detail -->
+    <div class="mt-4 pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+    <div class="flex items-start sm:items-center gap-2 font-body">
+    <span class="font-label font-semibold text-tertiary text-[11px] uppercase tracking-wider">Pase 8 de 9</span>
+    <span class="text-on-surface-variant hidden sm:inline">|</span>
+    <span class="font-medium text-on-surface">Pre-postre Cítrico &amp; Infusión Helada de Grano de Cacao</span>
+    </div>
+    <div class="flex items-center gap-2 font-label text-[11px] text-on-surface-variant">
+    <span class="px-2 py-0.5 rounded bg-surface-container-highest font-medium text-on-tertiary-fixed-variant">Château d'Yquem servido</span>
+    </div>
+    </div>
+    </div>
+    <!-- Mesa 12 (Ventanal Jardín - Allergy alert) -->
+    <div class="p-4 sm:p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-200">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+    <span class="w-10 h-10 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-headline text-base font-bold">
+                        12
+                      </span>
+    <div>
+    <div class="flex items-center gap-2">
+    <h3 class="font-label text-sm font-bold text-on-surface">Mesa 12 · 2 Pax</h3>
+    <span class="px-2 py-0.5 rounded-md bg-error-container text-on-error-container text-[10px] font-label font-bold tracking-wider uppercase flex items-center gap-1">
+    <span class="material-symbols-outlined text-[12px]">warning</span> Alergia Frutos Secos
+                          </span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant mt-0.5">Ubicación: Ventanal Jardín · Camarero: Lucas M.</p>
+    </div>
+    </div>
+    <div class="flex items-center gap-3 self-end sm:self-center">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest text-xs font-label font-semibold text-on-surface-variant shadow-xs">
+                        9 min en preparación
+                      </span>
+    <button class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface transition-colors" title="Ver comanda" type="button">
+    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+    </button>
+    </div>
+    </div>
+    <!-- Dish detail -->
+    <div class="mt-4 pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+    <div class="flex items-start sm:items-center gap-2 font-body">
+    <span class="font-label font-semibold text-tertiary text-[11px] uppercase tracking-wider">Pase 2 de 9</span>
+    <span class="text-on-surface-variant hidden sm:inline">|</span>
+    <span class="font-medium text-on-surface">Bogavante del Cantábrico en Emulsión de Tomate Asado</span>
+    </div>
+    <div class="flex items-center gap-2 font-label text-[11px]">
+    <span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-bold">Protocolo Seguro Auditado</span>
+    </div>
+    </div>
+    </div>
+    <!-- Mesa 02 (Terraza) -->
+    <div class="p-4 sm:p-5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-200">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+    <span class="w-10 h-10 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center font-headline text-base font-bold">
+                        02
+                      </span>
+    <div>
+    <div class="flex items-center gap-2">
+    <h3 class="font-label text-sm font-bold text-on-surface">Mesa 02 · 4 Pax</h3>
+    <span class="px-2 py-0.5 rounded-md bg-surface-container-highest text-on-surface-variant text-[10px] font-label font-bold tracking-wider uppercase">
+                            Terraza Climatizada
+                          </span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant mt-0.5">Ubicación: Pérgola Exterior · Camarera: Nuria G.</p>
+    </div>
+    </div>
+    <div class="flex items-center gap-3 self-end sm:self-center">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-lowest text-xs font-label font-semibold text-on-surface-variant shadow-xs">
+                        Recién sentados
+                      </span>
+    <button class="p-1.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface transition-colors" title="Ver comanda" type="button">
+    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+    </button>
+    </div>
+    </div>
+    <!-- Dish detail -->
+    <div class="mt-4 pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+    <div class="flex items-start sm:items-center gap-2 font-body">
+    <span class="font-label font-semibold text-tertiary text-[11px] uppercase tracking-wider">Pase 1 de 9</span>
+    <span class="text-on-surface-variant hidden sm:inline">|</span>
+    <span class="font-medium text-on-surface">Trilogía de Aperitivos de Mar &amp; Copa de Bienvenida Krug</span>
+    </div>
+    <div class="flex items-center gap-2 font-label text-[11px] text-on-surface-variant">
+    <span class="px-2 py-0.5 rounded bg-surface-container-highest font-medium">Servicio en curso</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- Rendimiento y Sincronización de Partidas (KDS) -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-sm space-y-6">
+    <div class="flex items-center justify-between">
+    <div>
+    <h2 class="font-headline text-xl font-normal text-on-surface">Rendimiento y Sincronización de Partidas (KDS)</h2>
+    <p class="font-body text-xs text-on-surface-variant mt-1">Eficiencia operativa de la brigada de fogones en directo.</p>
+    </div>
+    <div class="flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+    <span class="font-label text-xs font-semibold text-primary">Sincronización 98.4%</span>
+    </div>
+    </div>
+    <!-- Culinary Focus Feature Hero Card with real inspiration asset context -->
+    <div class="relative rounded-2xl overflow-hidden shadow-sm bg-surface-container-high">
+    <div class="grid grid-cols-1 sm:grid-cols-12 items-center">
+    <div class="sm:col-span-5 h-48 sm:h-full min-h-[190px] relative overflow-hidden">
+    <img class="w-full h-full object-cover" data-alt="A focused high-end Michelin female head chef meticulously plating a signature roast squab dish with fine culinary tweezers in a warm copper and wood professional restaurant kitchen, warm amber ambient lighting and stainless steel pass background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9DYopvaK-7ItoKLPxyuol1rxr0Q2Wm_NPYsOLtOOyVqBs2ESOT6Y_pgRMCiuEuxJL4uVzi7FyCsHq-oBqtc7L0bFCoaWu9VQbw-prxd4p4dPEOGYwzFsYrQINbonwRYq33nbnCaXVZ-P1uoRlGyCVWBTI9chQ6ttL5zoeEbaY1jk-JmXU4Lua12Dbffgn-r-eD0V-1Mm9BLFZRkpOUWQitVfNy8KHTRigDkS83PCd15hiniRV8d45">
+    <div class="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-on-surface/40 via-transparent to-transparent"></div>
+    </div>
+    <div class="sm:col-span-7 p-5 sm:p-6 space-y-3">
+    <div class="flex items-center justify-between">
+    <span class="font-label text-[10px] uppercase font-bold tracking-widest text-primary">Pase Central · Control de Calidad</span>
+    <span class="text-xs font-label font-bold text-tertiary">Chef Clara Morales</span>
+    </div>
+    <h4 class="font-headline text-lg font-semibold text-on-surface leading-tight">
+                      Inspección Visual y Armonía Sensorial
+                    </h4>
+    <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+                      Cero devoluciones en el turno. Tiempo de ensamblaje en pase de emplatado: 48 segundos promedio por plato.
+                    </p>
+    <div class="pt-1 flex items-center gap-4 text-xs font-label">
+    <span class="text-on-surface font-semibold">Tª Platos: 64°C</span>
+    <span class="text-outline-variant">·</span>
+    <span class="text-on-surface font-semibold">Pase Líquido: Impecable</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- Partidas Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+    <!-- Partida 1 -->
+    <div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between space-y-3">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+    <span class="font-label text-xs font-bold text-on-surface">Entrantes &amp; Crudos</span>
+    </div>
+    <span class="font-label text-[11px] font-bold text-primary">100% Ritmo</span>
+    </div>
+    <div class="space-y-1">
+    <div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+    <div class="h-full bg-primary rounded-full" style="width: 100%;"></div>
+    </div>
+    <div class="flex justify-between text-[11px] font-label text-on-surface-variant pt-1">
+    <span>Chef Marc Vallet</span>
+    <span>24 pases completados</span>
+    </div>
+    </div>
+    </div>
+    <!-- Partida 2 -->
+    <div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between space-y-3">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+    <span class="font-label text-xs font-bold text-on-surface">Pescados &amp; Mariscos</span>
+    </div>
+    <span class="font-label text-[11px] font-bold text-primary">96% Ritmo</span>
+    </div>
+    <div class="space-y-1">
+    <div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+    <div class="h-full bg-primary rounded-full" style="width: 96%;"></div>
+    </div>
+    <div class="flex justify-between text-[11px] font-label text-on-surface-variant pt-1">
+    <span>Chef Sara Domènech</span>
+    <span>Merluza de Pincho en curso</span>
+    </div>
+    </div>
+    </div>
+    <!-- Partida 3 -->
+    <div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between space-y-3">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+    <span class="font-label text-xs font-bold text-on-surface">Carnes &amp; Fuego</span>
+    </div>
+    <span class="font-label text-[11px] font-bold text-primary">98% Ritmo</span>
+    </div>
+    <div class="space-y-1">
+    <div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+    <div class="h-full bg-primary rounded-full" style="width: 98%;"></div>
+    </div>
+    <div class="flex justify-between text-[11px] font-label text-on-surface-variant pt-1">
+    <span>Chef Álvaro Montero</span>
+    <span>Brasas a 240°C</span>
+    </div>
+    </div>
+    </div>
+    <!-- Partida 4 -->
+    <div class="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between space-y-3">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+    <span class="font-label text-xs font-bold text-on-surface">Pastelería &amp; Cacao</span>
+    </div>
+    <span class="font-label text-[11px] font-bold text-tertiary">Mise en place lista</span>
+    </div>
+    <div class="space-y-1">
+    <div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+    <div class="h-full bg-tertiary rounded-full" style="width: 90%;"></div>
+    </div>
+    <div class="flex justify-between text-[11px] font-label text-on-surface-variant pt-1">
+    <span>Chef Camille Laurent</span>
+    <span>Postres preparados (32 un.)</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- Right Column: 40% (5 of 12 cols on desktop) -->
+    <div class="lg:col-span-5 space-y-8">
+    <!-- Card 1: Protocolo Michelin & Alertas Críticas -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-sm space-y-6">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <div class="w-7 h-7 rounded-lg bg-tertiary-container/30 text-on-tertiary-container flex items-center justify-center">
+    <span class="material-symbols-outlined text-[18px]">verified</span>
+    </div>
+    <h2 class="font-headline text-lg font-normal text-on-surface">Auditoría Michelin &amp; Seguridad</h2>
+    </div>
+    <span class="font-label text-[10px] uppercase font-bold tracking-widest text-tertiary">Nivel 1</span>
+    </div>
+    <div class="space-y-3.5">
+    <!-- Inspector Alert -->
+    <div class="p-4 rounded-xl bg-surface-container-low space-y-2">
+    <div class="flex items-center justify-between">
+    <span class="font-label text-xs font-bold text-on-surface flex items-center gap-1.5">
+    <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                      Presencia en Sala: Mesa 04
+                    </span>
+    <span class="text-[10px] font-label font-bold text-tertiary uppercase">Protocolo Activo</span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+                    Auditoría sensorial y verificación en plato por Head Chef previo a salida del pase. Trato discreto estándar.
+                  </p>
+    </div>
+    <!-- Wine Stock alert -->
+    <div class="p-4 rounded-xl bg-surface-container-low space-y-2">
+    <div class="flex items-center justify-between">
+    <span class="font-label text-xs font-bold text-on-surface flex items-center gap-1.5">
+    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                      Cava Patrimonial
+                    </span>
+    <span class="text-[10px] font-label font-semibold text-primary">Última Unidad</span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+                    Château Margaux 2010 (1.450 €) en stock crítico. Sommelier recomienda bloqueo para mesa presidencial.
+                  </p>
+    </div>
+    <!-- HACCP & Cold Chain -->
+    <div class="p-4 rounded-xl bg-surface-container-low space-y-2">
+    <div class="flex items-center justify-between">
+    <span class="font-label text-xs font-bold text-on-surface flex items-center gap-1.5">
+    <span class="material-symbols-outlined text-[16px] text-primary">ac_unit</span>
+                      Trazabilidad Frigorífica
+                    </span>
+    <span class="text-[10px] font-label font-bold text-primary">3.2°C Conforme</span>
+    </div>
+    <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+                    Todas las cámaras estables con firma biométrica sellada hace 14 minutos. Sin desviaciones térmicas.
+                  </p>
+    </div>
+    </div>
+    </div>
+    <!-- Card 2: Sumillería y Cava en Directo -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-sm space-y-6">
+    <div class="flex items-center justify-between">
+    <div>
+    <h2 class="font-headline text-lg font-normal text-on-surface">Sumillería y Cava en Directo</h2>
+    <p class="font-body text-xs text-on-surface-variant mt-0.5">Responsable: Elena Morales · Sommelier Jefe</p>
+    </div>
+    <div class="w-8 h-8 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+    <span class="material-symbols-outlined text-[20px]">local_bar</span>
+    </div>
+    </div>
+    <!-- Wine Breakdown metrics -->
+    <div class="grid grid-cols-3 gap-3">
+    <div class="p-3.5 rounded-xl bg-surface-container-low text-center">
+    <span class="font-headline text-xl font-bold text-on-surface">12</span>
+    <span class="block font-label text-[10px] uppercase tracking-wider text-on-surface-variant mt-1 font-semibold">Champagnes</span>
+    </div>
+    <div class="p-3.5 rounded-xl bg-surface-container-low text-center">
+    <span class="font-headline text-xl font-bold text-on-surface">18</span>
+    <span class="block font-label text-[10px] uppercase tracking-wider text-on-surface-variant mt-1 font-semibold">Tintos Gran Rva.</span>
+    </div>
+    <div class="p-3.5 rounded-xl bg-surface-container-low text-center">
+    <span class="font-headline text-xl font-bold text-on-surface">8</span>
+    <span class="block font-label text-[10px] uppercase tracking-wider text-on-surface-variant mt-1 font-semibold">Blancos Paraje</span>
+    </div>
+    </div>
+    <!-- Maridaje Live distribution -->
+    <div class="p-4 rounded-xl bg-surface-container-low space-y-3">
+    <div class="flex justify-between items-center text-xs font-label">
+    <span class="text-on-surface font-semibold">Adopción Maridaje Alta Selección</span>
+    <span class="font-bold text-primary">64% de las mesas</span>
+    </div>
+    <div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex">
+    <div class="h-full bg-primary" style="width: 64%;" title="Maridaje Completo"></div>
+    <div class="h-full bg-tertiary" style="width: 24%;" title="Botella Individual"></div>
+    <div class="h-full bg-secondary-container" style="width: 12%;" title="Sin Alcohol"></div>
+    </div>
+    <div class="flex items-center justify-between text-[11px] font-label text-on-surface-variant pt-1">
+    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary"></span> Armonía Clásica (64%)</span>
+    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-tertiary"></span> A la Carta (24%)</span>
+    </div>
+    </div>
+    <button class="w-full py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-dim text-on-surface font-label text-xs font-semibold transition-colors flex items-center justify-center gap-2" type="button">
+    <span>Gestionar Cava &amp; Carta de Vinos</span>
+    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+    </button>
+    </div>
+    <!-- Card 3: Brigada en Servicio Activo -->
+    <div class="bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-sm space-y-5">
+    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+    <span class="material-symbols-outlined text-[20px] text-primary">groups</span>
+    <h2 class="font-headline text-lg font-normal text-on-surface">Brigada Activa en Turno</h2>
+    </div>
+    <span class="px-2.5 py-1 rounded-full bg-surface-container text-primary font-label text-[11px] font-bold">
+                  28 / 28 Presentes
+                </span>
+    </div>
+    <div class="divide-y-0 space-y-2.5 font-label text-xs">
+    <div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-primary"></span>
+    <span class="text-on-surface font-semibold">Cocina &amp; Fogones</span>
+    </div>
+    <span class="text-on-surface-variant font-medium">14 chefs y ayudantes</span>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-primary"></span>
+    <span class="text-on-surface font-semibold">Sala &amp; Sumillería</span>
+    </div>
+    <span class="text-on-surface-variant font-medium">10 camareros y sommeliers</span>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+    <div class="flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-secondary"></span>
+    <span class="text-on-surface font-semibold">Office, Plonge &amp; Sanidad</span>
+    </div>
+    <span class="text-on-surface-variant font-medium">4 técnicos certificados</span>
+    </div>
+    </div>
+    <div class="pt-2 flex items-center justify-between text-xs font-label border-0">
+    <div class="flex items-center gap-2 text-on-surface-variant">
+    <span class="material-symbols-outlined text-[16px] text-tertiary">military_tech</span>
+    <span>Head Chef: <strong class="text-on-surface">Clara Morales</strong></span>
+    </div>
+    <span class="text-primary font-semibold hover:underline cursor-pointer">Ver Turnos Brigada</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- 4. Bottom Live Status & Connectivity Bar -->
+    <div class="pt-2 pb-6">
+    <div class="bg-surface-container-lowest rounded-2xl px-6 py-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-label text-on-surface-variant">
+    <div class="flex flex-wrap items-center gap-6">
+    <div class="flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-primary"></span>
+    <span class="font-medium text-on-surface">Socket KDS en Vivo</span>
+    <span class="text-[10px] text-on-surface-variant">(Latencia 12ms)</span>
+    </div>
+    <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-[16px] text-tertiary">security</span>
+    <span>Certificación Sanitaria ISO-22000 Verificada</span>
+    </div>
+    <div class="hidden sm:flex items-center gap-2">
+    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">sync</span>
+    <span>Última sincronización: hace 4 segundos</span>
+    </div>
+    </div>
+    <div class="flex items-center gap-4">
+    <span class="text-[11px] font-mono tracking-tight text-on-surface-variant">NODE: MAD-ATELIER-01</span>
+    <button class="text-primary hover:text-primary-container font-semibold transition-colors flex items-center gap-1" type="button">
+    <span>Refrescar Panel</span>
+    <span class="material-symbols-outlined text-[14px]">refresh</span>
+    </button>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div></main><footer class="w-full bg-surface-container-lowest mt-16"><div class="max-w-7xl mx-auto px-6 lg:px-12 py-10"><div class="flex flex-col md:flex-row items-center justify-between gap-6"><div class="flex items-center gap-4"><span class="font-headline text-sm font-semibold tracking-tight text-on-surface">Restaurant-CMR</span><span class="font-label text-xs text-on-surface-variant">SaaS de Alta Gastronomía &amp; Hospitalidad Michelin</span></div><div class="flex items-center gap-6 text-xs text-on-surface-variant"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span>Criptografía Bancaria TLS 1.3</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span><span>Latencia Sistema: 18ms</span></div><span>Versión 4.12 Archival</span></div></div><div class="mt-6 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-on-surface-variant gap-4"><p>© 2025 Restaurant-CMR International S.L. Todos los derechos reservados.</p><div class="flex items-center gap-6"><a class="hover:text-primary transition-colors" href="#">Protocolo de Seguridad Alimentaria</a><a class="hover:text-primary transition-colors" href="#">Auditoría de Bodega</a><a class="hover:text-primary transition-colors" href="#">Soporte Concierge 24/7</a></div></div></div></footer></body></html>

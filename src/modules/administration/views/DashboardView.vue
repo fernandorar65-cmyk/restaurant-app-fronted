@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
+import { useRouter } from 'vue-router'
+
 import { usePageTitle } from '@/composables/usePageTitle'
 import { fetchOrganizations, fetchRestaurants } from '@/modules/restaurants/api'
 import RestaurantSiteCard from '@/modules/restaurants/components/RestaurantSiteCard.vue'
@@ -11,6 +13,7 @@ import { useSessionStore } from '@/stores/session'
 usePageTitle('Sedes')
 
 const session = useSessionStore()
+const router = useRouter()
 
 const restaurants = ref<RestaurantSite[]>([])
 const organization = ref<Organization | null>(null)
@@ -73,8 +76,9 @@ async function loadDirectory(): Promise<void> {
   }
 }
 
-function enterSite(site: RestaurantSite): void {
+async function enterSite(site: RestaurantSite): Promise<void> {
   session.setRestaurant(site.id)
+  await router.push({ name: 'site-dashboard', params: { restaurantId: site.id } })
 }
 
 onMounted(() => {

@@ -1,23 +1,49 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
 
+import { fetchRestaurantById } from '@/modules/restaurants/api'
 import { useSessionStore } from '@/stores/session'
 import { getInitials } from '@/utils/string'
 
 const session = useSessionStore()
 const router = useRouter()
+const route = useRoute()
+const currentSiteName = ref<string | null>(null)
+
+async function loadCurrentSite(): Promise<void> {
+  const restaurantId = route.params.restaurantId
+  const id = typeof restaurantId === 'string' ? restaurantId : null
+
+  if (!id) {
+    currentSiteName.value = null
+    return
+  }
+
+  const site = await fetchRestaurantById(id)
+  currentSiteName.value = site?.name ?? null
+}
 
 async function logout(): Promise<void> {
   session.clearAuth()
   await router.push({ name: 'login' })
 }
+
+watch(
+  () => route.params.restaurantId,
+  () => {
+    void loadCurrentSite()
+  },
+)
+
+onMounted(() => {
+  void loadCurrentSite()
+})
 </script>
 
 <template>
-  <header
-    class="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/95 shadow-[0_1px_3px_rgba(0,0,0,0.03)] backdrop-blur-md"
-  >
-    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-8">
+  <header class="sticky top-0 z-50 w-full border-b border-outline-variant/60 bg-surface/85 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6 lg:px-12">
       <div class="flex items-center gap-5">
         <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-3">
           <div
@@ -33,40 +59,40 @@ async function logout(): Promise<void> {
             </svg>
           </div>
           <span class="flex flex-col">
-            <span class="font-headline text-[17px] leading-none font-semibold tracking-tight text-gray-900">
+            <span class="font-headline text-[17px] leading-none font-semibold tracking-tight text-on-surface">
               Restaurant-CMR
             </span>
-            <span class="font-label mt-0.5 text-[10px] font-medium tracking-wider text-gray-500 uppercase">
-              Editorial Cuisine System
+            <span class="font-label mt-0.5 text-[10px] font-medium tracking-wider text-secondary uppercase">
+              Haute Cuisine Suite
             </span>
           </span>
         </RouterLink>
+
+        <template v-if="currentSiteName">
+          <div class="hidden h-6 w-px bg-surface-container-highest sm:block" />
+          <RouterLink
+            :to="{ name: 'dashboard' }"
+            class="hidden items-center gap-2 rounded-lg bg-surface-container-low px-3 py-1.5 transition-colors hover:bg-surface-container sm:flex"
+          >
+            <span class="text-xs leading-none font-semibold text-on-surface">{{ currentSiteName }}</span>
+            <span class="text-[10px] text-on-surface-variant">Cambiar sede</span>
+          </RouterLink>
+        </template>
       </div>
 
-      <nav class="font-label hidden items-center gap-7 text-xs font-medium tracking-wider uppercase lg:flex" aria-label="Portal">
-        <RouterLink
-          :to="{ name: 'dashboard' }"
-          class="flex items-center border-b-2 border-primary py-5 -mb-px font-semibold text-primary"
-        >
-          Sedes
-        </RouterLink>
-      </nav>
-
       <div class="flex items-center gap-3">
-        <div v-if="session.user" class="hidden items-center gap-2.5 border-l border-gray-200 pl-2 sm:flex">
-          <div
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white"
-          >
+        <div v-if="session.user" class="hidden items-center gap-2.5 border-l border-outline-variant pl-2 sm:flex">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-on-primary">
             {{ getInitials(session.user.name) }}
           </div>
           <div class="flex flex-col text-left">
-            <span class="text-xs leading-tight font-semibold text-gray-900">{{ session.user.name }}</span>
-            <span class="font-label text-[10px] leading-tight text-gray-500">{{ session.user.email }}</span>
+            <span class="text-xs leading-tight font-semibold text-on-surface">{{ session.user.name }}</span>
+            <span class="font-label text-[10px] leading-tight text-on-surface-variant">{{ session.user.email }}</span>
           </div>
         </div>
         <button
           type="button"
-          class="rounded p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-700"
+          class="rounded p-1.5 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
           title="Cerrar sesión"
           @click="logout"
         >

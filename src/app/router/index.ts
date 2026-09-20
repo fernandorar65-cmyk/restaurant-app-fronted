@@ -75,6 +75,18 @@ export const router = createRouter({
       ],
     },
     {
+      path: '/sedes/:restaurantId',
+      component: PortalLayout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'site-dashboard',
+          component: () => import('@/modules/restaurants/views/SiteDashboardView.vue'),
+        },
+      ],
+    },
+    {
       path: '/admin',
       component: PortalLayout,
       children: [

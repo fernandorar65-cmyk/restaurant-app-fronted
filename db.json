@@ -123,5 +123,1059 @@
         "occupancyPercent": 70
       }
     }
+  ],
+  "siteOperations": [
+    {
+      "id": "1",
+      "restaurantId": "1",
+      "shiftLabel": "Pase de noche · 20:30 – 00:30",
+      "kpis": {
+        "revenue": "18.420 €",
+        "revenueHint": "+14.2% vs obj. (16.1k €)",
+        "ticket": "245 €",
+        "margin": "72.8%",
+        "occupancyCurrent": 21,
+        "occupancyMax": 44,
+        "occupancyDetail": "6/12 mesas ocupadas",
+        "occupancyVip": "6 pax VIP",
+        "cadence": "14.2",
+        "cadenceHint": "Cadencia óptima (<16m)",
+        "cadenceDetail": "68 servidos · 12 en marcha",
+        "cellar": "4.860 €",
+        "cellarShare": "26.4% facturación total",
+        "cellarDetail": "38 botellas · 12.4°C cava"
+      },
+      "tables": [
+        {
+          "number": "01",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Ventana",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        },
+        {
+          "number": "02",
+          "seats": 4,
+          "occupiedSeats": 4,
+          "floorStatus": "occupied",
+          "guests": 4,
+          "tagLabel": "Terraza",
+          "tagTone": "neutral",
+          "location": "Pérgola exterior",
+          "staff": "Nuria G.",
+          "statusLabel": "Recién sentados",
+          "courseLabel": "Pase 1 de 9",
+          "dish": "Trilogía de aperitivos de mar",
+          "note": "4/4 sillas"
+        },
+        {
+          "number": "03",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "cleaning",
+          "guests": 0,
+          "tagLabel": "Office",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Office",
+          "statusLabel": "Limpieza",
+          "courseLabel": "—",
+          "dish": "Reset de cubiertos",
+          "note": "4 sillas"
+        },
+        {
+          "number": "04",
+          "seats": 4,
+          "occupiedSeats": 4,
+          "floorStatus": "occupied",
+          "guests": 4,
+          "tagLabel": "Atención prioritaria",
+          "tagTone": "critical",
+          "location": "Sala principal central",
+          "staff": "Javier R.",
+          "statusLabel": "11 min en pase",
+          "courseLabel": "Pase 5 de 9",
+          "dish": "Pichón asado al sarmiento",
+          "note": "4/4 sillas"
+        },
+        {
+          "number": "05",
+          "seats": 6,
+          "occupiedSeats": 0,
+          "floorStatus": "reserved",
+          "guests": 0,
+          "tagLabel": "Reserva 21:15",
+          "tagTone": "alert",
+          "location": "Sala principal",
+          "staff": "Hostess",
+          "statusLabel": "Reservada",
+          "courseLabel": "—",
+          "dish": "6 pax confirmados",
+          "note": "6 sillas"
+        },
+        {
+          "number": "06",
+          "seats": 2,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Pareja",
+          "tagTone": "neutral",
+          "location": "Ventanal jardín",
+          "staff": "Lucas M.",
+          "statusLabel": "En servicio",
+          "courseLabel": "Pase 3 de 9",
+          "dish": "Pescado del día",
+          "note": "2/2 sillas"
+        },
+        {
+          "number": "07",
+          "seats": 4,
+          "occupiedSeats": 3,
+          "floorStatus": "occupied",
+          "guests": 3,
+          "tagLabel": "Silla libre",
+          "tagTone": "alert",
+          "location": "Sala principal",
+          "staff": "Javier R.",
+          "statusLabel": "3 de 4 cubiertos",
+          "courseLabel": "Pase 2 de 9",
+          "dish": "Entrante compartido",
+          "note": "3/4 sillas"
+        },
+        {
+          "number": "08",
+          "seats": 6,
+          "occupiedSeats": 6,
+          "floorStatus": "occupied",
+          "guests": 6,
+          "tagLabel": "Salón privado",
+          "tagTone": "neutral",
+          "location": "Salón privado norte",
+          "staff": "Elena Morales",
+          "statusLabel": "Pase inminente",
+          "courseLabel": "Pase 8 de 9",
+          "dish": "Pre-postre cítrico",
+          "note": "6/6 sillas"
+        },
+        {
+          "number": "09",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Sala",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "4 sillas"
+        },
+        {
+          "number": "10",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "reserved",
+          "guests": 0,
+          "tagLabel": "Reserva 22:00",
+          "tagTone": "alert",
+          "location": "Ventanal jardín",
+          "staff": "Hostess",
+          "statusLabel": "Reservada",
+          "courseLabel": "—",
+          "dish": "4 pax",
+          "note": "4 sillas"
+        },
+        {
+          "number": "11",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Barra",
+          "tagTone": "neutral",
+          "location": "Acceso barra",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        },
+        {
+          "number": "12",
+          "seats": 2,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Alergia frutos secos",
+          "tagTone": "alert",
+          "location": "Ventanal jardín",
+          "staff": "Lucas M.",
+          "statusLabel": "9 min en preparación",
+          "courseLabel": "Pase 2 de 9",
+          "dish": "Bogavante del Cantábrico",
+          "note": "2/2 sillas"
+        }
+      ],
+      "quality": {
+        "chef": "Chef Clara Morales",
+        "title": "Inspección visual y armonía sensorial",
+        "description": "Cero devoluciones en el turno. Tiempo de ensamblaje en pase: 48 segundos de promedio por plato.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuA9DYopvaK-7ItoKLPxyuol1rxr0Q2Wm_NPYsOLtOOyVqBs2ESOT6Y_pgRMCiuEuxJL4uVzi7FyCsHq-oBqtc7L0bFCoaWu9VQbw-prxd4p4dPEOGYwzFsYrQINbonwRYq33nbnCaXVZ-P1uoRlGyCVWBTI9chQ6ttL5zoeEbaY1jk-JmXU4Lua12Dbffgn-r-eD0V-1Mm9BLFZRkpOUWQitVfNy8KHTRigDkS83PCd15hiniRV8d45",
+        "extra": "Tª platos: 64°C · Pase líquido: estable"
+      },
+      "stations": [
+        {
+          "name": "Entrantes y crudos",
+          "chef": "Chef Marc Vallet",
+          "progressLabel": "100% ritmo",
+          "progressPercent": 100,
+          "detail": "24 pases completados"
+        },
+        {
+          "name": "Pescados y mariscos",
+          "chef": "Chef Sara Domènech",
+          "progressLabel": "96% ritmo",
+          "progressPercent": 96,
+          "detail": "Pescado del día en curso"
+        },
+        {
+          "name": "Carnes y fuego",
+          "chef": "Chef Álvaro Montero",
+          "progressLabel": "98% ritmo",
+          "progressPercent": 98,
+          "detail": "Brasas a 240°C"
+        },
+        {
+          "name": "Pastelería y cacao",
+          "chef": "Chef Camille Laurent",
+          "progressLabel": "Mise en place lista",
+          "progressPercent": 90,
+          "detail": "Postres preparados (32 un.)"
+        }
+      ],
+      "alerts": [
+        {
+          "title": "Presencia en sala: mesa 04",
+          "status": "Protocolo activo",
+          "description": "Verificación en plato por head chef previo a salida del pase."
+        },
+        {
+          "title": "Cava patrimonial",
+          "status": "Última unidad",
+          "description": "Referencia de alta gama en stock crítico. Revisar reserva de mesa presidencial."
+        },
+        {
+          "title": "Trazabilidad frigorífica",
+          "status": "3.2°C conforme",
+          "description": "Cámaras estables. Última revisión hace 14 minutos."
+        }
+      ],
+      "cellar": {
+        "sommelier": "Elena Morales",
+        "champagnes": 12,
+        "reds": 18,
+        "whites": 8,
+        "pairingPercent": 64
+      },
+      "brigade": {
+        "present": 11,
+        "total": 12,
+        "kitchen": "4 en cocina",
+        "floor": "5 en sala",
+        "support": "2 en soporte",
+        "headChef": "Clara Morales"
+      },
+      "staff": [
+        {
+          "id": "s1-1",
+          "name": "Clara Morales",
+          "role": "Head chef",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-2",
+          "name": "Marc Vallet",
+          "role": "Chef de partie",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-3",
+          "name": "Sara Domènech",
+          "role": "Chef de poisson",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-4",
+          "name": "Camille Laurent",
+          "role": "Pastelería",
+          "area": "kitchen",
+          "status": "break"
+        },
+        {
+          "id": "s1-5",
+          "name": "Javier Ruiz",
+          "role": "Camarero de sala",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-6",
+          "name": "Nuria Gómez",
+          "role": "Camarera terraza",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-7",
+          "name": "Lucas Martín",
+          "role": "Camarero jardín",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-8",
+          "name": "Elena Morales",
+          "role": "Sommelier",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-9",
+          "name": "Paula Ortiz",
+          "role": "Hostess",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-10",
+          "name": "Iván Soto",
+          "role": "Office / runner",
+          "area": "support",
+          "status": "on-shift"
+        },
+        {
+          "id": "s1-11",
+          "name": "Marta Gil",
+          "role": "Office",
+          "area": "support",
+          "status": "break"
+        },
+        {
+          "id": "s1-12",
+          "name": "Hugo Peña",
+          "role": "Ayudante de cocina",
+          "area": "kitchen",
+          "status": "absent"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "restaurantId": "2",
+      "shiftLabel": "Pre-servicio almuerzo · 13:00 – 16:00",
+      "kpis": {
+        "revenue": "14.180 €",
+        "revenueHint": "+8.7% vs obj.",
+        "ticket": "198 €",
+        "margin": "70.1%",
+        "occupancyCurrent": 8,
+        "occupancyMax": 28,
+        "occupancyDetail": "3/8 mesas ocupadas",
+        "occupancyVip": "2 pax VIP",
+        "cadence": "16.0",
+        "cadenceHint": "Dentro de objetivo",
+        "cadenceDetail": "40 servidos · 8 en marcha",
+        "cellar": "3.120 €",
+        "cellarShare": "22% facturación",
+        "cellarDetail": "21 botellas"
+      },
+      "tables": [
+        {
+          "number": "03",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Jardín",
+          "tagTone": "neutral",
+          "location": "Sala jardín",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        },
+        {
+          "number": "05",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "cleaning",
+          "guests": 0,
+          "tagLabel": "Reset",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Office",
+          "statusLabel": "Limpieza",
+          "courseLabel": "—",
+          "dish": "Cambio de mantel",
+          "note": "4 sillas"
+        },
+        {
+          "number": "07",
+          "seats": 4,
+          "occupiedSeats": 4,
+          "floorStatus": "occupied",
+          "guests": 4,
+          "tagLabel": "Reserva",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Pau L.",
+          "statusLabel": "Recién sentados",
+          "courseLabel": "Pase 1 de 7",
+          "dish": "Aperitivo de huerto",
+          "note": "4/4 sillas"
+        },
+        {
+          "number": "08",
+          "seats": 6,
+          "occupiedSeats": 0,
+          "floorStatus": "reserved",
+          "guests": 0,
+          "tagLabel": "Reserva 14:00",
+          "tagTone": "alert",
+          "location": "Sala principal",
+          "staff": "Hostess",
+          "statusLabel": "Reservada",
+          "courseLabel": "—",
+          "dish": "6 pax",
+          "note": "6 sillas"
+        },
+        {
+          "number": "11",
+          "seats": 2,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Ventana",
+          "tagTone": "neutral",
+          "location": "Sala jardín",
+          "staff": "Inés P.",
+          "statusLabel": "En pase",
+          "courseLabel": "Pase 3 de 7",
+          "dish": "Menú de temporada botánica",
+          "note": "2/2 sillas"
+        },
+        {
+          "number": "14",
+          "seats": 4,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Sillas libres",
+          "tagTone": "alert",
+          "location": "Sala jardín",
+          "staff": "Inés P.",
+          "statusLabel": "2 de 4 cubiertos",
+          "courseLabel": "Pase 2 de 7",
+          "dish": "Ensalada de temporada",
+          "note": "2/4 sillas"
+        },
+        {
+          "number": "16",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Terraza",
+          "tagTone": "neutral",
+          "location": "Terraza",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        },
+        {
+          "number": "18",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Sala",
+          "tagTone": "neutral",
+          "location": "Sala principal",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "4 sillas"
+        }
+      ],
+      "quality": {
+        "chef": "Inés Soler",
+        "title": "Control de pase de almuerzo",
+        "description": "Resumen operativo de demostración para esta sede.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuA9DYopvaK-7ItoKLPxyuol1rxr0Q2Wm_NPYsOLtOOyVqBs2ESOT6Y_pgRMCiuEuxJL4uVzi7FyCsHq-oBqtc7L0bFCoaWu9VQbw-prxd4p4dPEOGYwzFsYrQINbonwRYq33nbnCaXVZ-P1uoRlGyCVWBTI9chQ6ttL5zoeEbaY1jk-JmXU4Lua12Dbffgn-r-eD0V-1Mm9BLFZRkpOUWQitVfNy8KHTRigDkS83PCd15hiniRV8d45",
+        "extra": "Datos de mock en json-server"
+      },
+      "stations": [
+        {
+          "name": "Fríos y huerto",
+          "chef": "Chef Inés Soler",
+          "progressLabel": "92% ritmo",
+          "progressPercent": 92,
+          "detail": "Pases de apertura"
+        },
+        {
+          "name": "Calientes",
+          "chef": "Chef Nil Serra",
+          "progressLabel": "88% ritmo",
+          "progressPercent": 88,
+          "detail": "Fondos en punto"
+        }
+      ],
+      "alerts": [
+        {
+          "title": "Stock de huerto",
+          "status": "Estable",
+          "description": "Insumos de km0 sin roturas registradas."
+        }
+      ],
+      "cellar": {
+        "sommelier": "Marta Vives",
+        "champagnes": 6,
+        "reds": 10,
+        "whites": 14,
+        "pairingPercent": 55
+      },
+      "brigade": {
+        "present": 7,
+        "total": 8,
+        "kitchen": "2 en cocina",
+        "floor": "4 en sala",
+        "support": "1 en soporte",
+        "headChef": "Inés Soler"
+      },
+      "staff": [
+        {
+          "id": "s2-1",
+          "name": "Inés Soler",
+          "role": "Head chef",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-2",
+          "name": "Nil Serra",
+          "role": "Chef calientes",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-3",
+          "name": "Inés Puig",
+          "role": "Camarera jardín",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-4",
+          "name": "Pau López",
+          "role": "Camarero sala",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-5",
+          "name": "Marta Vives",
+          "role": "Sommelier",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-6",
+          "name": "Laia Roca",
+          "role": "Hostess",
+          "area": "floor",
+          "status": "break"
+        },
+        {
+          "id": "s2-7",
+          "name": "Oriol Font",
+          "role": "Office",
+          "area": "support",
+          "status": "on-shift"
+        },
+        {
+          "id": "s2-8",
+          "name": "Núria Casals",
+          "role": "Ayudante de cocina",
+          "area": "kitchen",
+          "status": "absent"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "restaurantId": "3",
+      "shiftLabel": "Cierre mañana / cava · 12:00 – 17:00",
+      "kpis": {
+        "revenue": "22.650 €",
+        "revenueHint": "+16.0% vs target",
+        "ticket": "162 €",
+        "margin": "74.2%",
+        "occupancyCurrent": 9,
+        "occupancyMax": 28,
+        "occupancyDetail": "3/8 mesas ocupadas",
+        "occupancyVip": "Cata privada",
+        "cadence": "11.5",
+        "cadenceHint": "Servicio de copas fluido",
+        "cadenceDetail": "90 servicios · 6 en marcha",
+        "cellar": "9.400 €",
+        "cellarShare": "41% facturación",
+        "cellarDetail": "64 copas · 1.840 referencias"
+      },
+      "tables": [
+        {
+          "number": "01",
+          "seats": 4,
+          "occupiedSeats": 4,
+          "floorStatus": "occupied",
+          "guests": 4,
+          "tagLabel": "Cata",
+          "tagTone": "critical",
+          "location": "Sala de barricas",
+          "staff": "Diego R.",
+          "statusLabel": "En cata",
+          "courseLabel": "Vuelo 2 de 4",
+          "dish": "Selección gran reserva",
+          "note": "4/4 sillas"
+        },
+        {
+          "number": "04",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Copa",
+          "tagTone": "neutral",
+          "location": "Barra cava",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        },
+        {
+          "number": "06",
+          "seats": 6,
+          "occupiedSeats": 0,
+          "floorStatus": "reserved",
+          "guests": 0,
+          "tagLabel": "Cata privada",
+          "tagTone": "alert",
+          "location": "Sala de barricas",
+          "staff": "Hostess",
+          "statusLabel": "Reservada",
+          "courseLabel": "—",
+          "dish": "6 pax a las 16:00",
+          "note": "6 sillas"
+        },
+        {
+          "number": "09",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "cleaning",
+          "guests": 0,
+          "tagLabel": "Reset",
+          "tagTone": "neutral",
+          "location": "Bistró",
+          "staff": "Office",
+          "statusLabel": "Limpieza",
+          "courseLabel": "—",
+          "dish": "Cambio de servicio",
+          "note": "4 sillas"
+        },
+        {
+          "number": "12",
+          "seats": 4,
+          "occupiedSeats": 3,
+          "floorStatus": "occupied",
+          "guests": 3,
+          "tagLabel": "Bistró",
+          "tagTone": "neutral",
+          "location": "Sala bistró",
+          "staff": "Sofía N.",
+          "statusLabel": "En servicio",
+          "courseLabel": "Pase 2",
+          "dish": "Plato de autor",
+          "note": "3/4 sillas"
+        },
+        {
+          "number": "15",
+          "seats": 2,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Barra",
+          "tagTone": "neutral",
+          "location": "Barra cava",
+          "staff": "Sofía N.",
+          "statusLabel": "Servicio de copas",
+          "courseLabel": "Pase 1",
+          "dish": "Tabla de autor",
+          "note": "2/2 sillas"
+        },
+        {
+          "number": "17",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Patio",
+          "tagTone": "neutral",
+          "location": "Patio",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "4 sillas"
+        },
+        {
+          "number": "20",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Barra",
+          "tagTone": "neutral",
+          "location": "Barra cava",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "2 sillas"
+        }
+      ],
+      "quality": {
+        "chef": "Ana Beltrán",
+        "title": "Servicio de cava y bistró",
+        "description": "Resumen operativo de demostración para esta sede.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuA9DYopvaK-7ItoKLPxyuol1rxr0Q2Wm_NPYsOLtOOyVqBs2ESOT6Y_pgRMCiuEuxJL4uVzi7FyCsHq-oBqtc7L0bFCoaWu9VQbw-prxd4p4dPEOGYwzFsYrQINbonwRYq33nbnCaXVZ-P1uoRlGyCVWBTI9chQ6ttL5zoeEbaY1jk-JmXU4Lua12Dbffgn-r-eD0V-1Mm9BLFZRkpOUWQitVfNy8KHTRigDkS83PCd15hiniRV8d45",
+        "extra": "Datos de mock en json-server"
+      },
+      "stations": [
+        {
+          "name": "Cava",
+          "chef": "Diego Ruiz",
+          "progressLabel": "96% ritmo",
+          "progressPercent": 96,
+          "detail": "Servicio de copas"
+        },
+        {
+          "name": "Bistró",
+          "chef": "Chef Ana Beltrán",
+          "progressLabel": "90% ritmo",
+          "progressPercent": 90,
+          "detail": "Plancha activa"
+        }
+      ],
+      "alerts": [
+        {
+          "title": "Stock de gran reserva",
+          "status": "Revisar",
+          "description": "Rotación alta en referencias premium."
+        }
+      ],
+      "cellar": {
+        "sommelier": "Diego Ruiz",
+        "champagnes": 8,
+        "reds": 40,
+        "whites": 16,
+        "pairingPercent": 71
+      },
+      "brigade": {
+        "present": 7,
+        "total": 8,
+        "kitchen": "2 en cocina",
+        "floor": "4 en sala",
+        "support": "1 en soporte",
+        "headChef": "Ana Beltrán"
+      },
+      "staff": [
+        {
+          "id": "s3-1",
+          "name": "Ana Beltrán",
+          "role": "Head chef",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-2",
+          "name": "Diego Ruiz",
+          "role": "Sommelier",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-3",
+          "name": "Sofía Navarro",
+          "role": "Camarera barra",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-4",
+          "name": "Luis Cano",
+          "role": "Camarero bistró",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-5",
+          "name": "Carmen Ortiz",
+          "role": "Hostess",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-6",
+          "name": "Pablo Méndez",
+          "role": "Cocina bistró",
+          "area": "kitchen",
+          "status": "break"
+        },
+        {
+          "id": "s3-7",
+          "name": "Elena Cruz",
+          "role": "Office",
+          "area": "support",
+          "status": "on-shift"
+        },
+        {
+          "id": "s3-8",
+          "name": "Raúl Vega",
+          "role": "Cava",
+          "area": "support",
+          "status": "absent"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "restaurantId": "4",
+      "shiftLabel": "Sesión laboratorio · 11:00 – 15:00",
+      "kpis": {
+        "revenue": "13.000 €",
+        "revenueHint": "Presupuesto Q2",
+        "ticket": "—",
+        "margin": "ROI 2.8x",
+        "occupancyCurrent": 8,
+        "occupancyMax": 20,
+        "occupancyDetail": "3/6 mesas ocupadas",
+        "occupancyVip": "Catadores",
+        "cadence": "22.0",
+        "cadenceHint": "Ritmo de cata",
+        "cadenceDetail": "9 prototipos · 3 en mesa",
+        "cellar": "1.200 €",
+        "cellarShare": "Insumos de ensayo",
+        "cellarDetail": "Extractos y bases"
+      },
+      "tables": [
+        {
+          "number": "A1",
+          "seats": 4,
+          "occupiedSeats": 4,
+          "floorStatus": "occupied",
+          "guests": 4,
+          "tagLabel": "Cata ciega",
+          "tagTone": "neutral",
+          "location": "Sala sensorial",
+          "staff": "Koldo A.",
+          "statusLabel": "En evaluación",
+          "courseLabel": "Prototipo 3 de 9",
+          "dish": "Menú ensayo",
+          "note": "4/4 sillas"
+        },
+        {
+          "number": "A2",
+          "seats": 2,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Dirección",
+          "tagTone": "critical",
+          "location": "Mesa de dirección",
+          "staff": "Amaia B.",
+          "statusLabel": "Briefing",
+          "courseLabel": "Prototipo 1 de 9",
+          "dish": "Entrada de investigación",
+          "note": "2/2 sillas"
+        },
+        {
+          "number": "B1",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "available",
+          "guests": 0,
+          "tagLabel": "Cata",
+          "tagTone": "neutral",
+          "location": "Sala sensorial",
+          "staff": "Sin asignar",
+          "statusLabel": "Libre",
+          "courseLabel": "—",
+          "dish": "Mesa lista",
+          "note": "4 sillas"
+        },
+        {
+          "number": "B2",
+          "seats": 4,
+          "occupiedSeats": 2,
+          "floorStatus": "occupied",
+          "guests": 2,
+          "tagLabel": "Notas",
+          "tagTone": "alert",
+          "location": "Sala sensorial",
+          "staff": "Amaia B.",
+          "statusLabel": "Registro",
+          "courseLabel": "Prototipo 2 de 9",
+          "dish": "Base caliente",
+          "note": "2/4 sillas"
+        },
+        {
+          "number": "C1",
+          "seats": 2,
+          "occupiedSeats": 0,
+          "floorStatus": "reserved",
+          "guests": 0,
+          "tagLabel": "Catadores 15:00",
+          "tagTone": "alert",
+          "location": "Sala sensorial",
+          "staff": "Registro",
+          "statusLabel": "Reservada",
+          "courseLabel": "—",
+          "dish": "2 catadores",
+          "note": "2 sillas"
+        },
+        {
+          "number": "C2",
+          "seats": 4,
+          "occupiedSeats": 0,
+          "floorStatus": "cleaning",
+          "guests": 0,
+          "tagLabel": "Reset",
+          "tagTone": "neutral",
+          "location": "Laboratorio",
+          "staff": "Office",
+          "statusLabel": "Limpieza",
+          "courseLabel": "—",
+          "dish": "Cambio de vajilla de cata",
+          "note": "4 sillas"
+        }
+      ],
+      "quality": {
+        "chef": "Koldo Aranburu",
+        "title": "Sesión de menú ensayo",
+        "description": "Resumen operativo de demostración para esta sede.",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuA9DYopvaK-7ItoKLPxyuol1rxr0Q2Wm_NPYsOLtOOyVqBs2ESOT6Y_pgRMCiuEuxJL4uVzi7FyCsHq-oBqtc7L0bFCoaWu9VQbw-prxd4p4dPEOGYwzFsYrQINbonwRYq33nbnCaXVZ-P1uoRlGyCVWBTI9chQ6ttL5zoeEbaY1jk-JmXU4Lua12Dbffgn-r-eD0V-1Mm9BLFZRkpOUWQitVfNy8KHTRigDkS83PCd15hiniRV8d45",
+        "extra": "Datos de mock en json-server"
+      },
+      "stations": [
+        {
+          "name": "I+D frío",
+          "chef": "Amaia Bengoetxea",
+          "progressLabel": "80% ritmo",
+          "progressPercent": 80,
+          "detail": "Extractos"
+        },
+        {
+          "name": "I+D caliente",
+          "chef": "Koldo Aranburu",
+          "progressLabel": "75% ritmo",
+          "progressPercent": 75,
+          "detail": "Prototipos en fuego"
+        }
+      ],
+      "alerts": [
+        {
+          "title": "Insumos críticos",
+          "status": "85%",
+          "description": "Stock de ensayo suficiente para la sesión."
+        }
+      ],
+      "cellar": {
+        "sommelier": "Laboratorio",
+        "champagnes": 2,
+        "reds": 4,
+        "whites": 4,
+        "pairingPercent": 40
+      },
+      "brigade": {
+        "present": 5,
+        "total": 6,
+        "kitchen": "3 en cocina",
+        "floor": "1 en sala",
+        "support": "1 en soporte",
+        "headChef": "Koldo Aranburu"
+      },
+      "staff": [
+        {
+          "id": "s4-1",
+          "name": "Koldo Aranburu",
+          "role": "Chef I+D",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s4-2",
+          "name": "Amaia Bengoetxea",
+          "role": "Chef I+D frío",
+          "area": "kitchen",
+          "status": "on-shift"
+        },
+        {
+          "id": "s4-3",
+          "name": "Jon Etxebarria",
+          "role": "Registro de cata",
+          "area": "support",
+          "status": "on-shift"
+        },
+        {
+          "id": "s4-4",
+          "name": "Irati Lasa",
+          "role": "Servicio de cata",
+          "area": "floor",
+          "status": "on-shift"
+        },
+        {
+          "id": "s4-5",
+          "name": "Mikel Oyarzabal",
+          "role": "Ayudante laboratorio",
+          "area": "kitchen",
+          "status": "break"
+        },
+        {
+          "id": "s4-6",
+          "name": "Nerea Urrutia",
+          "role": "Office",
+          "area": "support",
+          "status": "absent"
+        }
+      ]
+    }
   ]
 }
