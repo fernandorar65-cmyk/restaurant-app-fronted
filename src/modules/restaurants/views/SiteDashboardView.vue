@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/composables/usePageTitle'
+import SitePortalNav from '@/components/navigation/SitePortalNav.vue'
 import { fetchRestaurantById, fetchSiteOperation } from '@/modules/restaurants/api'
 import SiteFloorTable from '@/modules/restaurants/components/SiteFloorTable.vue'
 import SiteStaffCard from '@/modules/restaurants/components/SiteStaffCard.vue'
@@ -174,6 +175,8 @@ watch(
           <span class="text-tertiary">Sala y equipo</span>
         </nav>
 
+        <SitePortalNav :restaurant-id="restaurant.id" />
+
         <div class="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
           <div class="max-w-3xl space-y-2">
             <p class="font-label inline-flex items-center gap-2 rounded-full bg-surface-container px-2.5 py-1 text-[10px] font-bold tracking-widest text-tertiary uppercase">
@@ -186,7 +189,14 @@ watch(
               Estado de mesas, sillas y personal de {{ restaurant.name }}. Datos de demostración hasta conectar el API.
             </p>
           </div>
-          <div class="flex items-center gap-3 rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm">
+          <div class="flex flex-wrap items-center gap-3">
+            <RouterLink
+              class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+              :to="{ name: 'site-orders', params: { restaurantId: restaurant.id } }"
+            >
+              Ver pedidos
+            </RouterLink>
+            <div class="flex items-center gap-3 rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm">
             <span class="relative flex h-2.5 w-2.5">
               <span class="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
@@ -194,6 +204,7 @@ watch(
             <div class="flex flex-col">
               <span class="font-label text-[10px] font-semibold tracking-widest text-on-surface-variant uppercase">Turno activo</span>
               <span class="font-label text-xs font-bold text-on-surface">{{ operation.shiftLabel }}</span>
+            </div>
             </div>
           </div>
         </div>

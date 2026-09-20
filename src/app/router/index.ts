@@ -84,6 +84,16 @@ export const router = createRouter({
           name: 'site-dashboard',
           component: () => import('@/modules/restaurants/views/SiteDashboardView.vue'),
         },
+        {
+          path: 'pedidos',
+          name: 'site-orders',
+          component: () => import('@/modules/orders/views/SiteOrdersView.vue'),
+        },
+        {
+          path: 'pedidos/:orderId',
+          name: 'site-order-detail',
+          component: () => import('@/modules/orders/views/SiteOrdersView.vue'),
+        },
       ],
     },
     {
