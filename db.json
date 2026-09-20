@@ -6,5 +6,122 @@
       "email": "admin@restaurant.com",
       "password": "admin1234"
     }
+  ],
+  "organizations": [
+    {
+      "id": "1",
+      "name": "Restaurant CMR",
+      "code": "CMR-01"
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "1",
+      "code": "MAD-01-ETL",
+      "name": "L'Étoile Atelier",
+      "city": "Madrid",
+      "address": "Calle de Serrano, 48 · Milla de Oro Salamanca, Madrid",
+      "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCSlwe9ZdphvXfh3zqf-R1RlRPXUn2F01gIT4JouLvs6218ub8ubc0Iy2K5K2oCR82Q56kvnNbWs7p1bjB8rP5R3KqIoys3yi_nSQx_S1OywqRbTlmxFUMFD1hvBBYUA4bG813bJ7kDwuDfrcKGToqiqHUR6fGUWY7fbe0U6beAHlVoewFparOHenrz6xan7Jox45-pW1xvD7GDy5lcUZuXQuUdRb9XExpgmMhubtqP2Rkd7a2EecFg",
+      "category": "fine-dining",
+      "categoryLabel": "Alta cocina",
+      "cuisine": "Alta gastronomía francesa-vasca",
+      "statusLabel": "Servicio activo en pase",
+      "badgeLabel": "Alta cocina",
+      "badgeTone": "amber",
+      "capacityLabel": "Cubiertos: 52 max",
+      "roleLabel": "Dirección de sede",
+      "kpis": {
+        "revenueLabel": "18.420 €",
+        "revenueHint": "+14.2% vs obj.",
+        "marginLabel": "Margen 72.8%",
+        "stockLabel": "94% óptimo",
+        "stockHint": "Merma: 0.4%",
+        "stockNote": "Bodega completa",
+        "occupancyLabel": "92% ocupado",
+        "occupancyHint": "48 de 52 cubiertos",
+        "occupancyPercent": 92
+      }
+    },
+    {
+      "id": "2",
+      "code": "BCN-02-BOT",
+      "name": "Caelis Botanique",
+      "city": "Barcelona",
+      "address": "Passeig de Gràcia, 112 · Eixample Noble, Barcelona",
+      "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAxlgiuaXoPS3_0Z0Zu4u0OT9nJu0ueyb4X4GwQMrBMS5NmP5yELy3CjTl8fNkKZnwBc7QTWE9Ygf6cgLgap77YtaGkIayoFu0s7YgW12sV-uZeIPBzXN2AFr4IENJOuFj-uNh3Fzdr4LlzFgrUjm-X00hqJEcDiw_eYS9n20rdO5X9q3WhSJRZ7uHE2vkHTo1SwBgwRFcTJRYGsIyDsn2yMhm3wK09cv2lbFwAdybtpm5aVrOzm5A0",
+      "category": "fine-dining",
+      "categoryLabel": "Alta cocina",
+      "cuisine": "Gastronomía regenerativa y botánica",
+      "statusLabel": "Pre-servicio almuerzo",
+      "badgeLabel": "Cocina botánica",
+      "badgeTone": "emerald",
+      "capacityLabel": "Cubiertos: 40 max",
+      "roleLabel": "Supervisión de operaciones",
+      "kpis": {
+        "revenueLabel": "14.180 €",
+        "revenueHint": "+8.7% vs obj.",
+        "marginLabel": "Margen 70.1%",
+        "stockLabel": "88% estable",
+        "stockHint": "Huerto km0",
+        "stockNote": "Sin roturas",
+        "occupancyLabel": "80% confirmado",
+        "occupancyHint": "32 de 40 cubiertos",
+        "occupancyPercent": 80
+      }
+    },
+    {
+      "id": "3",
+      "code": "SVQ-03-CRU",
+      "name": "Bodega San Telmo Grand Cru",
+      "city": "Sevilla",
+      "address": "Plaza Doña Elvira, 7 · Barrio Santa Cruz, Sevilla",
+      "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBcbvbwRZ4PNA1VgzEI6fpOkE8vbXoKdl7vaSYCho2vcQSAjnm5NXpibDictut1JxNcaUBVVXuHt0iHQ4SLmK-ZbxOXXFbI5dtf-rph03MWbvs_iN6V2htsLOLxG4z3yHeMmnwRze4-FTtMG94tGINjCZNZw4Nx6XKFK-hxPyFhTRc5BkoWKbJcxigKVn7w6Dz-BxpWnSu8KDk-hcnAlDaPX4qi1ia1SyldjKi46s2aLlUI0F_opFBj",
+      "category": "bistro",
+      "categoryLabel": "Cava y bistró",
+      "cuisine": "Enología y bistronomía andaluza",
+      "statusLabel": "Cierre mañana / cava",
+      "badgeLabel": "Cava de autor",
+      "badgeTone": "wine",
+      "capacityLabel": "Plazas: 60 cava",
+      "roleLabel": "Consulta enológica",
+      "kpis": {
+        "revenueLabel": "22.650 €",
+        "revenueHint": "+16.0% vs target",
+        "marginLabel": "Margen 74.2%",
+        "stockLabel": "96% en cava",
+        "stockHint": "1.840 referencias",
+        "stockNote": "Rotación 4.2x anual",
+        "occupancyLabel": "74% registrado",
+        "occupancyHint": "44 de 60 plazas",
+        "occupancyPercent": 74
+      }
+    },
+    {
+      "id": "4",
+      "code": "EAS-04-LAB",
+      "name": "Atelier Vanguardia I+D",
+      "city": "Donostia",
+      "address": "Paseo del Faro, s/n · Donostia San Sebastián",
+      "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDnFO2NBekRAc3103Vdoa1r-9Fj26rHgQ17kVixaUfAYhn0wmMJVYAEReZJT_4a-eRAot99mKlyqzrusmLk3-ZUakpgiE7yj4Gn_aXVcWto5s4bBA-7y4HYCV9pVXpfOiY1DzqqQNJw-KbmLGpdf4PczQZYY0th5lM0xQ1OZjUvnkcDWBYmmU3bRCmrKptJy9MFWbBlOrt9vqi5z8cmpU4BnvfolcCOtt8QHIvBiuXMLxSIyrAfdhdd",
+      "category": "lab",
+      "categoryLabel": "I+D y laboratorio",
+      "cuisine": "Innovación culinaria y menú ensayo",
+      "statusLabel": "Modo laboratorio",
+      "badgeLabel": "Laboratorio sensorial",
+      "badgeTone": "blue",
+      "capacityLabel": "Catadores: 20 cupos",
+      "roleLabel": "Dirección de innovación",
+      "kpis": {
+        "revenueLabel": "13.000 €",
+        "revenueHint": "Asignado Q2",
+        "marginLabel": "ROI 2.8x carta",
+        "stockLabel": "85% insumos",
+        "stockHint": "Críticos y extractos",
+        "stockNote": "9 prototipos activos",
+        "occupancyLabel": "70% sesión",
+        "occupancyHint": "14 de 20 confirmados",
+        "occupancyPercent": 70
+      }
+    }
   ]
 }

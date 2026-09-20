@@ -54,9 +54,18 @@ export const useSessionStore = defineStore('session', () => {
     restaurantId.value = nextRestaurantId
   }
 
-  function setSession(session: AuthSession): void {
+  function setSession(session: AuthSession, options: { persist?: boolean } = {}): void {
+    const persist = options.persist ?? true
+
     accessToken.value = session.accessToken
     user.value = session.user
+
+    if (!persist) {
+      localStorage.removeItem(ACCESS_TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+      return
+    }
+
     localStorage.setItem(ACCESS_TOKEN_KEY, session.accessToken)
     localStorage.setItem(USER_KEY, JSON.stringify(session.user))
   }

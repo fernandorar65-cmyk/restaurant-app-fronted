@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Restaurant-CMR — Portal Institucional · W02 Selección de Sede</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#faf9fa",
+            "surface-bright": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f6f6f7",
+            "surface-container": "#efedee",
+            "surface-container-high": "#e8e7e9",
+            "surface-container-highest": "#e2e1e3",
+            "on-surface": "#1b1c1d",
+            "on-surface-variant": "#5f6368",
+            primary: "#1D4ED8",
+            "primary-container": "#2563EB",
+            "on-primary": "#ffffff",
+            tertiary: "#92400E",
+            "tertiary-container": "#FEF3C7",
+            "outline-variant": "#e2e8f0"
+          },
+          fontFamily: {
+            headline: ["Noto Serif", "serif"],
+            display: ["Noto Serif", "serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Public Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-[#f8f9fa] font-body text-on-surface min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+<!-- 1. Header Corporativo Editorial -->
+<header class="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+<div class="h-16 max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between gap-6">
+<!-- Brand & Security Tag -->
+<div class="flex items-center gap-5">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-[#1D4ED8] flex items-center justify-center text-white shadow-sm ring-1 ring-blue-700/20">
+<span class="material-symbols-outlined text-[20px]">restaurant_menu</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-[17px] font-semibold tracking-tight text-gray-900 leading-none">Restaurant-CMR</span>
+<span class="font-label text-[10px] tracking-wider uppercase text-gray-500 font-medium mt-0.5">Editorial Cuisine System</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded border border-emerald-200 bg-emerald-50/70 text-emerald-800 font-label text-[11px] font-medium">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">verified_user</span>
+<span>TLS 1.3 · Portal Validado</span>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="hidden lg:flex items-center gap-7 text-xs font-label uppercase tracking-wider font-medium">
+<a class="text-[#1D4ED8] font-semibold border-b-2 border-[#1D4ED8] py-5 -mb-[1px] flex items-center gap-1" href="#">
+<span>Sedes &amp; Holdings</span>
+</a>
+<a class="text-gray-500 hover:text-gray-900 transition-colors py-5" href="#">
+          Analítica Global
+        </a>
+<a class="text-gray-500 hover:text-gray-900 transition-colors py-5" href="#">
+          Auditoría &amp; Estándares
+        </a>
+</nav>
+<!-- Search & Executive Profile -->
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors text-xs font-label" type="button">
+<span class="material-symbols-outlined text-[15px]">search</span>
+<span>Buscar comando...</span>
+<kbd class="px-1.5 py-0.5 rounded bg-white border border-gray-200 text-[10px] font-mono text-gray-400">⌘K</kbd>
+</button>
+<div class="hidden sm:flex items-center gap-2.5 pl-2 border-l border-gray-200">
+<div class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-semibold">
+            AG
+          </div>
+<div class="flex flex-col text-left">
+<span class="text-xs font-semibold text-gray-900 leading-tight">Chef Director General</span>
+<span class="text-[10px] font-label text-gray-500 leading-tight">Grupo Culinario Arzak &amp; Co.</span>
+</div>
+</div>
+<a class="p-1.5 rounded text-gray-400 hover:text-red-700 hover:bg-red-50 transition-colors" href="#" title="Cerrar Sesión Segura">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</a>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="w-full flex-1 pb-16">
+<div class="max-w-7xl mx-auto px-6 lg:px-8 pt-8 space-y-6">
+<!-- 2. Barra Consolidada de Control Corporativo (Holding) -->
+<div class="bg-white rounded-lg border border-gray-200/90 shadow-sm p-6 space-y-6">
+<!-- Header & Holding Switcher -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-gray-100">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-block w-2 h-2 rounded-full bg-[#1D4ED8]"></span>
+<span class="font-label text-[11px] uppercase tracking-widest text-[#1D4ED8] font-bold">W02 — Panel Corporativo de Selección</span>
+</div>
+<h1 class="font-headline text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">
+              Directorio de Sedes Operativas
+            </h1>
+<p class="font-body text-xs sm:text-sm text-gray-500 mt-0.5">
+              Supervisión de operaciones en sala, sincronización de existencias y cuenta de explotación (P&amp;L) consolidada.
+            </p>
+</div>
+<!-- Holding Tag & Switcher -->
+<div class="flex items-center justify-between sm:justify-start gap-4 p-2.5 sm:px-4 sm:py-2.5 rounded border border-gray-200 bg-gray-50/70">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-white border border-gray-200 flex items-center justify-center text-[#1D4ED8] shadow-2xs">
+<span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-[10px] uppercase font-bold tracking-wider text-gray-400">Holding Activo</span>
+<span class="font-mono text-[10px] text-gray-500">#ARZ-99201</span>
+</div>
+<span class="text-xs font-semibold text-gray-900">Grupo Culinario Arzak &amp; Co.</span>
+</div>
+</div>
+<button class="px-2.5 py-1.5 rounded bg-white hover:bg-gray-100 border border-gray-300 text-xs font-label font-medium text-gray-700 flex items-center gap-1 transition-colors" type="button">
+<span>Cambiar Organización</span>
+<span class="material-symbols-outlined text-[15px] text-gray-400">unfold_more</span>
+</button>
+</div>
+</div>
+<!-- 4 Métricas Financieras y Operativas Consolidadas (Simétricas 4 columnas) -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="p-4 rounded border border-gray-200/80 bg-gray-50/40 flex flex-col justify-between">
+<div class="flex items-center justify-between text-gray-500 mb-1.5">
+<span class="font-label text-[11px] uppercase tracking-wider font-semibold">Facturación Global Hoy</span>
+<span class="material-symbols-outlined text-[17px] text-[#1D4ED8]">payments</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold text-gray-900">68.250 €</span>
+<span class="font-label text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 rounded">+12.4%</span>
+</div>
+<span class="text-[11px] font-body text-gray-500 mt-1">vs. objetivo de ventas</span>
+</div>
+<div class="p-4 rounded border border-gray-200/80 bg-gray-50/40 flex flex-col justify-between">
+<div class="flex items-center justify-between text-gray-500 mb-1.5">
+<span class="font-label text-[11px] uppercase tracking-wider font-semibold">Margen EBITDA Medio</span>
+<span class="material-symbols-outlined text-[17px] text-amber-700">trending_up</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold text-gray-900">69.8%</span>
+<span class="font-label text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1 rounded">Saludable</span>
+</div>
+<span class="text-[11px] font-body text-gray-500 mt-1">Costes F&amp;B contenidos en 24.1%</span>
+</div>
+<div class="p-4 rounded border border-gray-200/80 bg-gray-50/40 flex flex-col justify-between">
+<div class="flex items-center justify-between text-gray-500 mb-1.5">
+<span class="font-label text-[11px] uppercase tracking-wider font-semibold">Salud de Stock Global</span>
+<span class="material-symbols-outlined text-[17px] text-[#1D4ED8]">inventory_2</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold text-gray-900">91%</span>
+<span class="font-label text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 rounded">Óptimo</span>
+</div>
+<div class="w-full bg-gray-200 h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-[#1D4ED8] h-full" style="width: 91%"></div>
+</div>
+</div>
+<div class="p-4 rounded border border-gray-200/80 bg-gray-50/40 flex flex-col justify-between">
+<div class="flex items-center justify-between text-gray-500 mb-1.5">
+<span class="font-label text-[11px] uppercase tracking-wider font-semibold">Brigada Activa en Turno</span>
+<span class="material-symbols-outlined text-[17px] text-[#1D4ED8]">badge</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold text-gray-900">142</span>
+<span class="text-xs text-gray-500 font-medium">Profesionales</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] font-body text-emerald-700 mt-1 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+<span>4 sedes con pase activo simultáneo</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Barra de Control de Vista y Búsqueda -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+<!-- Filter Tabs -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+<button class="px-3.5 py-1.5 rounded text-xs font-label font-semibold bg-[#1D4ED8] text-white shadow-sm transition-colors whitespace-nowrap" type="button">
+            Todas las Sedes (4)
+          </button>
+<button class="px-3.5 py-1.5 rounded text-xs font-label font-medium bg-gray-100 hover:bg-gray-200/70 text-gray-700 transition-colors whitespace-nowrap" type="button">
+            Alta Cocina Michelin (2)
+          </button>
+<button class="px-3.5 py-1.5 rounded text-xs font-label font-medium bg-gray-100 hover:bg-gray-200/70 text-gray-700 transition-colors whitespace-nowrap" type="button">
+            Cava &amp; Bistró (1)
+          </button>
+<button class="px-3.5 py-1.5 rounded text-xs font-label font-medium bg-gray-100 hover:bg-gray-200/70 text-gray-700 transition-colors whitespace-nowrap" type="button">
+            I+D &amp; Laboratorio (1)
+          </button>
+</div>
+<!-- Search input & Add Button -->
+<div class="flex items-center gap-2.5">
+<div class="relative flex-1 md:w-80">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[17px] text-gray-400">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 rounded border border-gray-200 bg-gray-50/70 font-body text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1D4ED8] focus:border-[#1D4ED8]" placeholder="Filtrar por nombre, ciudad o código ID..." type="text"/>
+</div>
+<button class="px-3.5 py-1.5 rounded bg-[#1D4ED8] hover:bg-blue-700 text-white font-label text-xs font-medium flex items-center gap-1.5 shadow-sm transition-colors whitespace-nowrap" type="button">
+<span class="material-symbols-outlined text-[15px]">add</span>
+<span>Añadir Nueva Sede</span>
+</button>
+</div>
+</div>
+<!-- 4. Grid de Sedes con Orden y Estructura Uniforme (Cuadrícula Simétrica 2x2) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- TARJETA 1: L'Étoile Atelier (Madrid) -->
+<article class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
+<!-- Image Header Uniform (16:9 / Fixed Height) -->
+<div class="relative h-56 w-full bg-slate-900 overflow-hidden">
+<img alt="L'Étoile Atelier Madrid" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSlwe9ZdphvXfh3zqf-R1RlRPXUn2F01gIT4JouLvs6218ub8ubc0Iy2K5K2oCR82Q56kvnNbWs7p1bjB8rP5R3KqIoys3yi_nSQx_S1OywqRbTlmxFUMFD1hvBBYUA4bG813bJ7kDwuDfrcKGToqiqHUR6fGUWY7fbe0U6beAHlVoewFparOHenrz6xan7Jox45-pW1xvD7GDy5lcUZuXQuUdRb9XExpgmMhubtqP2Rkd7a2EecFg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+<!-- Badges Superpuestos -->
+<div class="absolute top-3 left-3 flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded bg-amber-500 text-slate-950 font-label text-[10px] font-bold tracking-wide uppercase shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">stars</span>
+                3 Estrellas Guía Michelin
+              </span>
+<span class="px-2.5 py-1 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-emerald-300 font-label text-[10px] font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Servicio Activo en Pase
+              </span>
+</div>
+<div class="absolute top-3 right-3 font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white border border-white/20">
+              MAD-01-ETL
+            </div>
+<!-- Bottom of Image Banner -->
+<div class="absolute bottom-3 left-4 right-4">
+<span class="text-[10px] font-label font-bold uppercase tracking-widest text-amber-300">Alta Gastronomía Francesa-Vasca</span>
+<h2 class="font-headline text-2xl font-semibold text-white tracking-tight leading-tight">
+                L'Étoile Atelier
+              </h2>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+<!-- Location row -->
+<div class="flex items-center justify-between text-xs text-gray-500 border-b border-gray-100 pb-2.5">
+<div class="flex items-center gap-1 text-gray-600 font-medium">
+<span class="material-symbols-outlined text-[15px] text-[#1D4ED8]">location_on</span>
+<span>Calle de Serrano, 48 · Milla de Oro Salamanca, Madrid</span>
+</div>
+<span class="font-mono text-[11px] text-gray-400">Cubiertos: 52 max</span>
+</div>
+<!-- Fila de 3 KPIs Uniformes -->
+<div class="grid grid-cols-3 gap-2.5">
+<!-- KPI 1: Facturación / Margen -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Facturación Hoy</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">18.420 €</span>
+<span class="font-label text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded inline-block">+14.2% vs obj.</span>
+</div>
+<span class="text-[10px] font-body text-gray-500">Margen 72.8%</span>
+</div>
+<!-- KPI 2: Stock -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Estado de Stock</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">94% Óptimo</span>
+<span class="text-[10px] font-body text-gray-500 block">Merma: 0.4%</span>
+</div>
+<span class="text-[10px] font-body text-emerald-700 font-medium">Bodega 100% full</span>
+</div>
+<!-- KPI 3: Capacidad / Aforo con barra -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Aforo en Sala</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">92% Ocupado</span>
+<span class="text-[10px] font-body text-gray-500 block">48 de 52 cubiertos</span>
+</div>
+<div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#1D4ED8] h-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<!-- Fila Inferior: Rol de usuario y Acciones alineadas -->
+<div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-gray-400">military_tech</span>
+<span class="text-xs font-medium text-gray-600">Rol: <strong class="text-gray-900">Chef Director Ejecutivo</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700 font-label text-xs font-semibold flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-gray-500">query_stats</span>
+<span>Métricas P&amp;L</span>
+</button>
+<button class="px-3.5 py-1.5 rounded bg-[#1D4ED8] hover:bg-blue-700 text-white font-label text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors" type="button">
+<span>Entrar a Sala de Mando</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- TARJETA 2: Caelis Botanique (Barcelona) -->
+<article class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
+<!-- Image Header Uniform (16:9 / Fixed Height) -->
+<div class="relative h-56 w-full bg-slate-900 overflow-hidden">
+<img alt="Caelis Botanique Barcelona" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxlgiuaXoPS3_0Z0Zu4u0OT9nJu0ueyb4X4GwQMrBMS5NmP5yELy3CjTl8fNkKZnwBc7QTWE9Ygf6cgLgap77YtaGkIayoFu0s7YgW12sV-uZeIPBzXN2AFr4IENJOuFj-uNh3Fzdr4LlzFgrUjm-X00hqJEcDiw_eYS9n20rdO5X9q3WhSJRZ7uHE2vkHTo1SwBgwRFcTJRYGsIyDsn2yMhm3wK09cv2lbFwAdybtpm5aVrOzm5A0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+<!-- Badges Superpuestos -->
+<div class="absolute top-3 left-3 flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-label text-[10px] font-bold tracking-wide uppercase shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">eco</span>
+                1 Estrella Michelin &amp; Verde
+              </span>
+<span class="px-2.5 py-1 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-emerald-300 font-label text-[10px] font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Pre-Servicio Almuerzo
+              </span>
+</div>
+<div class="absolute top-3 right-3 font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white border border-white/20">
+              BCN-02-BOT
+            </div>
+<!-- Bottom of Image Banner -->
+<div class="absolute bottom-3 left-4 right-4">
+<span class="text-[10px] font-label font-bold uppercase tracking-widest text-emerald-300">Gastronomía Regenerativa &amp; Botánica</span>
+<h2 class="font-headline text-2xl font-semibold text-white tracking-tight leading-tight">
+                Caelis Botanique
+              </h2>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+<!-- Location row -->
+<div class="flex items-center justify-between text-xs text-gray-500 border-b border-gray-100 pb-2.5">
+<div class="flex items-center gap-1 text-gray-600 font-medium">
+<span class="material-symbols-outlined text-[15px] text-[#1D4ED8]">location_on</span>
+<span>Passeig de Gràcia, 112 · Eixample Noble, Barcelona</span>
+</div>
+<span class="font-mono text-[11px] text-gray-400">Cubiertos: 40 max</span>
+</div>
+<!-- Fila de 3 KPIs Uniformes -->
+<div class="grid grid-cols-3 gap-2.5">
+<!-- KPI 1: Facturación / Margen -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Facturación Hoy</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">14.180 €</span>
+<span class="font-label text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded inline-block">+8.7% vs obj.</span>
+</div>
+<span class="text-[10px] font-body text-gray-500">Margen 70.1%</span>
+</div>
+<!-- KPI 2: Stock -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Estado de Stock</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">88% Estable</span>
+<span class="text-[10px] font-body text-gray-500 block">Huerto km0</span>
+</div>
+<span class="text-[10px] font-body text-emerald-700 font-medium">0 roturas registradas</span>
+</div>
+<!-- KPI 3: Capacidad / Aforo con barra -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Aforo en Sala</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">80% Confirmado</span>
+<span class="text-[10px] font-body text-gray-500 block">32 de 40 cubiertos</span>
+</div>
+<div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#1D4ED8] h-full" style="width: 80%"></div>
+</div>
+</div>
+</div>
+<!-- Fila Inferior: Rol de usuario y Acciones alineadas -->
+<div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-gray-400">admin_panel_settings</span>
+<span class="text-xs font-medium text-gray-600">Rol: <strong class="text-gray-900">Supervisor General Ops</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700 font-label text-xs font-semibold flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-gray-500">query_stats</span>
+<span>Métricas P&amp;L</span>
+</button>
+<button class="px-3.5 py-1.5 rounded bg-[#1D4ED8] hover:bg-blue-700 text-white font-label text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors" type="button">
+<span>Entrar a Sala de Mando</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- TARJETA 3: Bodega San Telmo Grand Cru (Sevilla) -->
+<article class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
+<!-- Image Header Uniform (16:9 / Fixed Height) -->
+<div class="relative h-56 w-full bg-slate-900 overflow-hidden">
+<img alt="Bodega San Telmo Grand Cru Sevilla" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcbvbwRZ4PNA1VgzEI6fpOkE8vbXoKdl7vaSYCho2vcQSAjnm5NXpibDictut1JxNcaUBVVXuHt0iHQ4SLmK-ZbxOXXFbI5dtf-rph03MWbvs_iN6V2htsLOLxG4z3yHeMmnwRze4-FTtMG94tGINjCZNZw4Nx6XKFK-hxPyFhTRc5BkoWKbJcxigKVn7w6Dz-BxpWnSu8KDk-hcnAlDaPX4qi1ia1SyldjKi46s2aLlUI0F_opFBj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+<!-- Badges Superpuestos -->
+<div class="absolute top-3 left-3 flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded bg-amber-700 text-white font-label text-[10px] font-bold tracking-wide uppercase shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">wine_bar</span>
+                Cava de Autor &amp; Gran Reserva
+              </span>
+<span class="px-2.5 py-1 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-emerald-300 font-label text-[10px] font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Cierre Mañana / Cava
+              </span>
+</div>
+<div class="absolute top-3 right-3 font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white border border-white/20">
+              SVQ-03-CRU
+            </div>
+<!-- Bottom of Image Banner -->
+<div class="absolute bottom-3 left-4 right-4">
+<span class="text-[10px] font-label font-bold uppercase tracking-widest text-amber-200">Enología &amp; Bistronomía Andaluza</span>
+<h2 class="font-headline text-2xl font-semibold text-white tracking-tight leading-tight">
+                Bodega San Telmo Grand Cru
+              </h2>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+<!-- Location row -->
+<div class="flex items-center justify-between text-xs text-gray-500 border-b border-gray-100 pb-2.5">
+<div class="flex items-center gap-1 text-gray-600 font-medium">
+<span class="material-symbols-outlined text-[15px] text-[#1D4ED8]">location_on</span>
+<span>Plaza Doña Elvira, 7 · Barrio Santa Cruz, Sevilla</span>
+</div>
+<span class="font-mono text-[11px] text-gray-400">Plazas: 60 cava</span>
+</div>
+<!-- Fila de 3 KPIs Uniformes -->
+<div class="grid grid-cols-3 gap-2.5">
+<!-- KPI 1: Facturación / Margen -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Facturación Hoy</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">22.650 €</span>
+<span class="font-label text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded inline-block">+16.0% vs target</span>
+</div>
+<span class="text-[10px] font-body text-gray-500">Margen 74.2%</span>
+</div>
+<!-- KPI 2: Stock -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Estado de Stock</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">96% en Cava</span>
+<span class="text-[10px] font-body text-gray-500 block">1.840 referencias</span>
+</div>
+<span class="text-[10px] font-body text-emerald-700 font-medium">Rotación 4.2x anual</span>
+</div>
+<!-- KPI 3: Capacidad / Aforo con barra -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Aforo Cava</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">74% Registrado</span>
+<span class="text-[10px] font-body text-gray-500 block">44 de 60 plazas</span>
+</div>
+<div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#1D4ED8] h-full" style="width: 74%"></div>
+</div>
+</div>
+</div>
+<!-- Fila Inferior: Rol de usuario y Acciones alineadas -->
+<div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-gray-400">liquor</span>
+<span class="text-xs font-medium text-gray-600">Rol: <strong class="text-gray-900">Consultor Enológico</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700 font-label text-xs font-semibold flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-gray-500">query_stats</span>
+<span>Métricas P&amp;L</span>
+</button>
+<button class="px-3.5 py-1.5 rounded bg-[#1D4ED8] hover:bg-blue-700 text-white font-label text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors" type="button">
+<span>Entrar a Sala de Mando</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- TARJETA 4: Atelier Vanguardia I+D (Donostia) -->
+<article class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
+<!-- Image Header Uniform (16:9 / Fixed Height) -->
+<div class="relative h-56 w-full bg-slate-900 overflow-hidden">
+<img alt="Atelier Vanguardia I+D Donostia" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnFO2NBekRAc3103Vdoa1r-9Fj26rHgQ17kVixaUfAYhn0wmMJVYAEReZJT_4a-eRAot99mKlyqzrusmLk3-ZUakpgiE7yj4Gn_aXVcWto5s4bBA-7y4HYCV9pVXpfOiY1DzqqQNJw-KbmLGpdf4PczQZYY0th5lM0xQ1OZjUvnkcDWBYmmU3bRCmrKptJy9MFWbBlOrt9vqi5z8cmpU4BnvfolcCOtt8QHIvBiuXMLxSIyrAfdhdd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+<!-- Badges Superpuestos -->
+<div class="absolute top-3 left-3 flex flex-wrap items-center gap-2">
+<span class="px-2.5 py-1 rounded bg-blue-600 text-white font-label text-[10px] font-bold tracking-wide uppercase shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">science</span>
+                Laboratorio Sensorial I+D
+              </span>
+<span class="px-2.5 py-1 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-emerald-300 font-label text-[10px] font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Modo Laboratorio
+              </span>
+</div>
+<div class="absolute top-3 right-3 font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white border border-white/20">
+              EAS-04-LAB
+            </div>
+<!-- Bottom of Image Banner -->
+<div class="absolute bottom-3 left-4 right-4">
+<span class="text-[10px] font-label font-bold uppercase tracking-widest text-sky-200">Innovación Culinaria &amp; Menú Ensayo</span>
+<h2 class="font-headline text-2xl font-semibold text-white tracking-tight leading-tight">
+                Atelier Vanguardia I+D
+              </h2>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+<!-- Location row -->
+<div class="flex items-center justify-between text-xs text-gray-500 border-b border-gray-100 pb-2.5">
+<div class="flex items-center gap-1 text-gray-600 font-medium">
+<span class="material-symbols-outlined text-[15px] text-[#1D4ED8]">location_on</span>
+<span>Paseo del Faro, s/n · Donostia San Sebastián</span>
+</div>
+<span class="font-mono text-[11px] text-gray-400">Catadores: 20 cupos</span>
+</div>
+<!-- Fila de 3 KPIs Uniformes -->
+<div class="grid grid-cols-3 gap-2.5">
+<!-- KPI 1: Facturación / Margen -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Presupuesto I+D</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">13.000 €</span>
+<span class="font-label text-[10px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded inline-block">Asignado Q2</span>
+</div>
+<span class="text-[10px] font-body text-gray-500">ROI 2.8x carta</span>
+</div>
+<!-- KPI 2: Stock -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Estado de Stock</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">85% Insumos</span>
+<span class="text-[10px] font-body text-gray-500 block">Críticos &amp; extractos</span>
+</div>
+<span class="text-[10px] font-body text-emerald-700 font-medium">9 prototipos activos</span>
+</div>
+<!-- KPI 3: Capacidad / Aforo con barra -->
+<div class="p-2.5 rounded border border-gray-200 bg-gray-50/60 flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase font-bold text-gray-500">Catadores VIP</span>
+<div class="my-1">
+<span class="font-headline text-base font-bold text-gray-900 block">70% Sesión</span>
+<span class="text-[10px] font-body text-gray-500 block">14 de 20 confirmados</span>
+</div>
+<div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#1D4ED8] h-full" style="width: 70%"></div>
+</div>
+</div>
+</div>
+<!-- Fila Inferior: Rol de usuario y Acciones alineadas -->
+<div class="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-gray-400">biotech</span>
+<span class="text-xs font-medium text-gray-600">Rol: <strong class="text-gray-900">Director de Innovación</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 text-gray-700 font-label text-xs font-semibold flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-gray-500">query_stats</span>
+<span>Métricas P&amp;L</span>
+</button>
+<button class="px-3.5 py-1.5 rounded bg-[#1D4ED8] hover:bg-blue-700 text-white font-label text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors" type="button">
+<span>Entrar a Sala de Mando</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<!-- 5. Pie de Página Institucional -->
+<footer class="w-full bg-white border-t border-gray-200 mt-auto py-5">
+<div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-label text-gray-500">
+<!-- Security Protocol details -->
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-1.5 text-gray-700 font-medium">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">shield</span>
+<span>Protocolo TLS 1.3 Corporativo Activo</span>
+</div>
+<span class="text-gray-300">·</span>
+<div class="flex items-center gap-1 font-mono text-[11px] text-gray-600">
+<span>IP Autorizada:</span>
+<strong>194.224.110.82 (Madrid-VPN)</strong>
+</div>
+</div>
+<!-- Links & Copyright -->
+<div class="flex items-center gap-4">
+<a class="text-[#1D4ED8] hover:underline font-medium flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[15px]">key</span>
+<span>Gestión de Accesos &amp; Auditoría</span>
+</a>
+<span class="text-gray-300">·</span>
+<span>© 2025 Restaurant-CMR Enterprise · All rights reserved</span>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-import PageHeader from '@/components/base/PageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { register as registerAccount } from '@/modules/auth/api'
+import AuthConsoleLayout from '@/modules/auth/components/AuthConsoleLayout.vue'
+import AuthModeTabs from '@/modules/auth/components/AuthModeTabs.vue'
 import AuthTextField from '@/modules/auth/components/AuthTextField.vue'
 import { validateEmail, validateName, validatePassword } from '@/modules/auth/validation'
 import { HttpError } from '@/services/http'
@@ -68,11 +69,22 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <PageHeader title="Crear cuenta" description="Regístrate para guardar tus pedidos y continuar como usuario.">
-    <form class="mt-6 space-y-4" novalidate @submit.prevent="onSubmit">
+  <AuthConsoleLayout>
+    <AuthModeTabs current="register" />
+
+    <div class="mb-8">
+      <h1 class="font-headline text-3xl leading-snug font-semibold tracking-tight text-on-surface">
+        Crear cuenta
+      </h1>
+      <p class="mt-2 text-sm leading-relaxed text-secondary">
+        Regístrate para acceder al panel de Restaurant CMR.
+      </p>
+    </div>
+
+    <form class="space-y-5" novalidate @submit.prevent="onSubmit">
       <p
         v-if="formError"
-        class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+        class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
         role="alert"
       >
         {{ formError }}
@@ -83,15 +95,17 @@ async function onSubmit(): Promise<void> {
         v-model="form.name"
         label="Nombre"
         autocomplete="name"
+        placeholder="Ana Pérez"
         :error="fieldErrors.name"
       />
 
       <AuthTextField
         id="register-email"
         v-model="form.email"
-        label="Correo"
+        label="Correo electrónico"
         type="email"
         autocomplete="email"
+        placeholder="chef@restaurantcmr.com"
         :error="fieldErrors.email"
       />
 
@@ -101,23 +115,19 @@ async function onSubmit(): Promise<void> {
         label="Contraseña"
         type="password"
         autocomplete="new-password"
+        placeholder="••••••••••••"
         :error="fieldErrors.password"
       />
 
-      <button
-        type="submit"
-        class="w-full rounded-lg bg-stone-900 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-        :disabled="isSubmitting"
-      >
-        {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
-      </button>
+      <div class="pt-3">
+        <button
+          type="submit"
+          class="font-label flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-container px-6 py-3.5 text-sm font-semibold tracking-wide text-on-primary shadow-md transition-all hover:from-primary-container hover:to-primary hover:shadow-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
+        </button>
+      </div>
     </form>
-
-    <p class="mt-4 text-sm text-stone-600">
-      ¿Ya tienes cuenta?
-      <RouterLink class="font-medium text-stone-900 underline" :to="{ name: 'login' }">
-        Ingresar
-      </RouterLink>
-    </p>
-  </PageHeader>
+  </AuthConsoleLayout>
 </template>

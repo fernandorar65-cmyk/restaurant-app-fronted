@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteLocationNormalized } from 'vue-router'
 
-import AdminLayout from '@/layouts/AdminLayout.vue'
+import PortalLayout from '@/layouts/PortalLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import CustomerLayout from '@/layouts/CustomerLayout.vue'
 import { useSessionStore } from '@/stores/session'
@@ -64,7 +64,7 @@ export const router = createRouter({
     },
     {
       path: '/dashboard',
-      component: AdminLayout,
+      component: PortalLayout,
       meta: { requiresAuth: true },
       children: [
         {
@@ -76,7 +76,7 @@ export const router = createRouter({
     },
     {
       path: '/admin',
-      component: AdminLayout,
+      component: PortalLayout,
       children: [
         {
           path: '',
