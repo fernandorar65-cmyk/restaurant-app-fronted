@@ -2,12 +2,14 @@ import { http, HttpError } from '@/services/http'
 import type {
   LiveTable,
   Organization,
+  RestaurantOperationalStatus,
   RestaurantSite,
   SiteOperation,
   SiteStaffMember,
   StaffArea,
   StaffShiftStatus,
   TableFloorStatus,
+  TableStatus,
   TableTagTone,
 } from '@/modules/restaurants/types'
 
@@ -25,6 +27,10 @@ function isOrganization(value: unknown): value is Organization {
     typeof value.name === 'string' &&
     typeof value.code === 'string'
   )
+}
+
+function isRestaurantOperationalStatus(value: unknown): value is RestaurantOperationalStatus {
+  return value === 'active' || value === 'inactive' || value === 'suspended'
 }
 
 function isRestaurantSite(value: unknown): value is RestaurantSite {
@@ -46,6 +52,7 @@ function isRestaurantSite(value: unknown): value is RestaurantSite {
     (category === 'fine-dining' || category === 'bistro' || category === 'lab') &&
     typeof value.categoryLabel === 'string' &&
     typeof value.cuisine === 'string' &&
+    isRestaurantOperationalStatus(value.status) &&
     typeof value.statusLabel === 'string' &&
     typeof value.badgeLabel === 'string' &&
     (badgeTone === 'amber' || badgeTone === 'emerald' || badgeTone === 'wine' || badgeTone === 'blue') &&
@@ -75,7 +82,14 @@ function toRestaurantSite(value: RestaurantSite): RestaurantSite {
   return {
     ...value,
     id: String(value.id),
+    currency: typeof value.currency === 'string' && value.currency ? value.currency : 'EUR',
+    timezone: typeof value.timezone === 'string' && value.timezone ? value.timezone : 'Europe/Madrid',
   }
+}
+
+/** La sede puede recibir comensales y abrir atenciones. */
+export function isRestaurantOpen(site: RestaurantSite): boolean {
+  return site.status === 'active'
 }
 
 export async function fetchOrganizations(): Promise<Organization[]> {
@@ -111,7 +125,124 @@ export async function fetchRestaurantById(id: string): Promise<RestaurantSite | 
   }
 }
 
+export interface RestaurantDraft {
+  name: string
+  city: string
+  address: string
+  cuisine: string
+  status: RestaurantOperationalStatus
+  statusLabel: string
+  category: RestaurantSite['category']
+  categoryLabel: string
+  currency: string
+  timezone: string
+}
+
+export interface NewRestaurantDraft extends RestaurantDraft {
+  code: string
+  imageUrl: string
+}
+
+/** Alta de sede: crea el restaurante y su registro operativo (plano de sala vacío). */
+export async function createRestaurant(draft: NewRestaurantDraft): Promise<RestaurantSite> {
+  const payload = await http<unknown>('/restaurants', {
+    method: 'POST',
+    body: {
+      ...draft,
+      badgeLabel: draft.categoryLabel,
+      badgeTone: 'blue',
+      capacityLabel: 'Cubiertos: —',
+      roleLabel: 'Dirección de sede',
+      kpis: {
+        revenueLabel: '—',
+        revenueHint: 'Sin datos todavía',
+        marginLabel: '—',
+        stockLabel: '—',
+        stockHint: '—',
+        stockNote: '—',
+        occupancyLabel: '—',
+        occupancyHint: '—',
+        occupancyPercent: 0,
+      },
+    },
+  })
+
+  if (!isRestaurantSite(payload)) {
+    throw new Error('No se pudo crear la sede.')
+  }
+
+  const site = toRestaurantSite(payload)
+
+  await http<unknown>('/siteOperations', {
+    method: 'POST',
+    body: {
+      restaurantId: site.id,
+      shiftLabel: 'Sin turno configurado',
+      kpis: {
+        revenue: '—',
+        revenueHint: '—',
+        ticket: '—',
+        margin: '—',
+        occupancyCurrent: 0,
+        occupancyMax: 0,
+        occupancyDetail: '—',
+        occupancyVip: '—',
+        cadence: '—',
+        cadenceHint: '—',
+        cadenceDetail: '—',
+        cellar: '—',
+        cellarShare: '—',
+        cellarDetail: '—',
+      },
+      tables: [],
+      staff: [],
+      quality: { chef: '—', title: '—', description: '—', imageUrl: '', extra: '—' },
+      stations: [],
+      alerts: [],
+      cellar: { sommelier: '—', champagnes: 0, reds: 0, whites: 0, pairingPercent: 0 },
+      brigade: { present: 0, total: 0, kitchen: '—', floor: '—', support: '—', headChef: '—' },
+    },
+  })
+
+  return site
+}
+
+export async function updateRestaurant(
+  id: string,
+  draft: RestaurantDraft & { imageUrl?: string },
+): Promise<RestaurantSite> {
+  const payload = await http<unknown>(`/restaurants/${id}`, {
+    method: 'PATCH',
+    body: draft,
+  })
+
+  if (!isRestaurantSite(payload)) {
+    throw new Error('No se pudo actualizar la sede.')
+  }
+
+  return toRestaurantSite(payload)
+}
+
+export interface OrganizationDraft {
+  name: string
+  code: string
+}
+
+export async function updateOrganization(id: string, draft: OrganizationDraft): Promise<Organization> {
+  const payload = await http<unknown>(`/organizations/${id}`, {
+    method: 'PATCH',
+    body: draft,
+  })
+
+  if (!isOrganization(payload)) {
+    throw new Error('No se pudo actualizar la organización.')
+  }
+
+  return toOrganization(payload)
+}
+
 const FLOOR_STATUSES: readonly TableFloorStatus[] = ['occupied', 'available', 'reserved', 'cleaning']
+const TABLE_STATUSES: readonly TableStatus[] = ['active', 'inactive', 'maintenance']
 const TAG_TONES: readonly TableTagTone[] = ['critical', 'neutral', 'alert']
 const STAFF_AREAS: readonly StaffArea[] = ['kitchen', 'floor', 'support']
 const STAFF_STATUSES: readonly StaffShiftStatus[] = ['on-shift', 'break', 'absent']
@@ -150,8 +281,18 @@ function isLiveTable(value: unknown): value is LiveTable {
     typeof value.statusLabel === 'string' &&
     typeof value.courseLabel === 'string' &&
     typeof value.dish === 'string' &&
-    typeof value.note === 'string'
+    typeof value.note === 'string' &&
+    typeof value.qrToken === 'string' &&
+    typeof value.qrActive === 'boolean'
   )
+}
+
+function toLiveTable(value: LiveTable): LiveTable {
+  return {
+    ...value,
+    code: typeof value.code === 'string' && value.code ? value.code : `M-${value.number}`,
+    status: (TABLE_STATUSES as readonly unknown[]).includes(value.status) ? value.status : 'active',
+  }
 }
 
 function isSiteStaffMember(value: unknown): value is SiteStaffMember {
@@ -191,6 +332,7 @@ function toSiteOperation(value: SiteOperation): SiteOperation {
     ...value,
     id: String(value.id),
     restaurantId: String(value.restaurantId),
+    tables: value.tables.map(toLiveTable),
     staff: value.staff.map((member) => ({
       ...member,
       id: String(member.id),
@@ -214,4 +356,17 @@ export async function fetchSiteOperation(restaurantId: string): Promise<SiteOper
   })
 
   return match ? toSiteOperation(match) : null
+}
+
+export async function updateSiteOperationTables(operationId: string, tables: LiveTable[]): Promise<SiteOperation> {
+  const payload = await http<unknown>(`/siteOperations/${operationId}`, {
+    method: 'PATCH',
+    body: { tables },
+  })
+
+  if (!isSiteOperation(payload)) {
+    throw new Error('No se pudo actualizar el plano de sala.')
+  }
+
+  return toSiteOperation(payload)
 }

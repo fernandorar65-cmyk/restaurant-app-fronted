@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
+import { landingRouteFor } from '@/app/router/landing'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
 import { useSessionStore } from '@/stores/session'
+import { useSiteActivityStore } from '@/stores/site-activity'
 import { getInitials } from '@/utils/string'
 
 const session = useSessionStore()
+const activity = useSiteActivityStore()
 const router = useRouter()
 const route = useRoute()
 const currentSiteName = ref<string | null>(null)
+const homeRoute = computed(() => landingRouteFor(session.user))
 
 const emit = defineEmits<{
   openMenu: []
@@ -29,6 +33,7 @@ async function loadCurrentSite(): Promise<void> {
 }
 
 async function logout(): Promise<void> {
+  activity.watchSite(null)
   session.clearAuth()
   await router.push({ name: 'login' })
 }
@@ -59,7 +64,7 @@ onMounted(() => {
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
         </button>
-        <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-3">
+        <RouterLink :to="homeRoute" class="flex items-center gap-3">
           <div
             class="flex h-9 w-9 items-center justify-center rounded bg-primary text-on-primary shadow-sm ring-1 ring-blue-700/20"
             aria-hidden="true"
@@ -85,7 +90,7 @@ onMounted(() => {
         <template v-if="currentSiteName">
           <div class="hidden h-6 w-px bg-surface-container-highest sm:block" />
           <RouterLink
-            :to="{ name: 'dashboard' }"
+            :to="homeRoute"
             class="hidden items-center gap-2 rounded-lg bg-surface-container-low px-3 py-1.5 transition-colors hover:bg-surface-container sm:flex"
           >
             <span class="text-xs leading-none font-semibold text-on-surface">{{ currentSiteName }}</span>
@@ -101,7 +106,7 @@ onMounted(() => {
           </div>
           <div class="flex flex-col text-left">
             <span class="text-xs leading-tight font-semibold text-on-surface">{{ session.user.name }}</span>
-            <span class="font-label text-[10px] leading-tight text-on-surface-variant">{{ session.user.email }}</span>
+            <span class="font-label text-[10px] leading-tight text-on-surface-variant">{{ session.user.roleName ?? session.user.email }}</span>
           </div>
         </div>
         <button

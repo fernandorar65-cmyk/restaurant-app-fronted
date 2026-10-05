@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 
 import { useRouter } from 'vue-router'
 
+import { siteLandingRoute } from '@/app/router/landing'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { fetchOrganizations, fetchRestaurants } from '@/modules/restaurants/api'
 import RestaurantSiteCard from '@/modules/restaurants/components/RestaurantSiteCard.vue'
@@ -66,7 +67,8 @@ async function loadDirectory(): Promise<void> {
 
   try {
     const [sites, organizations] = await Promise.all([fetchRestaurants(), fetchOrganizations()])
-    restaurants.value = sites
+    // Cada usuario ve solo las sedes a las que tiene acceso.
+    restaurants.value = sites.filter((site) => session.canAccessRestaurant(site.id))
     organization.value = organizations[0] ?? null
   } catch (error) {
     loadError.value =
@@ -78,7 +80,7 @@ async function loadDirectory(): Promise<void> {
 
 async function enterSite(site: RestaurantSite): Promise<void> {
   session.setRestaurant(site.id)
-  await router.push({ name: 'site-dashboard', params: { restaurantId: site.id } })
+  await router.push(siteLandingRoute(session.user, site.id) ?? { name: 'no-access' })
 }
 
 onMounted(() => {

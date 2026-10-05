@@ -1,5 +1,7 @@
 export type RestaurantCategory = 'fine-dining' | 'bistro' | 'lab'
 
+export type RestaurantOperationalStatus = 'active' | 'inactive' | 'suspended'
+
 export type RestaurantBadgeTone = 'amber' | 'emerald' | 'wine' | 'blue'
 
 export interface Organization {
@@ -30,17 +32,25 @@ export interface RestaurantSite {
   category: RestaurantCategory
   categoryLabel: string
   cuisine: string
+  status: RestaurantOperationalStatus
   statusLabel: string
   badgeLabel: string
   badgeTone: RestaurantBadgeTone
   capacityLabel: string
   roleLabel: string
   kpis: RestaurantKpis
+  /** Código ISO 4217 (EUR, PEN, USD…). */
+  currency: string
+  /** Zona horaria IANA (Europe/Madrid, America/Lima…). */
+  timezone: string
 }
 
 export type TableTagTone = 'critical' | 'neutral' | 'alert'
 
 export type TableFloorStatus = 'occupied' | 'available' | 'reserved' | 'cleaning'
+
+/** Estado operativo de la mesa: solo una mesa `active` puede abrir una atención. */
+export type TableStatus = 'active' | 'inactive' | 'maintenance'
 
 export type StaffArea = 'kitchen' | 'floor' | 'support'
 
@@ -48,6 +58,8 @@ export type StaffShiftStatus = 'on-shift' | 'break' | 'absent'
 
 export interface LiveTable {
   number: string
+  code: string
+  status: TableStatus
   seats: number
   occupiedSeats: number
   floorStatus: TableFloorStatus
@@ -60,6 +72,8 @@ export interface LiveTable {
   courseLabel: string
   dish: string
   note: string
+  qrToken: string
+  qrActive: boolean
 }
 
 export interface SiteStaffMember {

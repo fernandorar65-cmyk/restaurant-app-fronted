@@ -4,7 +4,64 @@
       "id": "1",
       "name": "Admin Demo",
       "email": "admin@restaurant.com",
-      "password": "admin1234"
+      "password": "admin1234",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-0",
+      "restaurantIds": [],
+      "employeeId": null
+    },
+    {
+      "id": "2",
+      "name": "Laia Ferrer",
+      "email": "laia.ferrer@restaurantcmr.com",
+      "password": "laia1234",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-1",
+      "restaurantIds": [
+        "1"
+      ],
+      "employeeId": "emp-3"
+    },
+    {
+      "id": "3",
+      "name": "Marc Vallet",
+      "email": "cocina@restaurant.com",
+      "password": "demo1234",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-2",
+      "restaurantIds": [
+        "1"
+      ],
+      "employeeId": "emp-1"
+    },
+    {
+      "id": "4",
+      "name": "Nuria García",
+      "email": "mozo@restaurant.com",
+      "password": "demo1234",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-4",
+      "restaurantIds": [
+        "1"
+      ],
+      "employeeId": "emp-2"
+    },
+    {
+      "id": "5",
+      "name": "Caja Sede 1",
+      "email": "caja@restaurant.com",
+      "password": "demo1234",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-6",
+      "restaurantIds": [
+        "1"
+      ],
+      "employeeId": null
     }
   ],
   "organizations": [
@@ -40,7 +97,10 @@
         "occupancyLabel": "92% ocupado",
         "occupancyHint": "48 de 52 cubiertos",
         "occupancyPercent": 92
-      }
+      },
+      "status": "active",
+      "currency": "EUR",
+      "timezone": "Europe/Madrid"
     },
     {
       "id": "2",
@@ -67,7 +127,10 @@
         "occupancyLabel": "80% confirmado",
         "occupancyHint": "32 de 40 cubiertos",
         "occupancyPercent": 80
-      }
+      },
+      "status": "active",
+      "currency": "EUR",
+      "timezone": "Europe/Madrid"
     },
     {
       "id": "3",
@@ -94,7 +157,10 @@
         "occupancyLabel": "74% registrado",
         "occupancyHint": "44 de 60 plazas",
         "occupancyPercent": 74
-      }
+      },
+      "status": "active",
+      "currency": "EUR",
+      "timezone": "Europe/Madrid"
     },
     {
       "id": "4",
@@ -121,7 +187,10 @@
         "occupancyLabel": "70% sesión",
         "occupancyHint": "14 de 20 confirmados",
         "occupancyPercent": 70
-      }
+      },
+      "status": "inactive",
+      "currency": "EUR",
+      "timezone": "Europe/Madrid"
     }
   ],
   "siteOperations": [
@@ -159,7 +228,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "d3000d55d882207e",
+          "qrActive": false,
+          "status": "active",
+          "code": "M-01"
         },
         {
           "number": "02",
@@ -174,7 +247,11 @@
           "statusLabel": "Recién sentados",
           "courseLabel": "Pase 1 de 9",
           "dish": "Trilogía de aperitivos de mar",
-          "note": "4/4 sillas"
+          "note": "4/4 sillas",
+          "qrToken": "1fe63d8979b469fb",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-02"
         },
         {
           "number": "03",
@@ -189,7 +266,11 @@
           "statusLabel": "Limpieza",
           "courseLabel": "—",
           "dish": "Reset de cubiertos",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "73abe7f66216b209",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-03"
         },
         {
           "number": "04",
@@ -204,7 +285,11 @@
           "statusLabel": "11 min en pase",
           "courseLabel": "Pase 5 de 9",
           "dish": "Pichón asado al sarmiento",
-          "note": "4/4 sillas"
+          "note": "4/4 sillas",
+          "qrToken": "2ba1b28adba1b5ad",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-04"
         },
         {
           "number": "05",
@@ -219,7 +304,11 @@
           "statusLabel": "Reservada",
           "courseLabel": "—",
           "dish": "6 pax confirmados",
-          "note": "6 sillas"
+          "note": "6 sillas",
+          "qrToken": "cdc3e66f074886b2",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-05"
         },
         {
           "number": "06",
@@ -234,7 +323,11 @@
           "statusLabel": "En servicio",
           "courseLabel": "Pase 3 de 9",
           "dish": "Pescado del día",
-          "note": "2/2 sillas"
+          "note": "2/2 sillas",
+          "qrToken": "2bc9b30f0110afb2",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-06"
         },
         {
           "number": "07",
@@ -249,7 +342,11 @@
           "statusLabel": "3 de 4 cubiertos",
           "courseLabel": "Pase 2 de 9",
           "dish": "Entrante compartido",
-          "note": "3/4 sillas"
+          "note": "3/4 sillas",
+          "qrToken": "86f1d4ee127f72f1",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-07"
         },
         {
           "number": "08",
@@ -264,7 +361,11 @@
           "statusLabel": "Pase inminente",
           "courseLabel": "Pase 8 de 9",
           "dish": "Pre-postre cítrico",
-          "note": "6/6 sillas"
+          "note": "6/6 sillas",
+          "qrToken": "312433283912bd35",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-08"
         },
         {
           "number": "09",
@@ -279,7 +380,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "cb6fe73eb86728da",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-09"
         },
         {
           "number": "10",
@@ -294,7 +399,11 @@
           "statusLabel": "Reservada",
           "courseLabel": "—",
           "dish": "4 pax",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "72eee0e7d71d04d3",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-10"
         },
         {
           "number": "11",
@@ -309,22 +418,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
-        },
-        {
-          "number": "12",
-          "seats": 2,
-          "occupiedSeats": 2,
-          "floorStatus": "occupied",
-          "guests": 2,
-          "tagLabel": "Alergia frutos secos",
-          "tagTone": "alert",
-          "location": "Ventanal jardín",
-          "staff": "Lucas M.",
-          "statusLabel": "9 min en preparación",
-          "courseLabel": "Pase 2 de 9",
-          "dish": "Bogavante del Cantábrico",
-          "note": "2/2 sillas"
+          "note": "2 sillas",
+          "qrToken": "c738381ab00c1af5",
+          "qrActive": true,
+          "status": "maintenance",
+          "code": "M-11"
         }
       ],
       "quality": {
@@ -517,7 +615,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "98554dc256adc5d0",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-03"
         },
         {
           "number": "05",
@@ -532,7 +634,11 @@
           "statusLabel": "Limpieza",
           "courseLabel": "—",
           "dish": "Cambio de mantel",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "3db5519fcbab9d5b",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-05"
         },
         {
           "number": "07",
@@ -547,7 +653,11 @@
           "statusLabel": "Recién sentados",
           "courseLabel": "Pase 1 de 7",
           "dish": "Aperitivo de huerto",
-          "note": "4/4 sillas"
+          "note": "4/4 sillas",
+          "qrToken": "81a6f05b3da03a52",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-07"
         },
         {
           "number": "08",
@@ -562,7 +672,11 @@
           "statusLabel": "Reservada",
           "courseLabel": "—",
           "dish": "6 pax",
-          "note": "6 sillas"
+          "note": "6 sillas",
+          "qrToken": "c2e85f20870b7345",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-08"
         },
         {
           "number": "11",
@@ -577,7 +691,11 @@
           "statusLabel": "En pase",
           "courseLabel": "Pase 3 de 7",
           "dish": "Menú de temporada botánica",
-          "note": "2/2 sillas"
+          "note": "2/2 sillas",
+          "qrToken": "32e8be6f8bc64a2e",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-11"
         },
         {
           "number": "14",
@@ -592,7 +710,11 @@
           "statusLabel": "2 de 4 cubiertos",
           "courseLabel": "Pase 2 de 7",
           "dish": "Ensalada de temporada",
-          "note": "2/4 sillas"
+          "note": "2/4 sillas",
+          "qrToken": "011e3f29192e7874",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-14"
         },
         {
           "number": "16",
@@ -607,7 +729,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "43bb4dc14021db05",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-16"
         },
         {
           "number": "18",
@@ -622,7 +748,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "64d3d450c5dfdeb9",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-18"
         }
       ],
       "quality": {
@@ -763,7 +893,11 @@
           "statusLabel": "En cata",
           "courseLabel": "Vuelo 2 de 4",
           "dish": "Selección gran reserva",
-          "note": "4/4 sillas"
+          "note": "4/4 sillas",
+          "qrToken": "ec40e279e0ca0c39",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-01"
         },
         {
           "number": "04",
@@ -778,7 +912,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "9bd52c8673154a71",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-04"
         },
         {
           "number": "06",
@@ -793,7 +931,11 @@
           "statusLabel": "Reservada",
           "courseLabel": "—",
           "dish": "6 pax a las 16:00",
-          "note": "6 sillas"
+          "note": "6 sillas",
+          "qrToken": "5cc4102e284b6b00",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-06"
         },
         {
           "number": "09",
@@ -808,7 +950,11 @@
           "statusLabel": "Limpieza",
           "courseLabel": "—",
           "dish": "Cambio de servicio",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "45d07b522b5397d3",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-09"
         },
         {
           "number": "12",
@@ -823,7 +969,11 @@
           "statusLabel": "En servicio",
           "courseLabel": "Pase 2",
           "dish": "Plato de autor",
-          "note": "3/4 sillas"
+          "note": "3/4 sillas",
+          "qrToken": "1c3c9f42fd05d4ef",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-12"
         },
         {
           "number": "15",
@@ -838,7 +988,11 @@
           "statusLabel": "Servicio de copas",
           "courseLabel": "Pase 1",
           "dish": "Tabla de autor",
-          "note": "2/2 sillas"
+          "note": "2/2 sillas",
+          "qrToken": "f81e024a122f9e98",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-15"
         },
         {
           "number": "17",
@@ -853,7 +1007,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "4041b5c95b3d6603",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-17"
         },
         {
           "number": "20",
@@ -868,7 +1026,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "696917bd1a63f3a2",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-20"
         }
       ],
       "quality": {
@@ -1009,7 +1171,11 @@
           "statusLabel": "En evaluación",
           "courseLabel": "Prototipo 3 de 9",
           "dish": "Menú ensayo",
-          "note": "4/4 sillas"
+          "note": "4/4 sillas",
+          "qrToken": "b039c53c3280d164",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-A1"
         },
         {
           "number": "A2",
@@ -1024,7 +1190,11 @@
           "statusLabel": "Briefing",
           "courseLabel": "Prototipo 1 de 9",
           "dish": "Entrada de investigación",
-          "note": "2/2 sillas"
+          "note": "2/2 sillas",
+          "qrToken": "11677ccaef2bf7ca",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-A2"
         },
         {
           "number": "B1",
@@ -1039,7 +1209,11 @@
           "statusLabel": "Libre",
           "courseLabel": "—",
           "dish": "Mesa lista",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "85fd70f32d65cef7",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-B1"
         },
         {
           "number": "B2",
@@ -1054,7 +1228,11 @@
           "statusLabel": "Registro",
           "courseLabel": "Prototipo 2 de 9",
           "dish": "Base caliente",
-          "note": "2/4 sillas"
+          "note": "2/4 sillas",
+          "qrToken": "6564dd0e32ab982b",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-B2"
         },
         {
           "number": "C1",
@@ -1069,7 +1247,11 @@
           "statusLabel": "Reservada",
           "courseLabel": "—",
           "dish": "2 catadores",
-          "note": "2 sillas"
+          "note": "2 sillas",
+          "qrToken": "ca36ffbe080f3d73",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-C1"
         },
         {
           "number": "C2",
@@ -1084,7 +1266,11 @@
           "statusLabel": "Limpieza",
           "courseLabel": "—",
           "dish": "Cambio de vajilla de cata",
-          "note": "4 sillas"
+          "note": "4 sillas",
+          "qrToken": "04e85ceff31c1589",
+          "qrActive": true,
+          "status": "active",
+          "code": "M-C2"
         }
       ],
       "quality": {
@@ -1178,1782 +1364,2439 @@
       ]
     }
   ],
-  "kitchenTickets": [
+  "menuCategories": [
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Terraza climatizada",
-        "Cuarto frío"
-      ],
-      "priority": "normal",
-      "id": "kt-1-1",
+      "id": "mc-1-1",
       "restaurantId": "1",
-      "code": "COM-0850",
-      "tableNumber": "02",
-      "guests": 4,
-      "courseLabel": "Pase 1 de 9 · Apertura",
-      "title": "Trilogía de aperitivos de mar y ostra Gillardeau N°2",
-      "station": "Cuarto frío",
-      "location": "Terraza",
-      "chefName": "Marc Vallet",
-      "chefInitials": "MV",
-      "waitLabel": "Hace 3m · Est: 6m",
-      "status": "backlog"
+      "name": "Aperitivos",
+      "description": "Bocados de apertura del pase degustación.",
+      "position": 1,
+      "menuId": "menu-1"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-2",
+      "id": "mc-1-2",
       "restaurantId": "1",
-      "code": "COM-0852",
-      "tableNumber": "07",
-      "guests": 2,
-      "courseLabel": "Pase 1 de 9 · Bienvenida",
-      "title": "Mantequilla ahumada de pasto y brioche hojaldrado",
-      "station": "Panadería artesanal",
-      "location": "Salón central",
-      "chefName": "Partida panadería",
-      "chefInitials": "PP",
-      "waitLabel": "Hace 1m · Est: 4m",
-      "status": "backlog"
+      "name": "Entrantes",
+      "description": "Primeros platos de la carta de temporada.",
+      "position": 2,
+      "menuId": "menu-1"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-3",
+      "id": "mc-1-3",
       "restaurantId": "1",
-      "code": "COM-0853",
-      "tableNumber": "11",
-      "guests": 3,
-      "courseLabel": "Pase 2/9",
-      "title": "Consomé clarificado de ave y jerez añejo",
-      "station": "Fondos",
-      "location": "Sala principal",
-      "chefName": "Marc Vallet",
-      "chefInitials": "MV",
-      "waitLabel": "En espera sincronización",
-      "status": "backlog"
+      "name": "Principales",
+      "description": "Platos de fondo con producto de mercado.",
+      "position": 3,
+      "menuId": "menu-1"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 70,
-      "progressLabel": "05:40 / 08:00 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Marcado en brasa de encina",
-          "done": true
-        },
-        {
-          "label": "Reposo en atemperador (52°C)",
-          "done": true
-        },
-        {
-          "label": "Salseo de tuétano y trufa fresca de verano",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Carnes & Brasa",
-        "Cocción Punto"
-      ],
-      "priority": "high",
-      "id": "kt-1-4",
+      "id": "mc-1-4",
       "restaurantId": "1",
-      "code": "COM-0846",
-      "tableNumber": "03",
-      "guests": 4,
-      "courseLabel": "Pase 6 de 9 · Plato principal",
-      "title": "Solomillo de vaca rubia gallega madurada (60d)",
-      "station": "Carnes y brasa",
-      "location": "Sala principal",
-      "chefName": "Álvaro Montero",
-      "chefInitials": "AM",
-      "waitLabel": "05:40 / 08:00 min",
-      "status": "cooking"
+      "name": "Postres",
+      "description": "Cierre dulce de la experiencia Atelier.",
+      "position": 4,
+      "menuId": "menu-1"
     },
     {
-      "allergen": "Frutos secos (ISO-22000)",
-      "notes": "Protocolo ISO-22000 activo. No marchar hasta validar batería.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Pescados & Mariscos",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-1-5",
+      "id": "mc-1-5",
       "restaurantId": "1",
-      "code": "COM-0847",
-      "tableNumber": "12",
-      "guests": 2,
-      "courseLabel": "Pase 2 de 9 · Entrada caliente",
-      "title": "Bogavante del Cantábrico con emulsión asada",
-      "station": "Pescados y mariscos",
-      "location": "Ventanal jardín",
-      "chefName": "Sara Domènech",
-      "chefInitials": "SD",
-      "waitLabel": "07:15 min retención",
-      "status": "cooking"
+      "name": "Maridajes",
+      "description": "Copas y botellas recomendadas por el sumiller.",
+      "position": 5,
+      "menuId": "menu-1"
     },
     {
-      "allergen": null,
-      "notes": "Mesa presidencial. Control de temperatura de corazón 54,2 °C.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "VIP"
-      ],
-      "priority": "high",
-      "id": "kt-1-6",
-      "restaurantId": "1",
-      "code": "COM-0842",
-      "tableNumber": "04",
-      "guests": 4,
-      "courseLabel": "Pase 5 de 9 · Plato de autor",
-      "title": "Pichón asado al sarmiento con moras salvajes e hígado glaseado",
-      "station": "Carnes y fuego",
-      "location": "Sala principal central",
-      "chefName": "Clara Morales",
-      "chefInitials": "CM",
-      "waitLabel": "SLA retraso: +02:10 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Château d'Yquem 2011 (Elena M.)",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-7",
-      "restaurantId": "1",
-      "code": "COM-0845",
-      "tableNumber": "08",
-      "guests": 6,
-      "courseLabel": "Pase 8 de 9 · Transición dulce",
-      "title": "Pre-postre cítrico de saúco e infusión fría de cacao criollo",
-      "station": "Pastelería",
-      "location": "Salón privado norte",
-      "chefName": "Camille Laurent",
-      "chefInitials": "CL",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Lucas M. (camarero principal)",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-8",
-      "restaurantId": "1",
-      "code": "COM-0844",
-      "tableNumber": "15",
-      "guests": 2,
-      "courseLabel": "Pase 2 de 9 · Frío",
-      "title": "Tartar de cigala real y caviar imperial Oscietra",
-      "station": "Cuarto frío",
-      "location": "Sala principal",
-      "chefName": "Lucas Martín",
-      "chefInitials": "LM",
-      "waitLabel": "Campana 01:20 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-9",
-      "restaurantId": "1",
-      "code": "COM-0849",
-      "tableNumber": "10",
-      "guests": 4,
-      "courseLabel": "Pase 4 de 9 · Caliente",
-      "title": "Rodaballo de bajura a la brasa de olivo milenario",
-      "station": "Pescados",
-      "location": "Sala principal",
-      "chefName": "Sara Domènech",
-      "chefInitials": "SD",
-      "waitLabel": "00:45 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Roberto G. hace 4 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-10",
-      "restaurantId": "1",
-      "code": "COM-0830",
-      "tableNumber": "01",
-      "guests": 2,
-      "courseLabel": "Pase 7 de 9",
-      "title": "Cochinillo crujiente y compota de manzana",
-      "station": "Carnes",
-      "location": "Sala principal",
-      "chefName": "Roberto G.",
-      "chefInitials": "RG",
-      "waitLabel": "11.2 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Lucía F. hace 8 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-11",
-      "restaurantId": "1",
-      "code": "COM-0831",
-      "tableNumber": "06",
-      "guests": 4,
-      "courseLabel": "Pase 3 de 9",
-      "title": "Guisantes de lágrima y caldo de ibérico",
-      "station": "Fríos",
-      "location": "Sala principal",
-      "chefName": "Lucía F.",
-      "chefInitials": "LF",
-      "waitLabel": "09.8 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Salón privado",
-        "Cuarto frío"
-      ],
-      "priority": "high",
-      "id": "kt-1-12",
-      "restaurantId": "1",
-      "code": "COM-0854",
-      "tableNumber": "16",
-      "guests": 5,
-      "courseLabel": "Pase 1 de 9 · Apertura",
-      "title": "Tartar de atún rojo y cítricos de Valencia",
-      "station": "Cuarto frío",
-      "location": "Salón privado",
-      "chefName": "Marc Vallet",
-      "chefInitials": "MV",
-      "waitLabel": "Hace 2m · Est: 5m",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-13",
-      "restaurantId": "1",
-      "code": "COM-0855",
-      "tableNumber": "09",
-      "guests": 2,
-      "courseLabel": "Pase 2 de 9 · Caldo",
-      "title": "Caldo de gallina de corral y jengibre fresco",
-      "station": "Fondos",
-      "location": "Sala jardín",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "En espera de sincronización de pase",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 40,
-      "progressLabel": "03:10 / 07:30 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Sofrito de chalota y vino blanco",
-          "done": true
-        },
-        {
-          "label": "Cocción de arroz carnaroli",
-          "done": false
-        },
-        {
-          "label": "Manos de mantequilla y parmesano",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Arroces",
-        "Cocción crema"
-      ],
-      "priority": "normal",
-      "id": "kt-1-14",
-      "restaurantId": "1",
-      "code": "COM-0848",
-      "tableNumber": "05",
-      "guests": 3,
-      "courseLabel": "Pase 4 de 9 · Principal",
-      "title": "Risotto de setas de otoño y tuétano",
-      "station": "Arroces",
-      "location": "Sala principal",
-      "chefName": "Álvaro Montero",
-      "chefInitials": "AM",
-      "waitLabel": "03:10 / 07:30 min",
-      "status": "cooking"
-    },
-    {
-      "allergen": "Gluten",
-      "notes": "Sustituir pan de masa madre por versión sin gluten certificada.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Panadería",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-1-15",
-      "restaurantId": "1",
-      "code": "COM-0851",
-      "tableNumber": "18",
-      "guests": 4,
-      "courseLabel": "Pase 1 de 9 · Pan",
-      "title": "Brioche de masa madre y mantequilla de algas",
-      "station": "Panadería artesanal",
-      "location": "Terraza",
-      "chefName": "Partida panadería",
-      "chefInitials": "PP",
-      "waitLabel": "04:40 min retención",
-      "status": "cooking"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Albariño de añada (Elena M.)",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-16",
-      "restaurantId": "1",
-      "code": "COM-0843",
-      "tableNumber": "13",
-      "guests": 2,
-      "courseLabel": "Pase 3 de 9 · Pescado",
-      "title": "Lubina salvaje a la sal con hinojo marino",
-      "station": "Pescados",
-      "location": "Ventanal jardín",
-      "chefName": "Sara Domènech",
-      "chefInitials": "SD",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Pastelería"
-      ],
-      "priority": "high",
-      "id": "kt-1-17",
-      "restaurantId": "1",
-      "code": "COM-0841",
-      "tableNumber": "21",
-      "guests": 8,
-      "courseLabel": "Pase 9 de 9 · Postre",
-      "title": "Soufflé de chocolate Guanaja y helado de oliva",
-      "station": "Pastelería",
-      "location": "Salón privado norte",
-      "chefName": "Camille Laurent",
-      "chefInitials": "CL",
-      "waitLabel": "QA visual 00:50 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Elena M. (sala)",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-18",
-      "restaurantId": "1",
-      "code": "COM-0840",
-      "tableNumber": "19",
-      "guests": 3,
-      "courseLabel": "Pase 3 de 9 · Frío",
-      "title": "Vieiras curadas y dashi de kombu",
-      "station": "Cuarto frío",
-      "location": "Barra",
-      "chefName": "Lucas Martín",
-      "chefInitials": "LM",
-      "waitLabel": "Campana 00:35 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "high",
-      "id": "kt-1-19",
-      "restaurantId": "1",
-      "code": "COM-0839",
-      "tableNumber": "17",
-      "guests": 4,
-      "courseLabel": "Pase 5 de 9 · Carne",
-      "title": "Cordero lechal y jus de romero",
-      "station": "Carnes y brasa",
-      "location": "Sala principal",
-      "chefName": "Clara Morales",
-      "chefInitials": "CM",
-      "waitLabel": "01:05 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Cierre de menú degustación hace 11 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-20",
-      "restaurantId": "1",
-      "code": "COM-0829",
-      "tableNumber": "14",
-      "guests": 2,
-      "courseLabel": "Pase 9 de 9",
-      "title": "Mignardises de cacao y café de especialidad",
-      "station": "Pastelería",
-      "location": "Sala principal",
-      "chefName": "Camille Laurent",
-      "chefInitials": "CL",
-      "waitLabel": "13.4 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Lucas M. hace 12 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-21",
-      "restaurantId": "1",
-      "code": "COM-0828",
-      "tableNumber": "20",
-      "guests": 6,
-      "courseLabel": "Pase 6 de 9",
-      "title": "Pato asado y cerezas de la Ribera",
-      "station": "Carnes y fuego",
-      "location": "Salón central",
-      "chefName": "Álvaro Montero",
-      "chefInitials": "AM",
-      "waitLabel": "10.6 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Terraza",
-        "Fríos"
-      ],
-      "priority": "normal",
-      "id": "kt-1-22",
-      "restaurantId": "1",
-      "code": "COM-0856",
-      "tableNumber": "22",
-      "guests": 4,
-      "courseLabel": "Pase 1 de 9 · Crudo",
-      "title": "Ostra Gillardeau N°3 y granizado de manzana verde",
-      "station": "Cuarto frío",
-      "location": "Terraza climatizada",
-      "chefName": "Marc Vallet",
-      "chefInitials": "MV",
-      "waitLabel": "Hace 4m · Est: 6m",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-23",
-      "restaurantId": "1",
-      "code": "COM-0857",
-      "tableNumber": "24",
-      "guests": 2,
-      "courseLabel": "Pase 2/9",
-      "title": "Espuma de coliflor asada y caviar de aceite",
-      "station": "Fondos",
-      "location": "Sala principal",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "En espera de sincronización",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 55,
-      "progressLabel": "04:20 / 08:00 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Marcado de piel a la brasa",
-          "done": true
-        },
-        {
-          "label": "Cocción a 48 °C",
-          "done": true
-        },
-        {
-          "label": "Glaseado de mantequilla noisette",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Pescados",
-        "Cocción baja"
-      ],
-      "priority": "high",
-      "id": "kt-1-24",
-      "restaurantId": "1",
-      "code": "COM-0858",
-      "tableNumber": "23",
-      "guests": 3,
-      "courseLabel": "Pase 4 de 9 · Pescado",
-      "title": "San Pedro de lonja y beurre blanc de yuzu",
-      "station": "Pescados y mariscos",
-      "location": "Ventanal jardín",
-      "chefName": "Sara Domènech",
-      "chefInitials": "SD",
-      "waitLabel": "04:20 / 08:00 min",
-      "status": "cooking"
-    },
-    {
-      "allergen": "Lactosa",
-      "notes": "Sustituir crema de leche por emulsión de avena. Protocolo ISO-22000.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Pastelería",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-1-25",
-      "restaurantId": "1",
-      "code": "COM-0859",
-      "tableNumber": "25",
-      "guests": 2,
-      "courseLabel": "Pase 8 de 9 · Postre",
-      "title": "Crema de vainilla de Tahití y crumble de cacao",
-      "station": "Pastelería",
-      "location": "Salón privado",
-      "chefName": "Camille Laurent",
-      "chefInitials": "CL",
-      "waitLabel": "06:05 min retención",
-      "status": "cooking"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Champagne blanc de blancs (Elena M.)",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-26",
-      "restaurantId": "1",
-      "code": "COM-0860",
-      "tableNumber": "26",
-      "guests": 4,
-      "courseLabel": "Pase 2 de 9 · Frío",
-      "title": "Carpaccio de cigala y emulsión de algas",
-      "station": "Cuarto frío",
-      "location": "Sala principal",
-      "chefName": "Lucas Martín",
-      "chefInitials": "LM",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": "Mesa presidencial. Servicio simultáneo de 4 pases.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "VIP"
-      ],
-      "priority": "high",
-      "id": "kt-1-27",
-      "restaurantId": "1",
-      "code": "COM-0861",
-      "tableNumber": "28",
-      "guests": 4,
-      "courseLabel": "Pase 6 de 9 · Autor",
-      "title": "Liebre a la royale y reducción de vino de Jura",
-      "station": "Carnes y fuego",
-      "location": "Sala principal central",
-      "chefName": "Clara Morales",
-      "chefInitials": "CM",
-      "waitLabel": "SLA retraso: +01:25 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Roberto G. (sala)",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-28",
-      "restaurantId": "1",
-      "code": "COM-0862",
-      "tableNumber": "27",
-      "guests": 2,
-      "courseLabel": "Pase 3 de 9 · Caliente",
-      "title": "Ravioli de foie y caldo de ave tostado",
-      "station": "Fondos",
-      "location": "Barra",
-      "chefName": "Marc Vallet",
-      "chefInitials": "MV",
-      "waitLabel": "Campana 00:55 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-29",
-      "restaurantId": "1",
-      "code": "COM-0863",
-      "tableNumber": "29",
-      "guests": 5,
-      "courseLabel": "Pase 5 de 9 · Carne",
-      "title": "Presa ibérica y pimiento del piquillo confitado",
-      "station": "Carnes y brasa",
-      "location": "Salón central",
-      "chefName": "Álvaro Montero",
-      "chefInitials": "AM",
-      "waitLabel": "00:28 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Sara D. hace 6 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-30",
-      "restaurantId": "1",
-      "code": "COM-0827",
-      "tableNumber": "30",
-      "guests": 3,
-      "courseLabel": "Pase 4 de 9",
-      "title": "Merluza de pincho y salsa verde de txakoli",
-      "station": "Pescados",
-      "location": "Sala principal",
-      "chefName": "Sara Domènech",
-      "chefInitials": "SD",
-      "waitLabel": "09.1 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Elena M. hace 15 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-1-31",
-      "restaurantId": "1",
-      "code": "COM-0826",
-      "tableNumber": "32",
-      "guests": 2,
-      "courseLabel": "Pase 8 de 9",
-      "title": "Sorbete de hierbabuena y lima kaffir",
-      "station": "Pastelería",
-      "location": "Terraza",
-      "chefName": "Camille Laurent",
-      "chefInitials": "CL",
-      "waitLabel": "07.4 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-1",
+      "id": "mc-2-1",
       "restaurantId": "2",
-      "code": "COM-2101",
-      "tableNumber": "11",
-      "guests": 2,
-      "courseLabel": "Pase 3 de 7",
-      "title": "Menú de temporada botánica",
-      "station": "Fríos y huerto",
-      "location": "Sala jardín",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "En pase",
-      "status": "cooking"
+      "name": "Del huerto",
+      "description": "Vegetales de proximidad y huerto propio.",
+      "position": 1,
+      "menuId": "menu-2"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-2",
+      "id": "mc-2-2",
       "restaurantId": "2",
-      "code": "COM-2102",
-      "tableNumber": "07",
-      "guests": 4,
-      "courseLabel": "Pase 1 de 7",
-      "title": "Aperitivo de huerto",
-      "station": "Fríos",
-      "location": "Sala principal",
-      "chefName": "Nil Serra",
-      "chefInitials": "NS",
-      "waitLabel": "Hace 2 min",
-      "status": "backlog"
+      "name": "Fermentados",
+      "description": "Elaboraciones fermentadas de la casa.",
+      "position": 2,
+      "menuId": "menu-2"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Inés P.",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-3",
+      "id": "mc-2-3",
       "restaurantId": "2",
-      "code": "COM-2100",
-      "tableNumber": "14",
-      "guests": 2,
-      "courseLabel": "Pase 2 de 7",
-      "title": "Ensalada de temporada",
-      "station": "Fríos",
-      "location": "Sala jardín",
-      "chefName": "Inés Puig",
-      "chefInitials": "IP",
-      "waitLabel": "Servido 10 min",
-      "status": "served"
+      "name": "Principales",
+      "description": "Platos de fondo con producto de temporada.",
+      "position": 3,
+      "menuId": "menu-2"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "high",
-      "id": "kt-3-1",
+      "id": "mc-2-4",
+      "restaurantId": "2",
+      "name": "Dulces botánicos",
+      "description": "Postres con hierbas y flores comestibles.",
+      "position": 4,
+      "menuId": "menu-2"
+    },
+    {
+      "id": "mc-3-1",
       "restaurantId": "3",
-      "code": "COM-3101",
-      "tableNumber": "01",
-      "guests": 4,
-      "courseLabel": "Vuelo 2 de 4",
-      "title": "Selección gran reserva",
-      "station": "Cava",
-      "location": "Sala de barricas",
-      "chefName": "Diego Ruiz",
-      "chefInitials": "DR",
-      "waitLabel": "En cata",
-      "status": "plating"
+      "name": "Tapas de cava",
+      "description": "Bocados para acompañar la cata de vinos.",
+      "position": 1,
+      "menuId": "menu-3"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-2",
+      "id": "mc-3-2",
       "restaurantId": "3",
-      "code": "COM-3102",
-      "tableNumber": "15",
-      "guests": 2,
-      "courseLabel": "Pase 1",
-      "title": "Tabla de autor",
-      "station": "Bistró",
-      "location": "Barra cava",
-      "chefName": "Sofía Navarro",
-      "chefInitials": "SN",
-      "waitLabel": "Hace 5 min",
-      "status": "cooking"
+      "name": "Raciones",
+      "description": "Platos para compartir en la bodega.",
+      "position": 2,
+      "menuId": "menu-3"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Sofía N.",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-3",
+      "id": "mc-3-3",
       "restaurantId": "3",
-      "code": "COM-3099",
-      "tableNumber": "12",
-      "guests": 3,
-      "courseLabel": "Pase 2",
-      "title": "Plato de autor",
-      "station": "Bistró",
-      "location": "Sala bistró",
-      "chefName": "Ana Beltrán",
-      "chefInitials": "AB",
-      "waitLabel": "08 min",
-      "status": "served"
+      "name": "Vinos por copa",
+      "description": "Selección de la cava de autor.",
+      "position": 3,
+      "menuId": "menu-3"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-1",
+      "id": "mc-4-1",
       "restaurantId": "4",
-      "code": "COM-4101",
-      "tableNumber": "A1",
-      "guests": 4,
-      "courseLabel": "Prototipo 3 de 9",
-      "title": "Menú ensayo de temporada",
-      "station": "I+D caliente",
-      "location": "Sala sensorial",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "En evaluación",
-      "status": "cooking"
+      "name": "Prototipos fríos",
+      "description": "Ensayos de temporada servidos en frío.",
+      "position": 1,
+      "menuId": "menu-4"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "high",
-      "id": "kt-4-2",
+      "id": "mc-4-2",
       "restaurantId": "4",
-      "code": "COM-4102",
-      "tableNumber": "A2",
-      "guests": 2,
-      "courseLabel": "Prototipo 1 de 9",
-      "title": "Entrada de investigación",
-      "station": "I+D frío",
-      "location": "Mesa de dirección",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "Briefing",
-      "status": "backlog"
+      "name": "Prototipos calientes",
+      "description": "Ensayos de temporada servidos en caliente.",
+      "position": 2,
+      "menuId": "menu-4"
     },
     {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Huerto",
-        "Fríos"
-      ],
-      "priority": "normal",
-      "id": "kt-2-4",
-      "restaurantId": "2",
-      "code": "COM-2103",
-      "tableNumber": "03",
-      "guests": 4,
-      "courseLabel": "Pase 1 de 7 · Huerto",
-      "title": "Ensalada de brotes y vinagreta de tomillo",
-      "station": "Fríos y huerto",
-      "location": "Sala jardín",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "Hace 2m · Est: 5m",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-5",
-      "restaurantId": "2",
-      "code": "COM-2104",
-      "tableNumber": "08",
-      "guests": 2,
-      "courseLabel": "Pase 2/7",
-      "title": "Caldo de verduras asadas y kombucha de manzana",
-      "station": "Fondos vegetales",
-      "location": "Sala principal",
-      "chefName": "Nil Serra",
-      "chefInitials": "NS",
-      "waitLabel": "En espera de pase de sala",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 62,
-      "progressLabel": "05:00 / 08:00 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Tostado de semillas de calabaza",
-          "done": true
-        },
-        {
-          "label": "Cocción de quinoa germinada",
-          "done": true
-        },
-        {
-          "label": "Aliño de aceite de oliva arbequina",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Caliente",
-        "Cocción grano"
-      ],
-      "priority": "high",
-      "id": "kt-2-6",
-      "restaurantId": "2",
-      "code": "COM-2105",
-      "tableNumber": "05",
-      "guests": 3,
-      "courseLabel": "Pase 4 de 7 · Principal",
-      "title": "Coliflor asada, miso blanco y avellana",
-      "station": "I+D vegetal",
-      "location": "Sala jardín",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "05:00 / 08:00 min",
-      "status": "cooking"
-    },
-    {
-      "allergen": "Frutos secos",
-      "notes": "Sin avellana. Sustituir por pipas tostadas.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Huerto",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-2-7",
-      "restaurantId": "2",
-      "code": "COM-2106",
-      "tableNumber": "12",
-      "guests": 2,
-      "courseLabel": "Pase 3 de 7 · Entrada",
-      "title": "Remolacha asada y praliné de avellana",
-      "station": "Fríos y huerto",
-      "location": "Terraza interior",
-      "chefName": "Nil Serra",
-      "chefInitials": "NS",
-      "waitLabel": "03:50 min retención",
-      "status": "cooking"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Pét-nat de xarel·lo (sommelier BCN)",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-8",
-      "restaurantId": "2",
-      "code": "COM-2107",
-      "tableNumber": "09",
-      "guests": 4,
-      "courseLabel": "Pase 5 de 7 · Transición",
-      "title": "Sorbete de hinojo y infusión de hinojo marino",
-      "station": "Pastelería vegetal",
-      "location": "Sala principal",
-      "chefName": "Inés Puig",
-      "chefInitials": "IP",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": "Mesa presidencial. Menú regenerativo completo.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "VIP"
-      ],
-      "priority": "high",
-      "id": "kt-2-9",
-      "restaurantId": "2",
-      "code": "COM-2108",
-      "tableNumber": "01",
-      "guests": 6,
-      "courseLabel": "Pase 6 de 7 · Autor",
-      "title": "Puerro a la brasa y salsa de fermento de tomate",
-      "station": "Brasa vegetal",
-      "location": "Sala jardín",
-      "chefName": "Inés Soler",
-      "chefInitials": "IS",
-      "waitLabel": "SLA retraso: +00:40 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Nil S. (sala)",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-10",
-      "restaurantId": "2",
-      "code": "COM-2109",
-      "tableNumber": "15",
-      "guests": 2,
-      "courseLabel": "Pase 2 de 7 · Frío",
-      "title": "Tartar de tomate raf y aceite de albahaca",
-      "station": "Fríos y huerto",
-      "location": "Sala principal",
-      "chefName": "Inés Puig",
-      "chefInitials": "IP",
-      "waitLabel": "Campana 00:42 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-11",
-      "restaurantId": "2",
-      "code": "COM-2110",
-      "tableNumber": "06",
-      "guests": 4,
-      "courseLabel": "Pase 4 de 7 · Caliente",
-      "title": "Calçot a la brasa y romesco suave",
-      "station": "Brasa vegetal",
-      "location": "Terraza interior",
-      "chefName": "Nil Serra",
-      "chefInitials": "NS",
-      "waitLabel": "01:10 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Inés P. hace 9 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-12",
-      "restaurantId": "2",
-      "code": "COM-2098",
-      "tableNumber": "04",
-      "guests": 3,
-      "courseLabel": "Pase 7 de 7",
-      "title": "Mousse de chocolate bean-to-bar y oliva arbequina",
-      "station": "Pastelería vegetal",
-      "location": "Sala jardín",
-      "chefName": "Inés Puig",
-      "chefInitials": "IP",
-      "waitLabel": "12.1 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Nil S. hace 14 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-2-13",
-      "restaurantId": "2",
-      "code": "COM-2097",
-      "tableNumber": "16",
-      "guests": 2,
-      "courseLabel": "Pase 5 de 7",
-      "title": "Helado de hinojo y crumble de algarroba",
-      "station": "Pastelería vegetal",
-      "location": "Sala principal",
-      "chefName": "Inés Puig",
-      "chefInitials": "IP",
-      "waitLabel": "08.6 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Cava",
-        "Embutido"
-      ],
-      "priority": "normal",
-      "id": "kt-3-4",
-      "restaurantId": "3",
-      "code": "COM-3103",
-      "tableNumber": "04",
-      "guests": 4,
-      "courseLabel": "Pase 1 · Apertura",
-      "title": "Salchichón de bellota y pan de cristal",
-      "station": "Bistró",
-      "location": "Sala de barricas",
-      "chefName": "Diego Ruiz",
-      "chefInitials": "DR",
-      "waitLabel": "Hace 3m · Est: 4m",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-5",
-      "restaurantId": "3",
-      "code": "COM-3104",
-      "tableNumber": "08",
-      "guests": 2,
-      "courseLabel": "Pase 2/4",
-      "title": "Croqueta de rabo de toro y PX",
-      "station": "Fritos",
-      "location": "Barra cava",
-      "chefName": "Sofía Navarro",
-      "chefInitials": "SN",
-      "waitLabel": "En espera de copa de jerez",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 48,
-      "progressLabel": "03:40 / 07:00 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Sellado de presa",
-          "done": true
-        },
-        {
-          "label": "Reposo 4 minutos",
-          "done": false
-        },
-        {
-          "label": "Jus de Pedro Ximénez",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Plancha",
-        "Carnes"
-      ],
-      "priority": "high",
-      "id": "kt-3-6",
-      "restaurantId": "3",
-      "code": "COM-3105",
-      "tableNumber": "06",
-      "guests": 3,
-      "courseLabel": "Pase 3 · Principal",
-      "title": "Presa ibérica a la plancha y ajos asados",
-      "station": "Bistró",
-      "location": "Sala bistró",
-      "chefName": "Ana Beltrán",
-      "chefInitials": "AB",
-      "waitLabel": "03:40 / 07:00 min",
-      "status": "cooking"
-    },
-    {
-      "allergen": "Marisco",
-      "notes": "Sin gamba. Sustituir por verdura de temporada.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Arroces",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-3-7",
-      "restaurantId": "3",
-      "code": "COM-3106",
-      "tableNumber": "10",
-      "guests": 4,
-      "courseLabel": "Pase 2 · Arroz",
-      "title": "Arroz meloso de gamba blanca y azafrán",
-      "station": "Arroces",
-      "location": "Patio interior",
-      "chefName": "Diego Ruiz",
-      "chefInitials": "DR",
-      "waitLabel": "05:20 min retención",
-      "status": "cooking"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Amontillado viejo (Diego R.)",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-8",
-      "restaurantId": "3",
-      "code": "COM-3107",
-      "tableNumber": "02",
-      "guests": 2,
-      "courseLabel": "Pase 4 · Quesos",
-      "title": "Tabla de quesos andaluces y membrillo",
-      "station": "Cava",
-      "location": "Sala de barricas",
-      "chefName": "Sofía Navarro",
-      "chefInitials": "SN",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": "Mesa presidencial. Cata vertical de palo cortado.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "VIP"
-      ],
-      "priority": "high",
-      "id": "kt-3-9",
-      "restaurantId": "3",
-      "code": "COM-3108",
-      "tableNumber": "01",
-      "guests": 8,
-      "courseLabel": "Vuelo 3 de 4 · Autor",
-      "title": "Carrillada al oloroso y puré de castaña",
-      "station": "Bistró",
-      "location": "Sala de barricas",
-      "chefName": "Diego Ruiz",
-      "chefInitials": "DR",
-      "waitLabel": "SLA retraso: +02:00 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Ana B. (sala)",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-10",
-      "restaurantId": "3",
-      "code": "COM-3109",
-      "tableNumber": "14",
-      "guests": 3,
-      "courseLabel": "Pase 1 · Frío",
-      "title": "Salmorejo de tomate raf y huevo confitado",
-      "station": "Fríos",
-      "location": "Patio interior",
-      "chefName": "Ana Beltrán",
-      "chefInitials": "AB",
-      "waitLabel": "Campana 00:38 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-11",
-      "restaurantId": "3",
-      "code": "COM-3110",
-      "tableNumber": "09",
-      "guests": 4,
-      "courseLabel": "Pase 3 · Caliente",
-      "title": "Bacalao al pil-pil y pimiento asado",
-      "station": "Bistró",
-      "location": "Sala bistró",
-      "chefName": "Sofía Navarro",
-      "chefInitials": "SN",
-      "waitLabel": "00:52 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Diego R. hace 7 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-3-12",
-      "restaurantId": "3",
-      "code": "COM-3098",
-      "tableNumber": "18",
-      "guests": 2,
-      "courseLabel": "Pase 4",
-      "title": "Tocino de cielo y naranja amarga",
-      "station": "Pastelería",
-      "location": "Barra cava",
-      "chefName": "Ana Beltrán",
-      "chefInitials": "AB",
-      "waitLabel": "11.0 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "Sensorial",
-        "Frío"
-      ],
-      "priority": "normal",
-      "id": "kt-4-3",
+      "id": "mc-4-3",
       "restaurantId": "4",
-      "code": "COM-4103",
-      "tableNumber": "A3",
-      "guests": 4,
-      "courseLabel": "Prototipo 1 de 9 · Textura",
-      "title": "Gel de algas y crocante de arroz inflado",
-      "station": "I+D frío",
-      "location": "Sala sensorial",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "Hace 6m · Est: 8m",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-4",
-      "restaurantId": "4",
-      "code": "COM-4104",
-      "tableNumber": "B1",
-      "guests": 2,
-      "courseLabel": "Prototipo 2/9",
-      "title": "Infusión de heno y mantequilla clarificada",
-      "station": "I+D aromas",
-      "location": "Mesa de dirección",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "En espera de panel sensorial",
-      "status": "backlog"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": 35,
-      "progressLabel": "02:50 / 09:00 min",
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [
-        {
-          "label": "Control de pH 5.8",
-          "done": true
-        },
-        {
-          "label": "Cocción a 62 °C",
-          "done": false
-        },
-        {
-          "label": "Registro de muestra",
-          "done": false
-        }
-      ],
-      "tags": [
-        "Laboratorio",
-        "Cocción controlada"
-      ],
-      "priority": "high",
-      "id": "kt-4-5",
-      "restaurantId": "4",
-      "code": "COM-4105",
-      "tableNumber": "A4",
-      "guests": 4,
-      "courseLabel": "Prototipo 4 de 9 · Proteína",
-      "title": "Merluza a baja temperatura y hidrolato de laurel",
-      "station": "I+D caliente",
-      "location": "Sala sensorial",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "02:50 / 09:00 min",
-      "status": "cooking"
-    },
-    {
-      "allergen": "Sulfitos",
-      "notes": "Sin reducción de vino. Usar caldo de verdura.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "I+D caliente",
-        "Bloqueo QA Activo"
-      ],
-      "priority": "urgent",
-      "id": "kt-4-6",
-      "restaurantId": "4",
-      "code": "COM-4106",
-      "tableNumber": "B2",
-      "guests": 2,
-      "courseLabel": "Prototipo 5 de 9 · Salsa",
-      "title": "Reducción de txakoli y mantequilla noisette",
-      "station": "I+D salsas",
-      "location": "Laboratorio",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "08:10 min retención",
-      "status": "cooking"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": "Txakoli experimental lote 14",
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-7",
-      "restaurantId": "4",
-      "code": "COM-4107",
-      "tableNumber": "A5",
-      "guests": 4,
-      "courseLabel": "Prototipo 7 de 9 · Maridaje",
-      "title": "Pre-postre de kéfir de oveja y miel de brezo",
-      "station": "I+D lácteos",
-      "location": "Sala sensorial",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "Emplatando",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": "Mesa presidencial. Cata de dirección de innovación.",
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [
-        "VIP"
-      ],
-      "priority": "high",
-      "id": "kt-4-8",
-      "restaurantId": "4",
-      "code": "COM-4108",
-      "tableNumber": "DIR",
-      "guests": 6,
-      "courseLabel": "Prototipo 6 de 9 · Autor",
-      "title": "Pichón ahumado y tierra de cacao nibs",
-      "station": "I+D caliente",
-      "location": "Mesa de dirección",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "SLA retraso: +03:15 min",
-      "status": "plating"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Panel sensorial A",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-9",
-      "restaurantId": "4",
-      "code": "COM-4109",
-      "tableNumber": "A6",
-      "guests": 4,
-      "courseLabel": "Prototipo 2 de 9 · Frío",
-      "title": "Tartar de tomate fermentado 72 h",
-      "station": "I+D frío",
-      "location": "Sala sensorial",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "Campana 00:25 min",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": null,
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-10",
-      "restaurantId": "4",
-      "code": "COM-4110",
-      "tableNumber": "B3",
-      "guests": 2,
-      "courseLabel": "Prototipo 8 de 9 · Caliente",
-      "title": "Caldo clarificado de hueso y té hojicha",
-      "station": "I+D caliente",
-      "location": "Laboratorio",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "00:40 min (temperatura OK)",
-      "status": "pass"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Amaia B. hace 10 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-11",
-      "restaurantId": "4",
-      "code": "COM-4096",
-      "tableNumber": "A7",
-      "guests": 4,
-      "courseLabel": "Prototipo 9 de 9",
-      "title": "Tableta de cacao 74% y sal ahumada",
-      "station": "I+D dulce",
-      "location": "Sala sensorial",
-      "chefName": "Amaia Bengoetxea",
-      "chefInitials": "AB",
-      "waitLabel": "14.2 min",
-      "status": "served"
-    },
-    {
-      "allergen": null,
-      "notes": null,
-      "progressPercent": null,
-      "progressLabel": null,
-      "pairing": null,
-      "deliveredBy": "Koldo A. hace 18 min",
-      "checklist": [],
-      "tags": [],
-      "priority": "normal",
-      "id": "kt-4-12",
-      "restaurantId": "4",
-      "code": "COM-4095",
-      "tableNumber": "B4",
-      "guests": 2,
-      "courseLabel": "Prototipo 3 de 9",
-      "title": "Espuma de txakoli y perla de algas",
-      "station": "I+D frío",
-      "location": "Mesa de dirección",
-      "chefName": "Koldo Aranburu",
-      "chefInitials": "KA",
-      "waitLabel": "09.3 min",
-      "status": "served"
+      "name": "Postres experimentales",
+      "description": "Cierre dulce del menú ensayo.",
+      "position": 3,
+      "menuId": "menu-4"
     }
-  ]
+  ],
+  "menuProducts": [
+    {
+      "id": "mp-1-1",
+      "restaurantId": "1",
+      "categoryId": "mc-1-1",
+      "name": "Trilogía de aperitivos de mar",
+      "description": "Ostra Gillardeau, tartar de erizo y espuma de algas.",
+      "price": 24,
+      "imageUrl": "https://picsum.photos/seed/mp-1-1/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Recomendado chef"
+      ],
+      "allergens": [
+        "Marisco"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-2",
+      "restaurantId": "1",
+      "categoryId": "mc-1-1",
+      "name": "Royale de foie y manzana verde",
+      "description": "Foie gras curado con gelée de manzana ácida.",
+      "price": 21,
+      "imageUrl": "https://picsum.photos/seed/mp-1-2/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-3",
+      "restaurantId": "1",
+      "categoryId": "mc-1-1",
+      "name": "Consomé de txangurro",
+      "description": "Caldo clarificado de txangurro con brioche tostado.",
+      "price": 19,
+      "imageUrl": "https://picsum.photos/seed/mp-1-3/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Marisco",
+        "Gluten"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-4",
+      "restaurantId": "1",
+      "categoryId": "mc-1-1",
+      "name": "Pan de masa madre y mantequilla ahumada",
+      "description": "Elaboración diaria de panadería propia.",
+      "price": 8,
+      "imageUrl": "https://picsum.photos/seed/mp-1-4/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-5",
+      "restaurantId": "1",
+      "categoryId": "mc-1-2",
+      "name": "Vieira a la brasa con puré de coliflor",
+      "description": "Vieira gallega, coliflor asada y beurre blanc.",
+      "price": 34,
+      "imageUrl": "https://picsum.photos/seed/mp-1-5/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Marisco",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-6",
+      "restaurantId": "1",
+      "categoryId": "mc-1-2",
+      "name": "Ravioli de trufa negra",
+      "description": "Pasta fresca rellena de trufa de Périgord.",
+      "price": 29,
+      "imageUrl": "https://picsum.photos/seed/mp-1-6/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Huevo"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-7",
+      "restaurantId": "1",
+      "categoryId": "mc-1-2",
+      "name": "Ensalada de bogavante y cítricos",
+      "description": "Bogavante escalfado, hinojo y vinagreta de yuzu.",
+      "price": 38,
+      "imageUrl": "https://picsum.photos/seed/mp-1-7/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Marisco"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-8",
+      "restaurantId": "1",
+      "categoryId": "mc-1-2",
+      "name": "Terrina de caza y avellanas",
+      "description": "Terrina de temporada con reducción de Pedro Ximénez.",
+      "price": 26,
+      "imageUrl": "https://picsum.photos/seed/mp-1-8/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Frutos secos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-9",
+      "restaurantId": "1",
+      "categoryId": "mc-1-3",
+      "name": "Pichón asado a la brasa de sarmiento",
+      "description": "Pichón de Bresse con jugo especiado y raíces glaseadas.",
+      "price": 46,
+      "imageUrl": "https://picsum.photos/seed/mp-1-9/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-10",
+      "restaurantId": "1",
+      "categoryId": "mc-1-3",
+      "name": "Rodaballo salvaje con beurre noisette",
+      "description": "Rodaballo de costa, alcaparras y mantequilla tostada.",
+      "price": 44,
+      "imageUrl": "https://picsum.photos/seed/mp-1-10/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Pescado",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-11",
+      "restaurantId": "1",
+      "categoryId": "mc-1-3",
+      "name": "Chuletón de vaca vieja madurado 45 días",
+      "description": "Corte de 400g a la brasa, sal en escamas.",
+      "price": 52,
+      "imageUrl": "https://picsum.photos/seed/mp-1-11/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Recomendado chef"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-12",
+      "restaurantId": "1",
+      "categoryId": "mc-1-3",
+      "name": "Risotto de setas de temporada",
+      "description": "Risotto cremoso con boletus y parmesano 36 meses.",
+      "price": 27,
+      "imageUrl": "https://picsum.photos/seed/mp-1-12/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-13",
+      "restaurantId": "1",
+      "categoryId": "mc-1-4",
+      "name": "Soufflé de chocolate Guanaja",
+      "description": "Soufflé caliente con helado de vainilla bourbon.",
+      "price": 16,
+      "imageUrl": "https://picsum.photos/seed/mp-1-13/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Lácteos",
+        "Huevo"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-14",
+      "restaurantId": "1",
+      "categoryId": "mc-1-4",
+      "name": "Milhojas de pera y avellana",
+      "description": "Hojaldre crujiente, crema de avellana y pera asada.",
+      "price": 14,
+      "imageUrl": "https://picsum.photos/seed/mp-1-14/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Frutos secos",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-15",
+      "restaurantId": "1",
+      "categoryId": "mc-1-4",
+      "name": "Tabla de quesos de temporada",
+      "description": "Selección de quesos franceses y vascos madurados.",
+      "price": 18,
+      "imageUrl": "https://picsum.photos/seed/mp-1-15/640/480",
+      "isAvailable": false,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-16",
+      "restaurantId": "1",
+      "categoryId": "mc-1-5",
+      "name": "Copa de champán Gillardeau brut",
+      "description": "Selección propia de la casa.",
+      "price": 15,
+      "imageUrl": "https://picsum.photos/seed/mp-1-16/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-17",
+      "restaurantId": "1",
+      "categoryId": "mc-1-5",
+      "name": "Rioja Alta reserva 2016",
+      "description": "Copa de tinto de guarda de bodega vasca.",
+      "price": 12,
+      "imageUrl": "https://picsum.photos/seed/mp-1-17/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-18",
+      "restaurantId": "1",
+      "categoryId": "mc-1-5",
+      "name": "Maridaje sumiller (5 copas)",
+      "description": "Recorrido de vinos ajustado al menú degustación.",
+      "price": 65,
+      "imageUrl": "https://picsum.photos/seed/mp-1-18/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Recomendado chef"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-19",
+      "restaurantId": "1",
+      "categoryId": "mc-1-1",
+      "name": "Gazpacho de tomate ahumado",
+      "description": "Tomate de temporada ahumado en frío con aceite de oliva.",
+      "price": 17,
+      "imageUrl": "https://picsum.photos/seed/mp-1-19/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano",
+        "Sin gluten"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-1-20",
+      "restaurantId": "1",
+      "categoryId": "mc-1-4",
+      "name": "Sorbete de cítricos de temporada",
+      "description": "Sorbete artesanal, alternativa ligera de cierre.",
+      "price": 10,
+      "imageUrl": "https://picsum.photos/seed/mp-1-20/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano",
+        "Sin gluten"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-1",
+      "restaurantId": "2",
+      "categoryId": "mc-2-1",
+      "name": "Ensalada de brotes del huerto propio",
+      "description": "Brotes tiernos, flores comestibles y vinagreta de hierbas.",
+      "price": 16,
+      "imageUrl": "https://picsum.photos/seed/mp-2-1/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano",
+        "Sin gluten"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-2",
+      "restaurantId": "2",
+      "categoryId": "mc-2-1",
+      "name": "Espárragos verdes a la brasa",
+      "description": "Espárragos de temporada con romesco ligero.",
+      "price": 18,
+      "imageUrl": "https://picsum.photos/seed/mp-2-2/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano"
+      ],
+      "allergens": [
+        "Frutos secos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-3",
+      "restaurantId": "2",
+      "categoryId": "mc-2-1",
+      "name": "Crema fría de guisantes y menta",
+      "description": "Guisante lágrima, menta fresca y aceite de oliva virgen.",
+      "price": 15,
+      "imageUrl": "https://picsum.photos/seed/mp-2-3/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano",
+        "Sin gluten"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-4",
+      "restaurantId": "2",
+      "categoryId": "mc-2-2",
+      "name": "Kombucha de flor de hibisco",
+      "description": "Fermentado propio de baja graduación.",
+      "price": 9,
+      "imageUrl": "https://picsum.photos/seed/mp-2-4/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-5",
+      "restaurantId": "2",
+      "categoryId": "mc-2-2",
+      "name": "Kimchi de temporada con tofu ahumado",
+      "description": "Vegetales fermentados, tofu ahumado en casa.",
+      "price": 17,
+      "imageUrl": "https://picsum.photos/seed/mp-2-5/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano",
+        "Picante"
+      ],
+      "allergens": [
+        "Soja"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-6",
+      "restaurantId": "2",
+      "categoryId": "mc-2-2",
+      "name": "Pan de masa madre con mantequilla de hierbas",
+      "description": "Elaboración diaria con hierbas del huerto.",
+      "price": 8,
+      "imageUrl": "https://picsum.photos/seed/mp-2-6/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-7",
+      "restaurantId": "2",
+      "categoryId": "mc-2-3",
+      "name": "Merluza de pincho al vapor de algas",
+      "description": "Merluza de temporada con caldo de algas y verdolaga.",
+      "price": 32,
+      "imageUrl": "https://picsum.photos/seed/mp-2-7/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Sin gluten"
+      ],
+      "allergens": [
+        "Pescado"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-8",
+      "restaurantId": "2",
+      "categoryId": "mc-2-3",
+      "name": "Arroz de setas y trufa de temporada",
+      "description": "Arroz meloso con setas silvestres y trufa.",
+      "price": 26,
+      "imageUrl": "https://picsum.photos/seed/mp-2-8/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-9",
+      "restaurantId": "2",
+      "categoryId": "mc-2-3",
+      "name": "Ternera regenerativa a baja temperatura",
+      "description": "Corte de ganadería regenerativa local, jugo de raíces.",
+      "price": 36,
+      "imageUrl": "https://picsum.photos/seed/mp-2-9/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-10",
+      "restaurantId": "2",
+      "categoryId": "mc-2-4",
+      "name": "Helado de romero y limón",
+      "description": "Elaboración propia con hierbas del huerto.",
+      "price": 11,
+      "imageUrl": "https://picsum.photos/seed/mp-2-10/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano",
+        "Sin gluten"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-11",
+      "restaurantId": "2",
+      "categoryId": "mc-2-4",
+      "name": "Tarta de flores comestibles",
+      "description": "Bizcocho ligero decorado con flores de temporada.",
+      "price": 13,
+      "imageUrl": "https://picsum.photos/seed/mp-2-11/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Gluten",
+        "Huevo",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-2-12",
+      "restaurantId": "2",
+      "categoryId": "mc-2-4",
+      "name": "Infusión botánica de cierre",
+      "description": "Selección de hierbas de huerto propio.",
+      "price": 6,
+      "imageUrl": "https://picsum.photos/seed/mp-2-12/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegano",
+        "Sin gluten"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-1",
+      "restaurantId": "3",
+      "categoryId": "mc-3-1",
+      "name": "Jamón ibérico de bellota al corte",
+      "description": "Corte a cuchillo, 36 meses de curación.",
+      "price": 22,
+      "imageUrl": "https://picsum.photos/seed/mp-3-1/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Recomendado chef"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-2",
+      "restaurantId": "3",
+      "categoryId": "mc-3-1",
+      "name": "Boquerones en vinagre de la casa",
+      "description": "Marinado tradicional de la bodega.",
+      "price": 12,
+      "imageUrl": "https://picsum.photos/seed/mp-3-2/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Pescado"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-3",
+      "restaurantId": "3",
+      "categoryId": "mc-3-1",
+      "name": "Croquetas de jamón ibérico",
+      "description": "Elaboración artesanal, seis unidades.",
+      "price": 11,
+      "imageUrl": "https://picsum.photos/seed/mp-3-3/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Gluten",
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-4",
+      "restaurantId": "3",
+      "categoryId": "mc-3-2",
+      "name": "Rabo de toro estofado al Pedro Ximénez",
+      "description": "Guiso lento con reducción de vino dulce.",
+      "price": 24,
+      "imageUrl": "https://picsum.photos/seed/mp-3-4/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-5",
+      "restaurantId": "3",
+      "categoryId": "mc-3-2",
+      "name": "Pescaíto frito andaluz",
+      "description": "Fritura variada de pescado de la bahía.",
+      "price": 19,
+      "imageUrl": "https://picsum.photos/seed/mp-3-5/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [
+        "Pescado",
+        "Gluten"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-6",
+      "restaurantId": "3",
+      "categoryId": "mc-3-2",
+      "name": "Tabla de quesos y embutidos de cava",
+      "description": "Selección de la bodega para compartir.",
+      "price": 21,
+      "imageUrl": "https://picsum.photos/seed/mp-3-6/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-7",
+      "restaurantId": "3",
+      "categoryId": "mc-3-3",
+      "name": "Copa de manzanilla en rama",
+      "description": "De las soleras propias de la bodega.",
+      "price": 6,
+      "imageUrl": "https://picsum.photos/seed/mp-3-7/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-8",
+      "restaurantId": "3",
+      "categoryId": "mc-3-3",
+      "name": "Copa de Pedro Ximénez Gran Cru",
+      "description": "Vino dulce de guarda extra añejo.",
+      "price": 9,
+      "imageUrl": "https://picsum.photos/seed/mp-3-8/640/480",
+      "isAvailable": true,
+      "tags": [],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-3-9",
+      "restaurantId": "3",
+      "categoryId": "mc-3-3",
+      "name": "Cata dirigida de 4 copas",
+      "description": "Recorrido guiado por el sumiller de la bodega.",
+      "price": 35,
+      "imageUrl": "https://picsum.photos/seed/mp-3-9/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Recomendado chef"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-1",
+      "restaurantId": "4",
+      "categoryId": "mc-4-1",
+      "name": "Espuma de txakoli y perla de algas",
+      "description": "Prototipo 3 del ciclo actual de I+D.",
+      "price": 14,
+      "imageUrl": "https://picsum.photos/seed/mp-4-1/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-2",
+      "restaurantId": "4",
+      "categoryId": "mc-4-1",
+      "name": "Esferificación de aceituna verde",
+      "description": "Técnica de esferificación inversa, ciclo I+D.",
+      "price": 12,
+      "imageUrl": "https://picsum.photos/seed/mp-4-2/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo",
+        "Vegano"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-3",
+      "restaurantId": "4",
+      "categoryId": "mc-4-1",
+      "name": "Gazpacho nitro de tomate ahumado",
+      "description": "Elaboración con nitrógeno líquido en sala.",
+      "price": 15,
+      "imageUrl": "https://picsum.photos/seed/mp-4-3/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-4",
+      "restaurantId": "4",
+      "categoryId": "mc-4-2",
+      "name": "Costilla a baja temperatura 48h",
+      "description": "Ensayo de cocción larga con humo de sarmiento.",
+      "price": 28,
+      "imageUrl": "https://picsum.photos/seed/mp-4-4/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo"
+      ],
+      "allergens": [],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-5",
+      "restaurantId": "4",
+      "categoryId": "mc-4-2",
+      "name": "Risotto de cenizas y trufa de temporada",
+      "description": "Prototipo de textura con ceniza comestible.",
+      "price": 25,
+      "imageUrl": "https://picsum.photos/seed/mp-4-5/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo",
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-6",
+      "restaurantId": "4",
+      "categoryId": "mc-4-2",
+      "name": "Huevo a baja temperatura y humo frío",
+      "description": "Ensayo de técnica de ahumado en sala.",
+      "price": 18,
+      "imageUrl": "https://picsum.photos/seed/mp-4-6/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo"
+      ],
+      "allergens": [
+        "Huevo"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-7",
+      "restaurantId": "4",
+      "categoryId": "mc-4-3",
+      "name": "Esfera de chocolate y aire de cacao",
+      "description": "Prototipo de textura aireada de cacao 70%.",
+      "price": 13,
+      "imageUrl": "https://picsum.photos/seed/mp-4-7/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo",
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-8",
+      "restaurantId": "4",
+      "categoryId": "mc-4-3",
+      "name": "Helado nitro en sala",
+      "description": "Elaborado al momento frente al comensal.",
+      "price": 12,
+      "imageUrl": "https://picsum.photos/seed/mp-4-8/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo"
+      ],
+      "allergens": [
+        "Lácteos"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "mp-4-9",
+      "restaurantId": "4",
+      "categoryId": "mc-4-3",
+      "name": "Tierra de frutos secos y miel fermentada",
+      "description": "Postre de texturas con miel fermentada propia.",
+      "price": 11,
+      "imageUrl": "https://picsum.photos/seed/mp-4-9/640/480",
+      "isAvailable": true,
+      "tags": [
+        "Prototipo",
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Frutos secos"
+      ],
+      "isActive": true
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay-1",
+      "attentionId": "att-4",
+      "orderedProductIds": [],
+      "amount": 56,
+      "method": "card",
+      "status": "paid",
+      "payerName": "Comensal 1",
+      "processedByEmployeeName": "Nuria Gómez",
+      "externalReference": null,
+      "createdAt": "2026-09-20T20:20:00Z",
+      "allocations": []
+    },
+    {
+      "id": "pay-2",
+      "attentionId": "att-4",
+      "orderedProductIds": [],
+      "amount": 56,
+      "method": "cash",
+      "status": "paid",
+      "payerName": "Comensal 2",
+      "processedByEmployeeName": "Nuria Gómez",
+      "externalReference": null,
+      "createdAt": "2026-09-20T20:21:00Z",
+      "allocations": []
+    },
+    {
+      "attentionId": "qu4zrI6ZYe4",
+      "orderedProductIds": [],
+      "amount": 45,
+      "method": "card",
+      "payerName": null,
+      "processedByEmployeeName": null,
+      "status": "paid",
+      "externalReference": null,
+      "createdAt": "2026-09-20T18:10:28.771Z",
+      "id": "l_Pb1ZWRYWQ",
+      "allocations": []
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-0",
+      "name": "Propietario",
+      "description": "Dueño de la organización: acceso completo a todas las sedes y a la administración.",
+      "permissions": [
+        "org.manage",
+        "users.manage",
+        "staff.manage",
+        "sites.manage",
+        "orders.manage",
+        "kitchen.manage",
+        "delivery.manage",
+        "menu.manage",
+        "payments.manage",
+        "inventory.manage",
+        "reports.view"
+      ],
+      "employeeCount": 0
+    },
+    {
+      "id": "role-1",
+      "name": "Gerente de sede",
+      "description": "Dirige la operación completa de una sede: sala, cocina y facturación.",
+      "permissions": [
+        "staff.manage",
+        "sites.manage",
+        "orders.manage",
+        "kitchen.manage",
+        "delivery.manage",
+        "menu.manage",
+        "payments.manage",
+        "inventory.manage",
+        "reports.view"
+      ],
+      "employeeCount": 2
+    },
+    {
+      "id": "role-2",
+      "name": "Jefe de cocina",
+      "description": "Responsable de la partida de cocina y el tablero de comandas.",
+      "permissions": [
+        "orders.manage",
+        "kitchen.manage",
+        "menu.manage",
+        "inventory.manage"
+      ],
+      "employeeCount": 3
+    },
+    {
+      "id": "role-3",
+      "name": "Jefe de sala",
+      "description": "Coordina mesas, reservas y equipo de sala.",
+      "permissions": [
+        "sites.manage",
+        "orders.manage",
+        "delivery.manage",
+        "payments.manage"
+      ],
+      "employeeCount": 1
+    },
+    {
+      "id": "role-4",
+      "name": "Camarero",
+      "description": "Atiende mesas y gestiona pedidos de sala.",
+      "permissions": [
+        "orders.manage",
+        "delivery.manage"
+      ],
+      "employeeCount": 2
+    },
+    {
+      "id": "role-5",
+      "name": "Sumiller",
+      "description": "Gestiona la cava y los maridajes de la carta.",
+      "permissions": [
+        "menu.manage",
+        "inventory.manage"
+      ],
+      "employeeCount": 2
+    },
+    {
+      "id": "role-6",
+      "name": "Cajero",
+      "description": "Cobra las cuentas de la sede y hace el cierre del día.",
+      "permissions": [
+        "payments.manage",
+        "reports.view"
+      ],
+      "employeeCount": 0
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp-1",
+      "name": "Marc Vallet",
+      "email": "marc.vallet@restaurantcmr.com",
+      "phone": "+34 611 220 011",
+      "roleId": "role-2",
+      "restaurantId": "1",
+      "area": "kitchen",
+      "status": "active",
+      "hiredAt": "2021-03-01",
+      "restaurantName": "L'Étoile Atelier",
+      "roleName": "Jefe de cocina",
+      "userId": "3"
+    },
+    {
+      "id": "emp-2",
+      "name": "Nuria García",
+      "email": "nuria.garcia@restaurantcmr.com",
+      "phone": "+34 611 220 012",
+      "roleId": "role-4",
+      "restaurantId": "1",
+      "area": "floor",
+      "status": "active",
+      "hiredAt": "2022-05-14",
+      "restaurantName": "L'Étoile Atelier",
+      "roleName": "Camarero",
+      "userId": "4"
+    },
+    {
+      "id": "emp-3",
+      "name": "Laia Ferrer",
+      "email": "laia.ferrer@restaurantcmr.com",
+      "phone": "+34 611 220 013",
+      "roleId": "role-1",
+      "restaurantId": "1",
+      "area": "management",
+      "status": "active",
+      "hiredAt": "2019-11-02",
+      "restaurantName": "L'Étoile Atelier",
+      "roleName": "Gerente de sede",
+      "userId": "2"
+    },
+    {
+      "id": "emp-4",
+      "name": "Héctor Roig",
+      "email": "hector.roig@restaurantcmr.com",
+      "phone": "+34 611 220 014",
+      "roleId": "role-5",
+      "restaurantId": "1",
+      "area": "floor",
+      "status": "on-leave",
+      "hiredAt": "2020-07-20",
+      "restaurantName": "L'Étoile Atelier",
+      "roleName": "Sumiller",
+      "userId": null
+    },
+    {
+      "id": "emp-5",
+      "name": "Anna Bosch",
+      "email": "anna.bosch@restaurantcmr.com",
+      "phone": "+34 611 220 015",
+      "roleId": "role-2",
+      "restaurantId": "2",
+      "area": "kitchen",
+      "status": "active",
+      "hiredAt": "2021-09-09",
+      "restaurantName": "Caelis Botanique",
+      "roleName": "Jefe de cocina",
+      "userId": null
+    },
+    {
+      "id": "emp-6",
+      "name": "Pau Riera",
+      "email": "pau.riera@restaurantcmr.com",
+      "phone": "+34 611 220 016",
+      "roleId": "role-3",
+      "restaurantId": "2",
+      "area": "floor",
+      "status": "active",
+      "hiredAt": "2020-02-17",
+      "restaurantName": "Caelis Botanique",
+      "roleName": "Jefe de sala",
+      "userId": null
+    },
+    {
+      "id": "emp-7",
+      "name": "Rocío Mena",
+      "email": "rocio.mena@restaurantcmr.com",
+      "phone": "+34 611 220 017",
+      "roleId": "role-1",
+      "restaurantId": "3",
+      "area": "management",
+      "status": "active",
+      "hiredAt": "2018-06-30",
+      "restaurantName": "Bodega San Telmo Grand Cru",
+      "roleName": "Gerente de sede",
+      "userId": null
+    },
+    {
+      "id": "emp-8",
+      "name": "Curro Salas",
+      "email": "curro.salas@restaurantcmr.com",
+      "phone": "+34 611 220 018",
+      "roleId": "role-5",
+      "restaurantId": "3",
+      "area": "floor",
+      "status": "active",
+      "hiredAt": "2022-01-11",
+      "restaurantName": "Bodega San Telmo Grand Cru",
+      "roleName": "Sumiller",
+      "userId": null
+    },
+    {
+      "id": "emp-9",
+      "name": "Koldo Aranburu",
+      "email": "koldo.aranburu@restaurantcmr.com",
+      "phone": "+34 611 220 019",
+      "roleId": "role-2",
+      "restaurantId": "4",
+      "area": "kitchen",
+      "status": "active",
+      "hiredAt": "2023-04-03",
+      "restaurantName": "Atelier Vanguardia I+D",
+      "roleName": "Jefe de cocina",
+      "userId": null
+    },
+    {
+      "id": "emp-10",
+      "name": "Iker Etxeberria",
+      "email": "iker.etxeberria@restaurantcmr.com",
+      "phone": "+34 611 220 020",
+      "roleId": "role-4",
+      "restaurantId": "4",
+      "area": "floor",
+      "status": "inactive",
+      "hiredAt": "2023-08-19",
+      "restaurantName": "Atelier Vanguardia I+D",
+      "roleName": "Camarero",
+      "userId": null
+    }
+  ],
+  "inventoryItems": [
+    {
+      "id": "inv-1",
+      "restaurantId": "1",
+      "name": "Ostra Gillardeau N°2",
+      "unit": "ud",
+      "stock": 48,
+      "minStock": 40,
+      "status": "ok",
+      "supplier": "Mariscos Atlántico",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-2",
+      "restaurantId": "1",
+      "name": "Foie gras de pato",
+      "unit": "kg",
+      "stock": 4.2,
+      "minStock": 5,
+      "status": "low",
+      "supplier": "Maison Landaise",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-3",
+      "restaurantId": "1",
+      "name": "Trufa negra de Périgord",
+      "unit": "kg",
+      "stock": 0.6,
+      "minStock": 1,
+      "status": "critical",
+      "supplier": "Trufas del Sur",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-4",
+      "restaurantId": "1",
+      "name": "Chuletón de vaca vieja",
+      "unit": "kg",
+      "stock": 18,
+      "minStock": 10,
+      "status": "ok",
+      "supplier": "Carnes Etxeberria",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-5",
+      "restaurantId": "1",
+      "name": "Champán brut casa",
+      "unit": "botella",
+      "stock": 22,
+      "minStock": 12,
+      "status": "ok",
+      "supplier": "Bodegas Gillardeau",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-6",
+      "restaurantId": "2",
+      "name": "Brotes de huerto propio",
+      "unit": "kg",
+      "stock": 3.1,
+      "minStock": 4,
+      "status": "low",
+      "supplier": "Huerto Botanique",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-7",
+      "restaurantId": "2",
+      "name": "Tofu ahumado artesanal",
+      "unit": "kg",
+      "stock": 5.4,
+      "minStock": 3,
+      "status": "ok",
+      "supplier": "Fermentos Km0",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-8",
+      "restaurantId": "3",
+      "name": "Jamón ibérico de bellota",
+      "unit": "pieza",
+      "stock": 6,
+      "minStock": 4,
+      "status": "ok",
+      "supplier": "Dehesa San Telmo",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-9",
+      "restaurantId": "3",
+      "name": "Pedro Ximénez Gran Cru",
+      "unit": "botella",
+      "stock": 2,
+      "minStock": 6,
+      "status": "critical",
+      "supplier": "Bodegas del Cru",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-10",
+      "restaurantId": "4",
+      "name": "Nitrógeno líquido",
+      "unit": "L",
+      "stock": 9,
+      "minStock": 10,
+      "status": "low",
+      "supplier": "Gases Industriales Norte",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    },
+    {
+      "id": "inv-11",
+      "restaurantId": "4",
+      "name": "Ceniza comestible de sarmiento",
+      "unit": "kg",
+      "stock": 1.8,
+      "minStock": 1,
+      "status": "ok",
+      "supplier": "Ahumados Etxeberria",
+      "updatedAt": "2026-09-20T09:00:00Z",
+      "isActive": true
+    }
+  ],
+  "menus": [
+    {
+      "id": "menu-1",
+      "restaurantId": "1",
+      "name": "Carta principal",
+      "status": "active"
+    },
+    {
+      "id": "menu-2",
+      "restaurantId": "2",
+      "name": "Carta principal",
+      "status": "active"
+    },
+    {
+      "id": "menu-3",
+      "restaurantId": "3",
+      "name": "Carta de bodega",
+      "status": "active"
+    },
+    {
+      "id": "menu-4",
+      "restaurantId": "4",
+      "name": "Menú de ensayo",
+      "status": "active"
+    },
+    {
+      "id": "menu-5",
+      "restaurantId": "1",
+      "name": "Carta de otoño (borrador)",
+      "status": "draft"
+    }
+  ],
+  "attentions": [
+    {
+      "id": "att-1",
+      "restaurantId": "1",
+      "tableNumber": "02",
+      "status": "open",
+      "openedAt": "2026-09-20T20:41:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-2",
+      "restaurantId": "1",
+      "tableNumber": "05",
+      "status": "open",
+      "openedAt": "2026-09-20T20:55:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-3",
+      "restaurantId": "1",
+      "tableNumber": "08",
+      "status": "account-requested",
+      "openedAt": "2026-09-20T21:05:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-4",
+      "restaurantId": "1",
+      "tableNumber": "12",
+      "status": "closed",
+      "openedAt": "2026-09-20T19:30:00Z",
+      "closedAt": "2026-09-20T20:21:00Z",
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-5",
+      "restaurantId": "1",
+      "tableNumber": "03",
+      "status": "open",
+      "openedAt": "2026-09-20T21:10:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-6",
+      "restaurantId": "1",
+      "tableNumber": "09",
+      "status": "cancelled",
+      "openedAt": "2026-09-20T18:50:00Z",
+      "closedAt": "2026-09-20T18:58:00Z",
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-7",
+      "restaurantId": "2",
+      "tableNumber": "01",
+      "status": "open",
+      "openedAt": "2026-09-20T20:30:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-8",
+      "restaurantId": "3",
+      "tableNumber": "01",
+      "status": "open",
+      "openedAt": "2026-09-20T20:35:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "id": "att-9",
+      "restaurantId": "4",
+      "tableNumber": "01",
+      "status": "open",
+      "openedAt": "2026-09-20T20:40:00Z",
+      "closedAt": null,
+      "guestName": null,
+      "customerId": null,
+      "cancellationReason": null
+    },
+    {
+      "restaurantId": "1",
+      "tableNumber": "Mostrador",
+      "status": "closed",
+      "openedAt": "2026-09-20T18:09:58.546Z",
+      "closedAt": "2026-09-20T18:10:28.784Z",
+      "guestName": null,
+      "id": "qu4zrI6ZYe4",
+      "customerId": null,
+      "cancellationReason": null
+    }
+  ],
+  "orderedProducts": [
+    {
+      "id": "op-1",
+      "attentionId": "att-1",
+      "restaurantId": "1",
+      "productId": "mp-1-1",
+      "name": "Trilogía de aperitivos de mar",
+      "unitPrice": 24,
+      "quantity": 1,
+      "subtotal": 24,
+      "notes": "",
+      "status": "confirmed",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:41:00Z",
+      "batchId": "batch-att-1-2026-09-20T20:41:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-2",
+      "attentionId": "att-1",
+      "restaurantId": "1",
+      "productId": "mp-1-9",
+      "name": "Pichón asado a la brasa de sarmiento",
+      "unitPrice": 46,
+      "quantity": 2,
+      "subtotal": 92,
+      "notes": "",
+      "status": "confirmed",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:41:00Z",
+      "batchId": "batch-att-1-2026-09-20T20:41:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-3",
+      "attentionId": "att-1",
+      "restaurantId": "1",
+      "productId": "mp-1-16",
+      "name": "Copa de champán Gillardeau brut",
+      "unitPrice": 15,
+      "quantity": 2,
+      "subtotal": 30,
+      "notes": "Sin hielo",
+      "status": "confirmed",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:41:00Z",
+      "batchId": "batch-att-1-2026-09-20T20:41:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-4",
+      "attentionId": "att-2",
+      "restaurantId": "1",
+      "productId": "mp-1-6",
+      "name": "Ravioli de trufa negra",
+      "unitPrice": 29,
+      "quantity": 2,
+      "subtotal": 58,
+      "notes": "",
+      "status": "preparing",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:55:00Z",
+      "batchId": "batch-att-2-2026-09-20T20:55:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-5",
+      "attentionId": "att-2",
+      "restaurantId": "1",
+      "productId": "mp-1-11",
+      "name": "Chuletón de vaca vieja madurado 45 días",
+      "unitPrice": 52,
+      "quantity": 1,
+      "subtotal": 52,
+      "notes": "",
+      "status": "confirmed",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:55:00Z",
+      "batchId": "batch-att-2-2026-09-20T20:55:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-6",
+      "attentionId": "att-3",
+      "restaurantId": "1",
+      "productId": "mp-1-10",
+      "name": "Rodaballo salvaje con beurre noisette",
+      "unitPrice": 44,
+      "quantity": 1,
+      "subtotal": 44,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T21:05:00Z",
+      "batchId": "batch-att-3-2026-09-20T21:05:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-7",
+      "attentionId": "att-3",
+      "restaurantId": "1",
+      "productId": "mp-1-13",
+      "name": "Soufflé de chocolate Guanaja",
+      "unitPrice": 16,
+      "quantity": 1,
+      "subtotal": 16,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T21:05:00Z",
+      "batchId": "batch-att-3-2026-09-20T21:05:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-8",
+      "attentionId": "att-3",
+      "restaurantId": "1",
+      "productId": "mp-1-17",
+      "name": "Rioja Alta reserva 2016",
+      "unitPrice": 12,
+      "quantity": 1,
+      "subtotal": 12,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T21:05:00Z",
+      "batchId": "batch-att-3-2026-09-20T21:05:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-9",
+      "attentionId": "att-4",
+      "restaurantId": "1",
+      "productId": "mp-1-4",
+      "name": "Pan de masa madre y mantequilla ahumada",
+      "unitPrice": 8,
+      "quantity": 1,
+      "subtotal": 8,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T19:30:00Z",
+      "batchId": "batch-att-4-2026-09-20T19:30:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-10",
+      "attentionId": "att-4",
+      "restaurantId": "1",
+      "productId": "mp-1-7",
+      "name": "Ensalada de bogavante y cítricos",
+      "unitPrice": 38,
+      "quantity": 2,
+      "subtotal": 76,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T19:30:00Z",
+      "batchId": "batch-att-4-2026-09-20T19:30:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-11",
+      "attentionId": "att-4",
+      "restaurantId": "1",
+      "productId": "mp-1-14",
+      "name": "Milhojas de pera y avellana",
+      "unitPrice": 14,
+      "quantity": 2,
+      "subtotal": 28,
+      "notes": "",
+      "status": "delivered",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T19:30:00Z",
+      "batchId": "batch-att-4-2026-09-20T19:30:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-12",
+      "attentionId": "att-5",
+      "restaurantId": "1",
+      "productId": "mp-1-15",
+      "name": "Tabla de quesos de temporada",
+      "unitPrice": 18,
+      "quantity": 1,
+      "subtotal": 18,
+      "notes": "",
+      "status": "rejected",
+      "rejectionReason": "Producto agotado en cocina",
+      "requestedAt": "2026-09-20T21:10:00Z",
+      "batchId": "batch-att-5-2026-09-20T21:10:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-13",
+      "attentionId": "att-5",
+      "restaurantId": "1",
+      "productId": "mp-1-20",
+      "name": "Sorbete de cítricos de temporada",
+      "unitPrice": 10,
+      "quantity": 1,
+      "subtotal": 10,
+      "notes": "",
+      "status": "rejected",
+      "rejectionReason": "Se acabó el insumo",
+      "requestedAt": "2026-09-20T21:10:00Z",
+      "batchId": "batch-att-5-2026-09-20T21:10:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-14",
+      "attentionId": "att-6",
+      "restaurantId": "1",
+      "productId": "mp-1-19",
+      "name": "Gazpacho de tomate ahumado",
+      "unitPrice": 17,
+      "quantity": 1,
+      "subtotal": 17,
+      "notes": "",
+      "status": "cancelled",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T18:50:00Z",
+      "batchId": "batch-att-6-2026-09-20T18:50:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-15",
+      "attentionId": "att-7",
+      "restaurantId": "2",
+      "productId": "mp-2-1",
+      "name": "Ensalada de brotes del huerto propio",
+      "unitPrice": 16,
+      "quantity": 1,
+      "subtotal": 16,
+      "notes": "",
+      "status": "sent",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:30:00Z",
+      "batchId": "batch-att-7-2026-09-20T20:30:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-16",
+      "attentionId": "att-8",
+      "restaurantId": "3",
+      "productId": "mp-3-1",
+      "name": "Jamón ibérico de bellota al corte",
+      "unitPrice": 22,
+      "quantity": 1,
+      "subtotal": 22,
+      "notes": "",
+      "status": "confirmed",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:35:00Z",
+      "batchId": "batch-att-8-2026-09-20T20:35:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "id": "op-17",
+      "attentionId": "att-9",
+      "restaurantId": "4",
+      "productId": "mp-4-1",
+      "name": "Espuma de txakoli y perla de algas",
+      "unitPrice": 14,
+      "quantity": 1,
+      "subtotal": 14,
+      "notes": "",
+      "status": "sent",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T20:40:00Z",
+      "batchId": "batch-att-9-2026-09-20T20:40:00Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "attentionId": "qu4zrI6ZYe4",
+      "restaurantId": "1",
+      "productId": "mp-1-1",
+      "name": "Trilogía de aperitivos de mar",
+      "unitPrice": 24,
+      "quantity": 1,
+      "subtotal": 24,
+      "notes": "",
+      "status": "sent",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T18:09:58.551Z",
+      "id": "jiwWqB0kd6I",
+      "batchId": "batch-qu4zrI6ZYe4-2026-09-20T18:09:58.551Z",
+      "createdBy": null,
+      "customerId": null
+    },
+    {
+      "attentionId": "qu4zrI6ZYe4",
+      "restaurantId": "1",
+      "productId": "mp-1-2",
+      "name": "Royale de foie y manzana verde",
+      "unitPrice": 21,
+      "quantity": 1,
+      "subtotal": 21,
+      "notes": "",
+      "status": "sent",
+      "rejectionReason": null,
+      "requestedAt": "2026-09-20T18:09:58.554Z",
+      "id": "wCM42YnWi1g",
+      "batchId": "batch-qu4zrI6ZYe4-2026-09-20T18:09:58.554Z",
+      "createdBy": null,
+      "customerId": null
+    }
+  ],
+  "statusHistory": [
+    {
+      "id": "hist-1",
+      "entityType": "attention",
+      "entityId": "att-1",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:41:00Z"
+    },
+    {
+      "id": "hist-2",
+      "entityType": "orderedProduct",
+      "entityId": "op-1",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:41:00Z"
+    },
+    {
+      "id": "hist-3",
+      "entityType": "orderedProduct",
+      "entityId": "op-2",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:41:00Z"
+    },
+    {
+      "id": "hist-4",
+      "entityType": "orderedProduct",
+      "entityId": "op-3",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:41:00Z"
+    },
+    {
+      "id": "hist-5",
+      "entityType": "attention",
+      "entityId": "att-2",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:55:00Z"
+    },
+    {
+      "id": "hist-6",
+      "entityType": "orderedProduct",
+      "entityId": "op-4",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:55:00Z"
+    },
+    {
+      "id": "hist-7",
+      "entityType": "orderedProduct",
+      "entityId": "op-4",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Marc Vallet",
+      "reason": null,
+      "changedAt": "2026-09-20T20:57:00Z"
+    },
+    {
+      "id": "hist-8",
+      "entityType": "orderedProduct",
+      "entityId": "op-4",
+      "fromStatus": "confirmed",
+      "toStatus": "preparing",
+      "userName": "Marc Vallet",
+      "reason": null,
+      "changedAt": "2026-09-20T21:00:00Z"
+    },
+    {
+      "id": "hist-9",
+      "entityType": "orderedProduct",
+      "entityId": "op-5",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:55:00Z"
+    },
+    {
+      "id": "hist-10",
+      "entityType": "orderedProduct",
+      "entityId": "op-5",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Marc Vallet",
+      "reason": null,
+      "changedAt": "2026-09-20T20:58:00Z"
+    },
+    {
+      "id": "hist-11",
+      "entityType": "attention",
+      "entityId": "att-3",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:05:00Z"
+    },
+    {
+      "id": "hist-12",
+      "entityType": "attention",
+      "entityId": "att-3",
+      "fromStatus": "open",
+      "toStatus": "account-requested",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:40:00Z"
+    },
+    {
+      "id": "hist-13",
+      "entityType": "orderedProduct",
+      "entityId": "op-6",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:05:00Z"
+    },
+    {
+      "id": "hist-14",
+      "entityType": "orderedProduct",
+      "entityId": "op-6",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T21:06:00Z"
+    },
+    {
+      "id": "hist-15",
+      "entityType": "orderedProduct",
+      "entityId": "op-6",
+      "fromStatus": "confirmed",
+      "toStatus": "preparing",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T21:08:00Z"
+    },
+    {
+      "id": "hist-16",
+      "entityType": "orderedProduct",
+      "entityId": "op-6",
+      "fromStatus": "preparing",
+      "toStatus": "ready",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T21:20:00Z"
+    },
+    {
+      "id": "hist-17",
+      "entityType": "orderedProduct",
+      "entityId": "op-6",
+      "fromStatus": "ready",
+      "toStatus": "delivered",
+      "userName": "Javier Ruiz",
+      "reason": null,
+      "changedAt": "2026-09-20T21:23:00Z"
+    },
+    {
+      "id": "hist-18",
+      "entityType": "orderedProduct",
+      "entityId": "op-7",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:05:00Z"
+    },
+    {
+      "id": "hist-19",
+      "entityType": "orderedProduct",
+      "entityId": "op-7",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Camille Laurent",
+      "reason": null,
+      "changedAt": "2026-09-20T21:25:00Z"
+    },
+    {
+      "id": "hist-20",
+      "entityType": "orderedProduct",
+      "entityId": "op-7",
+      "fromStatus": "confirmed",
+      "toStatus": "preparing",
+      "userName": "Camille Laurent",
+      "reason": null,
+      "changedAt": "2026-09-20T21:28:00Z"
+    },
+    {
+      "id": "hist-21",
+      "entityType": "orderedProduct",
+      "entityId": "op-7",
+      "fromStatus": "preparing",
+      "toStatus": "ready",
+      "userName": "Camille Laurent",
+      "reason": null,
+      "changedAt": "2026-09-20T21:35:00Z"
+    },
+    {
+      "id": "hist-22",
+      "entityType": "orderedProduct",
+      "entityId": "op-7",
+      "fromStatus": "ready",
+      "toStatus": "delivered",
+      "userName": "Javier Ruiz",
+      "reason": null,
+      "changedAt": "2026-09-20T21:37:00Z"
+    },
+    {
+      "id": "hist-23",
+      "entityType": "orderedProduct",
+      "entityId": "op-8",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:05:00Z"
+    },
+    {
+      "id": "hist-24",
+      "entityType": "orderedProduct",
+      "entityId": "op-8",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Elena Moral",
+      "reason": null,
+      "changedAt": "2026-09-20T21:06:00Z"
+    },
+    {
+      "id": "hist-25",
+      "entityType": "orderedProduct",
+      "entityId": "op-8",
+      "fromStatus": "confirmed",
+      "toStatus": "delivered",
+      "userName": "Elena Moral",
+      "reason": null,
+      "changedAt": "2026-09-20T21:10:00Z"
+    },
+    {
+      "id": "hist-26",
+      "entityType": "attention",
+      "entityId": "att-4",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T19:30:00Z"
+    },
+    {
+      "id": "hist-27",
+      "entityType": "attention",
+      "entityId": "att-4",
+      "fromStatus": "open",
+      "toStatus": "account-requested",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:15:00Z"
+    },
+    {
+      "id": "hist-28",
+      "entityType": "attention",
+      "entityId": "att-4",
+      "fromStatus": "account-requested",
+      "toStatus": "closed",
+      "userName": "Nuria Gómez",
+      "reason": null,
+      "changedAt": "2026-09-20T20:21:00Z"
+    },
+    {
+      "id": "hist-29",
+      "entityType": "orderedProduct",
+      "entityId": "op-9",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T19:30:00Z"
+    },
+    {
+      "id": "hist-30",
+      "entityType": "orderedProduct",
+      "entityId": "op-9",
+      "fromStatus": "sent",
+      "toStatus": "delivered",
+      "userName": "Nuria Gómez",
+      "reason": null,
+      "changedAt": "2026-09-20T19:40:00Z"
+    },
+    {
+      "id": "hist-31",
+      "entityType": "orderedProduct",
+      "entityId": "op-10",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T19:30:00Z"
+    },
+    {
+      "id": "hist-32",
+      "entityType": "orderedProduct",
+      "entityId": "op-10",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T19:32:00Z"
+    },
+    {
+      "id": "hist-33",
+      "entityType": "orderedProduct",
+      "entityId": "op-10",
+      "fromStatus": "confirmed",
+      "toStatus": "preparing",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T19:35:00Z"
+    },
+    {
+      "id": "hist-34",
+      "entityType": "orderedProduct",
+      "entityId": "op-10",
+      "fromStatus": "preparing",
+      "toStatus": "ready",
+      "userName": "Sara Domènech",
+      "reason": null,
+      "changedAt": "2026-09-20T19:50:00Z"
+    },
+    {
+      "id": "hist-35",
+      "entityType": "orderedProduct",
+      "entityId": "op-10",
+      "fromStatus": "ready",
+      "toStatus": "delivered",
+      "userName": "Nuria Gómez",
+      "reason": null,
+      "changedAt": "2026-09-20T19:53:00Z"
+    },
+    {
+      "id": "hist-36",
+      "entityType": "orderedProduct",
+      "entityId": "op-11",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T19:30:00Z"
+    },
+    {
+      "id": "hist-37",
+      "entityType": "orderedProduct",
+      "entityId": "op-11",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Camille Laurent",
+      "reason": null,
+      "changedAt": "2026-09-20T20:00:00Z"
+    },
+    {
+      "id": "hist-38",
+      "entityType": "orderedProduct",
+      "entityId": "op-11",
+      "fromStatus": "confirmed",
+      "toStatus": "delivered",
+      "userName": "Nuria Gómez",
+      "reason": null,
+      "changedAt": "2026-09-20T20:10:00Z"
+    },
+    {
+      "id": "hist-39",
+      "entityType": "attention",
+      "entityId": "att-5",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:10:00Z"
+    },
+    {
+      "id": "hist-40",
+      "entityType": "orderedProduct",
+      "entityId": "op-12",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:10:00Z"
+    },
+    {
+      "id": "hist-41",
+      "entityType": "orderedProduct",
+      "entityId": "op-12",
+      "fromStatus": "sent",
+      "toStatus": "rejected",
+      "userName": "Marc Vallet",
+      "reason": "Producto agotado en cocina",
+      "changedAt": "2026-09-20T21:12:00Z"
+    },
+    {
+      "id": "hist-42",
+      "entityType": "orderedProduct",
+      "entityId": "op-13",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T21:10:00Z"
+    },
+    {
+      "id": "hist-43",
+      "entityType": "attention",
+      "entityId": "att-6",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:50:00Z"
+    },
+    {
+      "id": "hist-44",
+      "entityType": "attention",
+      "entityId": "att-6",
+      "fromStatus": "open",
+      "toStatus": "cancelled",
+      "userName": "Paula Ortiz",
+      "reason": "Mesa liberada, comensales no confirmaron pedido",
+      "changedAt": "2026-09-20T18:58:00Z"
+    },
+    {
+      "id": "hist-45",
+      "entityType": "orderedProduct",
+      "entityId": "op-14",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:50:00Z"
+    },
+    {
+      "id": "hist-46",
+      "entityType": "orderedProduct",
+      "entityId": "op-14",
+      "fromStatus": "sent",
+      "toStatus": "cancelled",
+      "userName": "Paula Ortiz",
+      "reason": "Atención cancelada",
+      "changedAt": "2026-09-20T18:58:00Z"
+    },
+    {
+      "id": "hist-47",
+      "entityType": "attention",
+      "entityId": "att-7",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:30:00Z"
+    },
+    {
+      "id": "hist-48",
+      "entityType": "orderedProduct",
+      "entityId": "op-15",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:30:00Z"
+    },
+    {
+      "id": "hist-49",
+      "entityType": "attention",
+      "entityId": "att-8",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:35:00Z"
+    },
+    {
+      "id": "hist-50",
+      "entityType": "orderedProduct",
+      "entityId": "op-16",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:35:00Z"
+    },
+    {
+      "id": "hist-51",
+      "entityType": "orderedProduct",
+      "entityId": "op-16",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Curro Salas",
+      "reason": null,
+      "changedAt": "2026-09-20T20:37:00Z"
+    },
+    {
+      "id": "hist-52",
+      "entityType": "attention",
+      "entityId": "att-9",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:40:00Z"
+    },
+    {
+      "id": "hist-53",
+      "entityType": "orderedProduct",
+      "entityId": "op-17",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T20:40:00Z"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "op-13",
+      "fromStatus": "sent",
+      "toStatus": "rejected",
+      "userName": "Admin Demo",
+      "reason": "Se acabó el insumo",
+      "changedAt": "2026-09-20T18:07:25.345Z",
+      "id": "-CnhqKSGpdE"
+    },
+    {
+      "entityType": "attention",
+      "entityId": "qu4zrI6ZYe4",
+      "fromStatus": null,
+      "toStatus": "open",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:09:58.548Z",
+      "id": "P3u5vOimXHM"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "jiwWqB0kd6I",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:09:58.553Z",
+      "id": "gOy93C9FwOg"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "wCM42YnWi1g",
+      "fromStatus": null,
+      "toStatus": "sent",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:09:58.555Z",
+      "id": "dQPvkHy7sv4"
+    },
+    {
+      "entityType": "attention",
+      "entityId": "qu4zrI6ZYe4",
+      "fromStatus": "open",
+      "toStatus": "account-requested",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:09:58.629Z",
+      "id": "J9ccSB7SNcc"
+    },
+    {
+      "entityType": "attention",
+      "entityId": "qu4zrI6ZYe4",
+      "fromStatus": "account-requested",
+      "toStatus": "closed",
+      "userName": null,
+      "reason": null,
+      "changedAt": "2026-09-20T18:10:28.787Z",
+      "id": "WwDWP7QPyq0"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "op-1",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Admin Demo",
+      "reason": null,
+      "changedAt": "2026-09-20T18:10:30.167Z",
+      "id": "9q8UWAqypaE"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "op-2",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Admin Demo",
+      "reason": null,
+      "changedAt": "2026-09-20T18:11:52.428Z",
+      "id": "y5vp_I6ZJOc"
+    },
+    {
+      "entityType": "orderedProduct",
+      "entityId": "op-3",
+      "fromStatus": "sent",
+      "toStatus": "confirmed",
+      "userName": "Admin Demo",
+      "reason": null,
+      "changedAt": "2026-09-20T18:12:50.262Z",
+      "id": "2QwPYvlIm6M"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json",
+  "customers": [
+    {
+      "id": "cus-1",
+      "name": "Comensal Demo",
+      "email": "cliente@demo.com",
+      "password": "cliente1234"
+    }
+  ],
+  "dailyClosures": []
 }

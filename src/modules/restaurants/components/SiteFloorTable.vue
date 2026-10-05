@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { floorStatusLabel } from '@/modules/restaurants/site-labels'
+import { floorStatusLabel, tableStatusLabel } from '@/modules/restaurants/site-labels'
 import type { LiveTable } from '@/modules/restaurants/types'
 
 const props = defineProps<{
@@ -58,12 +58,18 @@ const seats = computed(() => {
       />
       <span
         class="absolute top-1/2 left-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-lg border-2 text-xs font-bold"
-        :class="seatTone[table.floorStatus]"
+        :class="[seatTone[table.floorStatus], table.status !== 'active' ? 'border-dashed opacity-50' : '']"
       >
         {{ table.number }}
       </span>
     </span>
-    <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">
+    <span
+      v-if="table.status !== 'active'"
+      class="font-label rounded bg-error-container px-1.5 text-[10px] font-semibold tracking-wide text-on-error-container uppercase"
+    >
+      {{ tableStatusLabel[table.status] }}
+    </span>
+    <span v-else class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">
       {{ table.occupiedSeats }}/{{ table.seats }} sillas
     </span>
   </button>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+
+import { landingRouteFor } from '@/app/router/landing'
 
 import { usePageTitle } from '@/composables/usePageTitle'
 import { login } from '@/modules/auth/api'
@@ -14,6 +16,7 @@ import { useSessionStore } from '@/stores/session'
 usePageTitle('Ingresar')
 
 const router = useRouter()
+const route = useRoute()
 const session = useSessionStore()
 
 const form = reactive({
@@ -53,7 +56,8 @@ async function onSubmit(): Promise<void> {
     })
 
     session.setSession(authSession, { persist: rememberSession.value })
-    await router.push({ name: 'dashboard' })
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
+    await router.push(redirect && redirect.startsWith('/') ? redirect : landingRouteFor(authSession.user))
   } catch (error) {
     formError.value =
       error instanceof HttpError ? error.message : 'No se pudo iniciar sesión. Inténtalo de nuevo.'
@@ -128,11 +132,12 @@ async function onSubmit(): Promise<void> {
       </div>
     </form>
 
-    <p class="mt-8 rounded-xl bg-surface-container-low/70 p-4 text-center text-xs leading-relaxed text-secondary">
-      Demo:
-      <span class="font-semibold text-on-surface">admin@restaurant.com</span>
-      /
-      <span class="font-semibold text-on-surface">admin1234</span>
-    </p>
+    <div class="mt-8 space-y-1 rounded-xl bg-surface-container-low/70 p-4 text-xs leading-relaxed text-secondary">
+      <p class="text-center font-semibold text-on-surface">Cuentas demo</p>
+      <p><span class="font-semibold text-on-surface">admin@restaurant.com</span> / admin1234 · Propietario</p>
+      <p><span class="font-semibold text-on-surface">cocina@restaurant.com</span> / demo1234 · Jefe de cocina</p>
+      <p><span class="font-semibold text-on-surface">mozo@restaurant.com</span> / demo1234 · Camarero</p>
+      <p><span class="font-semibold text-on-surface">caja@restaurant.com</span> / demo1234 · Cajero</p>
+    </div>
   </AuthConsoleLayout>
 </template>

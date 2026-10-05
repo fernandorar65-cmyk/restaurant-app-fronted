@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { landingRouteFor } from '@/app/router/landing'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { register as registerAccount } from '@/modules/auth/api'
 import AuthConsoleLayout from '@/modules/auth/components/AuthConsoleLayout.vue'
@@ -56,7 +57,7 @@ async function onSubmit(): Promise<void> {
     })
 
     session.setSession(authSession)
-    await router.push({ name: 'dashboard' })
+    await router.push(landingRouteFor(authSession.user))
   } catch (error) {
     formError.value =
       error instanceof HttpError
