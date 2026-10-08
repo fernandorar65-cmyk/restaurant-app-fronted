@@ -36,8 +36,11 @@ const activeCategoryId = ref<string | null>(null)
 const searchQuery = ref('')
 const detailProduct = ref<MenuProduct | null>(null)
 
-/** Solo se puede pedir con una mesa confirmada (entrada por QR) en esta misma sede. */
-const canOrder = computed(() => diner.isReadyToOrder && diner.restaurantId === site.value?.id)
+/**
+ * Se puede agregar a la orden en la sede actual del comensal, tenga mesa o no.
+ * Si tiene mesa en otra sede, esta carta es solo de consulta para no mezclar carritos.
+ */
+const canOrder = computed(() => site.value !== null && diner.restaurantId === site.value.id)
 
 /** Tiene mesa en otra sede y está mirando esta carta: se muestra sin tocar su mesa. */
 const tableElsewhere = computed(() => diner.isReadyToOrder && site.value !== null && diner.restaurantId !== site.value.id)

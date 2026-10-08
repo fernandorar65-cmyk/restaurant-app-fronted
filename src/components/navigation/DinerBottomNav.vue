@@ -30,7 +30,7 @@ const items = computed<NavItem[]>(() => {
     },
   ]
 
-  if (diner.isReadyToOrder) {
+  if (diner.isReadyToOrder || cart.itemCount > 0) {
     list.push({
       key: 'cart',
       label: 'Carrito',

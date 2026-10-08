@@ -5,6 +5,11 @@ import type { RouteLocationRaw } from 'vue-router'
 const DINER_KEY = 'restaurant-cmr:diner'
 const RECENT_KEY = 'restaurant-cmr:recent-restaurants'
 const RECENT_LIMIT = 6
+/**
+ * Código de la mesa donde está el comensal. Hoy se ingresa a mano al ir a pagar;
+ * más adelante lo guardará el flujo del QR al abrir su URL.
+ */
+const TABLE_CODE_KEY = 'restaurant-cmr:table-code'
 
 export interface DinerCustomer {
   id: string
@@ -16,6 +21,13 @@ export interface DinerCustomer {
 export interface RecentRestaurant {
   id: string
   visitedAt: string
+}
+
+/** Identificador de mesa (texto libre) asociado a la sede donde se guardó. */
+export interface StoredTableCode {
+  restaurantId: string
+  code: string
+  savedAt: string
 }
 
 /** Cómo entró el comensal: escaneando el QR de una mesa o eligiendo la sede a mano. */
@@ -83,6 +95,33 @@ function readRecentRestaurants(): RecentRestaurant[] {
   return []
 }
 
+function readTableCode(): StoredTableCode | null {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(TABLE_CODE_KEY) ?? 'null')
+
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'restaurantId' in parsed &&
+      'code' in parsed &&
+      typeof parsed.restaurantId === 'string' &&
+      typeof parsed.code === 'string' &&
+      parsed.code.trim()
+    ) {
+      const stored = parsed as Partial<StoredTableCode>
+      return {
+        restaurantId: parsed.restaurantId,
+        code: parsed.code,
+        savedAt: typeof stored.savedAt === 'string' ? stored.savedAt : '',
+      }
+    }
+  } catch {
+    // Almacenamiento no disponible o dañado: sin código de mesa.
+  }
+
+  return null
+}
+
 /**
  * Contexto del comensal (sede, mesa, atención en curso y cuenta opcional).
  * Se guarda en localStorage para sobrevivir a un refresh o a cerrar la pestaña.
@@ -100,6 +139,12 @@ export const useDinerStore = defineStore('diner', () => {
   const attentionId = ref<string | null>(stored.attentionId)
   const customer = ref<DinerCustomer | null>(stored.customer)
   const recentRestaurants = ref<RecentRestaurant[]>(readRecentRestaurants())
+  const storedTableCode = ref<StoredTableCode | null>(readTableCode())
+
+  /** Código de mesa válido solo para la sede actual: uno de otra sede no sirve para pagar aquí. */
+  const tableCode = computed(() =>
+    storedTableCode.value && storedTableCode.value.restaurantId === restaurantId.value ? storedTableCode.value.code : null,
+  )
 
   const hasRestaurant = computed(() => restaurantId.value !== null)
   const hasTable = computed(() => tableNumber.value !== null)
@@ -116,6 +161,14 @@ export const useDinerStore = defineStore('diner', () => {
       { id, visitedAt: new Date().toISOString() },
       ...recentRestaurants.value.filter((item) => item.id !== id),
     ].slice(0, RECENT_LIMIT)
+  }
+
+  function setTableCode(forRestaurantId: string, code: string): void {
+    storedTableCode.value = { restaurantId: forRestaurantId, code: code.trim(), savedAt: new Date().toISOString() }
+  }
+
+  function clearTableCode(): void {
+    storedTableCode.value = null
   }
 
   /** Fija sede y mesa. Si cambia la mesa o la sede, se olvida la atención anterior. */
@@ -136,6 +189,8 @@ export const useDinerStore = defineStore('diner', () => {
     tableNumber.value = next.tableNumber
     entry.value = next.entry
     rememberRestaurant(next.restaurantId)
+    // La mesa que llega por QR también queda como código de mesa para el pago.
+    setTableCode(next.restaurantId, next.tableNumber)
 
     if (changed) {
       confirmed.value = false
@@ -210,6 +265,18 @@ export const useDinerStore = defineStore('diner', () => {
     }
   })
 
+  watch(storedTableCode, (value) => {
+    try {
+      if (value) {
+        localStorage.setItem(TABLE_CODE_KEY, JSON.stringify(value))
+      } else {
+        localStorage.removeItem(TABLE_CODE_KEY)
+      }
+    } catch {
+      // Sin almacenamiento: el código vive solo en memoria.
+    }
+  })
+
   return {
     restaurantId,
     restaurantSlug,
@@ -221,10 +288,13 @@ export const useDinerStore = defineStore('diner', () => {
     attentionId,
     customer,
     recentRestaurants,
+    tableCode,
     hasRestaurant,
     hasTable,
     isReadyToOrder,
     menuRoute,
+    setTableCode,
+    clearTableCode,
     setTable,
     browse,
     confirmTable,

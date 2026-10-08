@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import EmptyState from '@/components/base/EmptyState.vue'
-import DinerNotice from '@/components/feedback/DinerNotice.vue'
 import QuantityStepper from '@/modules/menus/components/QuantityStepper.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
+import TableCodeDialog from '@/modules/payments/components/TableCodeDialog.vue'
 import {
   addOrderedProducts,
   BusinessRuleError,
@@ -29,6 +29,8 @@ const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
 const issues = ref<CartIssue[]>([])
 const sent = ref<{ attentionId: string; count: number } | null>(null)
+const isCheckingOut = ref(false)
+const isAskingTable = ref(false)
 
 const blockingIssues = computed(() => issues.value.filter((issue) => issue.kind !== 'price-changed'))
 const priceIssues = computed(() => issues.value.filter((issue) => issue.kind === 'price-changed'))
@@ -109,6 +111,49 @@ async function confirmOrder(): Promise<void> {
   }
 }
 
+/**
+ * Sin mesa confirmada: revisa la orden contra la carta, pide el código de mesa si
+ * no hay uno guardado para esta sede y pasa a elegir el método de pago.
+ */
+async function continueToPayment(): Promise<void> {
+  const restaurantId = diner.restaurantId
+
+  if (!restaurantId || cart.items.length === 0 || isCheckingOut.value) {
+    return
+  }
+
+  isCheckingOut.value = true
+  submitError.value = null
+
+  try {
+    issues.value = await validateOrderItems(
+      restaurantId,
+      cart.items.map((item) => ({ productId: item.productId, name: item.name, unitPrice: item.price })),
+    )
+
+    if (issues.value.length > 0) {
+      return
+    }
+
+    if (diner.tableCode) {
+      await router.push({ name: 'checkout' })
+    } else {
+      isAskingTable.value = true
+    }
+  } catch (error) {
+    submitError.value = errorMessage(error, 'No pudimos revisar tu orden. Revisa tu conexión y vuelve a intentarlo.')
+  } finally {
+    isCheckingOut.value = false
+  }
+}
+
+async function saveTableCode(code: string): Promise<void> {
+  if (diner.restaurantId) {
+    diner.setTableCode(diner.restaurantId, code)
+    await router.push({ name: 'checkout' })
+  }
+}
+
 async function goToStatus(): Promise<void> {
   if (sent.value) {
     await router.push({ name: 'order-status', params: { attentionId: sent.value.attentionId } })
@@ -133,20 +178,12 @@ async function goToStatus(): Promise<void> {
       <BaseButton variant="secondary" size="lg" block :to="diner.menuRoute">Seguir viendo la carta</BaseButton>
     </div>
 
-    <DinerNotice v-else-if="!diner.isReadyToOrder" kind="no-table">
-      <RouterLink
-        v-if="diner.restaurantId"
-        class="font-label rounded-xl bg-surface-container min-h-12 px-5 text-base inline-flex items-center justify-center font-semibold text-on-surface hover:bg-surface-container-high"
-        :to="diner.menuRoute"
-      >
-        Ver la carta
-      </RouterLink>
-    </DinerNotice>
-
     <template v-else>
       <div>
-        <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu carrito</h1>
-        <p class="text-sm text-on-surface-variant">Revisa y confirma antes de enviarlo a la cocina.</p>
+        <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu orden</h1>
+        <p class="text-sm text-on-surface-variant">
+          {{ diner.isReadyToOrder ? 'Revisa y confirma antes de enviarla a la cocina.' : `Productos de ${diner.restaurantName ?? 'la sede'}.` }}
+        </p>
       </div>
 
       <EmptyState v-if="cart.items.length === 0" icon="inbox" title="Tu carrito está vacío" message="Elige productos de la carta para armar tu pedido.">
@@ -225,6 +262,7 @@ async function goToStatus(): Promise<void> {
             {{ submitError }}
           </p>
           <BaseButton
+            v-if="diner.isReadyToOrder"
             variant="primary"
             size="lg"
             block
@@ -234,8 +272,26 @@ async function goToStatus(): Promise<void> {
           >
             {{ isSubmitting ? 'Enviando pedido…' : submitError ? 'Reintentar envío' : 'Confirmar pedido' }}
           </BaseButton>
+          <BaseButton
+            v-else
+            variant="primary"
+            size="lg"
+            block
+            :loading="isCheckingOut"
+            :disabled="issues.length > 0"
+            @click="continueToPayment"
+          >
+            Continuar al pago
+          </BaseButton>
         </div>
       </template>
     </template>
+
+    <TableCodeDialog
+      v-if="isAskingTable"
+      :restaurant-name="diner.restaurantName"
+      @save="saveTableCode"
+      @close="isAskingTable = false"
+    />
   </div>
 </template>

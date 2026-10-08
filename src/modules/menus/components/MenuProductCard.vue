@@ -7,7 +7,7 @@ defineProps<{
   product: MenuProduct
   quantity: number
   currency: string
-  /** false = carta en modo consulta (sin mesa confirmada): no se puede agregar al carrito. */
+  /** false = carta de otra sede (el comensal tiene mesa en una distinta): no se puede agregar a la orden. */
   orderable: boolean
 }>()
 

@@ -46,6 +46,11 @@ export const router = createRouter({
           component: () => import('@/modules/orders/views/CartView.vue'),
         },
         {
+          path: 'pago',
+          name: 'checkout',
+          component: () => import('@/modules/payments/views/CheckoutView.vue'),
+        },
+        {
           path: 'orders/:attentionId',
           name: 'order-status',
           component: () => import('@/modules/orders/views/OrderStatusView.vue'),
