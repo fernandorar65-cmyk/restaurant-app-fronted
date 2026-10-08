@@ -3,6 +3,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 
 import { landingRouteFor } from '@/app/router/landing'
+import ThemeMenu from '@/components/navigation/ThemeMenu.vue'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
 import { useSessionStore } from '@/stores/session'
 import { useSiteActivityStore } from '@/stores/site-activity'
@@ -102,6 +103,7 @@ onMounted(() => {
       </div>
 
       <div class="flex items-center gap-3">
+        <ThemeMenu />
         <div v-if="session.user" class="hidden items-center gap-2.5 border-l border-outline-variant pl-2 sm:flex">
           <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-on-primary">
             {{ getInitials(session.user.name) }}

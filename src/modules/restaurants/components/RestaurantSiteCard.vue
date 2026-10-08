@@ -20,7 +20,7 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
 
 <template>
   <article
-    class="flex flex-col justify-between overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+    class="flex flex-col justify-between overflow-hidden rounded-lg border border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md"
   >
     <div class="relative h-56 w-full overflow-hidden bg-slate-900">
       <img :alt="restaurant.name" class="h-full w-full object-cover object-center" :src="restaurant.imageUrl" />
@@ -55,8 +55,8 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
     </div>
 
     <div class="flex flex-1 flex-col justify-between space-y-4 p-5">
-      <div class="flex items-center justify-between border-b border-gray-100 pb-2.5 text-xs text-gray-500">
-        <p class="flex items-center gap-1 font-medium text-gray-600">
+      <div class="flex items-center justify-between border-b border-outline-variant/60 pb-2.5 text-xs text-on-surface-variant">
+        <p class="flex items-center gap-1 font-medium text-on-surface-variant">
           <svg class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             <path
@@ -67,47 +67,47 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
           </svg>
           <span>{{ restaurant.address }}</span>
         </p>
-        <span class="font-mono text-xs text-gray-400">{{ restaurant.capacityLabel }}</span>
+        <span class="font-mono text-xs text-outline">{{ restaurant.capacityLabel }}</span>
       </div>
 
       <div class="grid grid-cols-3 gap-2.5">
-        <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-xs font-bold text-gray-500 uppercase">Facturación hoy</span>
+        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-2.5">
+          <span class="font-label text-xs font-bold text-on-surface-variant uppercase">Facturación hoy</span>
           <div class="my-1">
-            <span class="font-headline block text-base font-bold text-gray-900">{{ restaurant.kpis.revenueLabel }}</span>
+            <span class="font-headline block text-base font-bold text-on-surface">{{ restaurant.kpis.revenueLabel }}</span>
             <span class="font-label inline-block rounded bg-success-container px-1 text-xs font-bold text-on-success-container">
               {{ restaurant.kpis.revenueHint }}
             </span>
           </div>
-          <span class="text-xs text-gray-500">{{ restaurant.kpis.marginLabel }}</span>
+          <span class="text-xs text-on-surface-variant">{{ restaurant.kpis.marginLabel }}</span>
         </div>
-        <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-xs font-bold text-gray-500 uppercase">Estado de stock</span>
+        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-2.5">
+          <span class="font-label text-xs font-bold text-on-surface-variant uppercase">Estado de stock</span>
           <div class="my-1">
-            <span class="font-headline block text-base font-bold text-gray-900">{{ restaurant.kpis.stockLabel }}</span>
-            <span class="block text-xs text-gray-500">{{ restaurant.kpis.stockHint }}</span>
+            <span class="font-headline block text-base font-bold text-on-surface">{{ restaurant.kpis.stockLabel }}</span>
+            <span class="block text-xs text-on-surface-variant">{{ restaurant.kpis.stockHint }}</span>
           </div>
           <span class="text-xs font-medium text-success">{{ restaurant.kpis.stockNote }}</span>
         </div>
-        <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-xs font-bold text-gray-500 uppercase">Aforo</span>
+        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-2.5">
+          <span class="font-label text-xs font-bold text-on-surface-variant uppercase">Aforo</span>
           <div class="my-1">
-            <span class="font-headline block text-base font-bold text-gray-900">
+            <span class="font-headline block text-base font-bold text-on-surface">
               {{ restaurant.kpis.occupancyLabel }}
             </span>
-            <span class="block text-xs text-gray-500">{{ restaurant.kpis.occupancyHint }}</span>
+            <span class="block text-xs text-on-surface-variant">{{ restaurant.kpis.occupancyHint }}</span>
           </div>
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
             <div class="h-full bg-primary" :style="{ width: `${restaurant.kpis.occupancyPercent}%` }" />
           </div>
         </div>
       </div>
 
       <div
-        class="flex flex-col items-stretch justify-between gap-3 border-t border-gray-100 pt-3 sm:flex-row sm:items-center"
+        class="flex flex-col items-stretch justify-between gap-3 border-t border-outline-variant/60 pt-3 sm:flex-row sm:items-center"
       >
-        <p class="text-xs font-medium text-gray-600">
-          Rol: <strong class="text-gray-900">{{ restaurant.roleLabel }}</strong>
+        <p class="text-xs font-medium text-on-surface-variant">
+          Rol: <strong class="text-on-surface">{{ restaurant.roleLabel }}</strong>
         </p>
         <button
           type="button"

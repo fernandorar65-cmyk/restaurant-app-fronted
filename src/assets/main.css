@@ -51,8 +51,9 @@
 }
 
 /*
- * Tema oscuro de alto contraste para pantallas de cocina/sala.
- * Se activa con la clase .theme-dark en un contenedor: redefine los mismos tokens.
+ * Tema oscuro. Redefine los mismos tokens, así los componentes no cambian.
+ * - Toda la app: el store de tema pone .theme-dark en <html> (preferencia del usuario).
+ * - Pantalla de cocina: también puede activarlo solo en su contenedor.
  */
 .theme-dark {
   --color-background: #111316;
@@ -85,8 +86,34 @@
   --color-on-warning: #3a2400;
   --color-warning-container: #5a3a00;
   --color-on-warning-container: #ffe3b8;
+  --color-surface-dim: #111316;
+  --color-outline: #8e919c;
+  --color-secondary: #c3c7cc;
+  --color-secondary-container: #3f4448;
+  --color-on-secondary-container: #dfe3e8;
+  --color-on-primary-container: #dbe5ff;
+  --color-primary-fixed-dim: #5b7fd1;
+  --color-tertiary: #e3c757;
+  --color-tertiary-container: #8c7a1e;
+  color-scheme: dark;
   background-color: var(--color-background);
   color: var(--color-on-surface);
+}
+
+/* Mapa (Leaflet) en tema oscuro: se oscurecen los tiles sin tocar los marcadores. */
+.theme-dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
+
+.theme-dark .leaflet-container {
+  background: var(--color-surface-container);
+}
+
+.theme-dark .leaflet-control-zoom a,
+.theme-dark .leaflet-control-attribution {
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface-variant);
+  border-color: var(--color-outline-variant);
 }
 
 

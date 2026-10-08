@@ -7,10 +7,10 @@ const { title, description } = defineProps<{
 
 <template>
   <section class="space-y-2">
-    <h1 class="text-2xl font-semibold tracking-tight text-stone-900">
+    <h1 class="text-2xl font-semibold tracking-tight text-on-surface">
       {{ title }}
     </h1>
-    <p v-if="description" class="text-stone-600">
+    <p v-if="description" class="text-on-surface-variant">
       {{ description }}
     </p>
     <slot />

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
+import ThemeMenu from '@/components/navigation/ThemeMenu.vue'
 import { useCartStore } from '@/stores/cart'
 import { useDinerStore } from '@/stores/diner'
 
@@ -42,11 +43,11 @@ const title = computed(() => (isHome.value ? null : diner.restaurantName) ?? 'Re
       >
         Mesa {{ diner.tableNumber }}
       </span>
+      <ThemeMenu :class="{ 'ml-auto': !(diner.tableNumber && !isHome) }" />
       <RouterLink
         v-if="isMenu"
         :to="{ name: 'cart' }"
         class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface transition-colors hover:bg-surface-container"
-        :class="{ 'ml-auto': !(diner.tableNumber && !isHome) }"
         :aria-label="cart.itemCount > 0 ? `Ver carrito, ${cart.itemCount} productos` : 'Ver carrito'"
       >
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
