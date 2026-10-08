@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 
 import { useDinerStore } from '@/stores/diner'
 
 const diner = useDinerStore()
+const route = useRoute()
+
+/* En el inicio el comensal todavía está eligiendo sede: se muestra la marca, no la última sede. */
+const isHome = computed(() => route.name === 'home')
+const title = computed(() => (isHome.value ? null : diner.restaurantName) ?? 'RentaSol')
 </script>
 
 <template>
@@ -21,19 +27,19 @@ const diner = useDinerStore()
         </span>
         <span class="min-w-0 leading-tight">
           <span class="font-headline block truncate text-base font-semibold text-on-surface">
-            {{ diner.restaurantName ?? 'Restaurant CMR' }}
+            {{ title }}
           </span>
-          <span v-if="!diner.restaurantId" class="block text-xs text-on-surface-variant">Pide desde tu mesa</span>
+          <span v-if="isHome || !diner.restaurantId" class="block text-xs text-on-surface-variant">Pide desde tu mesa</span>
         </span>
       </RouterLink>
       <span
-        v-if="diner.tableNumber"
+        v-if="diner.tableNumber && !isHome"
         class="font-label ml-auto shrink-0 rounded-full bg-primary-fixed px-3 py-1 text-xs font-semibold text-on-primary-fixed"
       >
         Mesa {{ diner.tableNumber }}
       </span>
       <span
-        v-else-if="diner.restaurantId"
+        v-else-if="diner.restaurantId && !isHome"
         class="font-label ml-auto shrink-0 rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-on-surface-variant"
       >
         Solo consulta

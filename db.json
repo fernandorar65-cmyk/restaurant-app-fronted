@@ -75,6 +75,8 @@
     {
       "id": "1",
       "code": "MAD-01-ETL",
+      "lat": 40.4277,
+      "lng": -3.6866,
       "name": "L'Étoile Atelier",
       "city": "Madrid",
       "address": "Calle de Serrano, 48 · Milla de Oro Salamanca, Madrid",
@@ -105,6 +107,8 @@
     {
       "id": "2",
       "code": "BCN-02-BOT",
+      "lat": 41.3963,
+      "lng": 2.1597,
       "name": "Caelis Botanique",
       "city": "Barcelona",
       "address": "Passeig de Gràcia, 112 · Eixample Noble, Barcelona",
@@ -135,6 +139,8 @@
     {
       "id": "3",
       "code": "SVQ-03-CRU",
+      "lat": 37.3858,
+      "lng": -5.9917,
       "name": "Bodega San Telmo Grand Cru",
       "city": "Sevilla",
       "address": "Plaza Doña Elvira, 7 · Barrio Santa Cruz, Sevilla",
@@ -165,6 +171,8 @@
     {
       "id": "4",
       "code": "EAS-04-LAB",
+      "lat": 43.3226,
+      "lng": -2.0063,
       "name": "Atelier Vanguardia I+D",
       "city": "Donostia",
       "address": "Paseo del Faro, s/n · Donostia San Sebastián",

@@ -2,11 +2,19 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
 const DINER_KEY = 'restaurant-cmr:diner'
+const RECENT_KEY = 'restaurant-cmr:recent-restaurants'
+const RECENT_LIMIT = 6
 
 export interface DinerCustomer {
   id: string
   name: string
   email: string
+}
+
+/** Sede que el comensal abrió hace poco (por QR o desde el mapa). */
+export interface RecentRestaurant {
+  id: string
+  visitedAt: string
 }
 
 /** Cómo entró el comensal: escaneando el QR de una mesa o eligiendo la sede a mano. */
@@ -55,6 +63,23 @@ function readStoredDiner(): StoredDiner {
   return { ...EMPTY }
 }
 
+function readRecentRestaurants(): RecentRestaurant[] {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
+
+    if (Array.isArray(parsed)) {
+      return parsed.filter(
+        (item): item is RecentRestaurant =>
+          typeof item === 'object' && item !== null && typeof item.id === 'string' && typeof item.visitedAt === 'string',
+      )
+    }
+  } catch {
+    // Almacenamiento no disponible o dañado: sin recientes.
+  }
+
+  return []
+}
+
 /**
  * Contexto del comensal (sede, mesa, atención en curso y cuenta opcional).
  * Se guarda en localStorage para sobrevivir a un refresh o a cerrar la pestaña.
@@ -70,10 +95,19 @@ export const useDinerStore = defineStore('diner', () => {
   const confirmed = ref(stored.confirmed)
   const attentionId = ref<string | null>(stored.attentionId)
   const customer = ref<DinerCustomer | null>(stored.customer)
+  const recentRestaurants = ref<RecentRestaurant[]>(readRecentRestaurants())
 
   const hasRestaurant = computed(() => restaurantId.value !== null)
   const hasTable = computed(() => tableNumber.value !== null)
   const isReadyToOrder = computed(() => hasRestaurant.value && hasTable.value && confirmed.value)
+
+  /** La sede pasa al inicio de los recientes, sin duplicados. */
+  function rememberRestaurant(id: string): void {
+    recentRestaurants.value = [
+      { id, visitedAt: new Date().toISOString() },
+      ...recentRestaurants.value.filter((item) => item.id !== id),
+    ].slice(0, RECENT_LIMIT)
+  }
 
   /** Fija sede y mesa. Si cambia la mesa o la sede, se olvida la atención anterior. */
   function setTable(next: {
@@ -90,6 +124,7 @@ export const useDinerStore = defineStore('diner', () => {
     currency.value = next.currency
     tableNumber.value = next.tableNumber
     entry.value = next.entry
+    rememberRestaurant(next.restaurantId)
 
     if (changed) {
       confirmed.value = false
@@ -106,6 +141,7 @@ export const useDinerStore = defineStore('diner', () => {
     entry.value = 'manual'
     confirmed.value = false
     attentionId.value = null
+    rememberRestaurant(next.restaurantId)
   }
 
   function confirmTable(): void {
@@ -152,6 +188,14 @@ export const useDinerStore = defineStore('diner', () => {
     { deep: true },
   )
 
+  watch(recentRestaurants, (items) => {
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(items))
+    } catch {
+      // Sin almacenamiento: los recientes viven solo en memoria.
+    }
+  })
+
   return {
     restaurantId,
     restaurantName,
@@ -161,6 +205,7 @@ export const useDinerStore = defineStore('diner', () => {
     confirmed,
     attentionId,
     customer,
+    recentRestaurants,
     hasRestaurant,
     hasTable,
     isReadyToOrder,

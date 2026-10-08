@@ -43,6 +43,9 @@ export interface RestaurantSite {
   currency: string
   /** Zona horaria IANA (Europe/Madrid, America/Lima…). */
   timezone: string
+  /** Ubicación para el mapa del comensal; sin coordenadas la sede no aparece en el mapa. */
+  lat?: number
+  lng?: number
 }
 
 export type TableTagTone = 'critical' | 'neutral' | 'alert'

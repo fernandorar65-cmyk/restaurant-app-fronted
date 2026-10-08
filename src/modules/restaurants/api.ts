@@ -84,6 +84,8 @@ function toRestaurantSite(value: RestaurantSite): RestaurantSite {
     id: String(value.id),
     currency: typeof value.currency === 'string' && value.currency ? value.currency : 'EUR',
     timezone: typeof value.timezone === 'string' && value.timezone ? value.timezone : 'Europe/Madrid',
+    lat: typeof value.lat === 'number' ? value.lat : undefined,
+    lng: typeof value.lng === 'number' ? value.lng : undefined,
   }
 }
 
