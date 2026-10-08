@@ -48,7 +48,7 @@
       "restaurantIds": [
         "1"
       ],
-      "employeeId": "emp-2"
+      "employeeId": null
     },
     {
       "id": "5",
@@ -1494,7 +1494,7 @@
       "name": "Trilogía de aperitivos de mar",
       "description": "Ostra Gillardeau, tartar de erizo y espuma de algas.",
       "price": 24,
-      "imageUrl": "https://picsum.photos/seed/mp-1-1/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=1",
       "isAvailable": true,
       "tags": [
         "Recomendado chef"
@@ -1511,7 +1511,7 @@
       "name": "Royale de foie y manzana verde",
       "description": "Foie gras curado con gelée de manzana ácida.",
       "price": 21,
-      "imageUrl": "https://picsum.photos/seed/mp-1-2/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=2",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1526,7 +1526,7 @@
       "name": "Consomé de txangurro",
       "description": "Caldo clarificado de txangurro con brioche tostado.",
       "price": 19,
-      "imageUrl": "https://picsum.photos/seed/mp-1-3/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=3",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1542,7 +1542,7 @@
       "name": "Pan de masa madre y mantequilla ahumada",
       "description": "Elaboración diaria de panadería propia.",
       "price": 8,
-      "imageUrl": "https://picsum.photos/seed/mp-1-4/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=4",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1560,7 +1560,7 @@
       "name": "Vieira a la brasa con puré de coliflor",
       "description": "Vieira gallega, coliflor asada y beurre blanc.",
       "price": 34,
-      "imageUrl": "https://picsum.photos/seed/mp-1-5/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=5",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1576,7 +1576,7 @@
       "name": "Ravioli de trufa negra",
       "description": "Pasta fresca rellena de trufa de Périgord.",
       "price": 29,
-      "imageUrl": "https://picsum.photos/seed/mp-1-6/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=6",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1594,7 +1594,7 @@
       "name": "Ensalada de bogavante y cítricos",
       "description": "Bogavante escalfado, hinojo y vinagreta de yuzu.",
       "price": 38,
-      "imageUrl": "https://picsum.photos/seed/mp-1-7/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=7",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1609,7 +1609,7 @@
       "name": "Terrina de caza y avellanas",
       "description": "Terrina de temporada con reducción de Pedro Ximénez.",
       "price": 26,
-      "imageUrl": "https://picsum.photos/seed/mp-1-8/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=8",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1624,7 +1624,7 @@
       "name": "Pichón asado a la brasa de sarmiento",
       "description": "Pichón de Bresse con jugo especiado y raíces glaseadas.",
       "price": 46,
-      "imageUrl": "https://picsum.photos/seed/mp-1-9/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=9",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -1637,7 +1637,7 @@
       "name": "Rodaballo salvaje con beurre noisette",
       "description": "Rodaballo de costa, alcaparras y mantequilla tostada.",
       "price": 44,
-      "imageUrl": "https://picsum.photos/seed/mp-1-10/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=10",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -1653,7 +1653,7 @@
       "name": "Chuletón de vaca vieja madurado 45 días",
       "description": "Corte de 400g a la brasa, sal en escamas.",
       "price": 52,
-      "imageUrl": "https://picsum.photos/seed/mp-1-11/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=11",
       "isAvailable": true,
       "tags": [
         "Recomendado chef"
@@ -1668,7 +1668,7 @@
       "name": "Risotto de setas de temporada",
       "description": "Risotto cremoso con boletus y parmesano 36 meses.",
       "price": 27,
-      "imageUrl": "https://picsum.photos/seed/mp-1-12/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=12",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1685,7 +1685,7 @@
       "name": "Soufflé de chocolate Guanaja",
       "description": "Soufflé caliente con helado de vainilla bourbon.",
       "price": 16,
-      "imageUrl": "https://picsum.photos/seed/mp-1-13/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=13",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1704,7 +1704,7 @@
       "name": "Milhojas de pera y avellana",
       "description": "Hojaldre crujiente, crema de avellana y pera asada.",
       "price": 14,
-      "imageUrl": "https://picsum.photos/seed/mp-1-14/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=14",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1723,7 +1723,7 @@
       "name": "Tabla de quesos de temporada",
       "description": "Selección de quesos franceses y vascos madurados.",
       "price": 18,
-      "imageUrl": "https://picsum.photos/seed/mp-1-15/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=15",
       "isAvailable": false,
       "tags": [
         "Vegetariano"
@@ -1740,7 +1740,7 @@
       "name": "Copa de champán Gillardeau brut",
       "description": "Selección propia de la casa.",
       "price": 15,
-      "imageUrl": "https://picsum.photos/seed/mp-1-16/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=16",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -1753,7 +1753,7 @@
       "name": "Rioja Alta reserva 2016",
       "description": "Copa de tinto de guarda de bodega vasca.",
       "price": 12,
-      "imageUrl": "https://picsum.photos/seed/mp-1-17/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=17",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -1766,7 +1766,7 @@
       "name": "Maridaje sumiller (5 copas)",
       "description": "Recorrido de vinos ajustado al menú degustación.",
       "price": 65,
-      "imageUrl": "https://picsum.photos/seed/mp-1-18/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=18",
       "isAvailable": true,
       "tags": [
         "Recomendado chef"
@@ -1781,7 +1781,7 @@
       "name": "Gazpacho de tomate ahumado",
       "description": "Tomate de temporada ahumado en frío con aceite de oliva.",
       "price": 17,
-      "imageUrl": "https://picsum.photos/seed/mp-1-19/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/tapas,food?lock=19",
       "isAvailable": true,
       "tags": [
         "Vegetariano",
@@ -1797,7 +1797,7 @@
       "name": "Sorbete de cítricos de temporada",
       "description": "Sorbete artesanal, alternativa ligera de cierre.",
       "price": 10,
-      "imageUrl": "https://picsum.photos/seed/mp-1-20/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=20",
       "isAvailable": true,
       "tags": [
         "Vegetariano",
@@ -1813,7 +1813,7 @@
       "name": "Ensalada de brotes del huerto propio",
       "description": "Brotes tiernos, flores comestibles y vinagreta de hierbas.",
       "price": 16,
-      "imageUrl": "https://picsum.photos/seed/mp-2-1/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=21",
       "isAvailable": true,
       "tags": [
         "Vegano",
@@ -1829,7 +1829,7 @@
       "name": "Espárragos verdes a la brasa",
       "description": "Espárragos de temporada con romesco ligero.",
       "price": 18,
-      "imageUrl": "https://picsum.photos/seed/mp-2-2/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=22",
       "isAvailable": true,
       "tags": [
         "Vegano"
@@ -1846,7 +1846,7 @@
       "name": "Crema fría de guisantes y menta",
       "description": "Guisante lágrima, menta fresca y aceite de oliva virgen.",
       "price": 15,
-      "imageUrl": "https://picsum.photos/seed/mp-2-3/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=23",
       "isAvailable": true,
       "tags": [
         "Vegano",
@@ -1862,7 +1862,7 @@
       "name": "Kombucha de flor de hibisco",
       "description": "Fermentado propio de baja graduación.",
       "price": 9,
-      "imageUrl": "https://picsum.photos/seed/mp-2-4/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=24",
       "isAvailable": true,
       "tags": [
         "Vegano"
@@ -1877,7 +1877,7 @@
       "name": "Kimchi de temporada con tofu ahumado",
       "description": "Vegetales fermentados, tofu ahumado en casa.",
       "price": 17,
-      "imageUrl": "https://picsum.photos/seed/mp-2-5/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=25",
       "isAvailable": true,
       "tags": [
         "Vegano",
@@ -1895,7 +1895,7 @@
       "name": "Pan de masa madre con mantequilla de hierbas",
       "description": "Elaboración diaria con hierbas del huerto.",
       "price": 8,
-      "imageUrl": "https://picsum.photos/seed/mp-2-6/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=26",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1913,7 +1913,7 @@
       "name": "Merluza de pincho al vapor de algas",
       "description": "Merluza de temporada con caldo de algas y verdolaga.",
       "price": 32,
-      "imageUrl": "https://picsum.photos/seed/mp-2-7/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=27",
       "isAvailable": true,
       "tags": [
         "Sin gluten"
@@ -1930,7 +1930,7 @@
       "name": "Arroz de setas y trufa de temporada",
       "description": "Arroz meloso con setas silvestres y trufa.",
       "price": 26,
-      "imageUrl": "https://picsum.photos/seed/mp-2-8/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=28",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1947,7 +1947,7 @@
       "name": "Ternera regenerativa a baja temperatura",
       "description": "Corte de ganadería regenerativa local, jugo de raíces.",
       "price": 36,
-      "imageUrl": "https://picsum.photos/seed/mp-2-9/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=29",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -1960,7 +1960,7 @@
       "name": "Helado de romero y limón",
       "description": "Elaboración propia con hierbas del huerto.",
       "price": 11,
-      "imageUrl": "https://picsum.photos/seed/mp-2-10/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=30",
       "isAvailable": true,
       "tags": [
         "Vegetariano",
@@ -1978,7 +1978,7 @@
       "name": "Tarta de flores comestibles",
       "description": "Bizcocho ligero decorado con flores de temporada.",
       "price": 13,
-      "imageUrl": "https://picsum.photos/seed/mp-2-11/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=31",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -1997,7 +1997,7 @@
       "name": "Infusión botánica de cierre",
       "description": "Selección de hierbas de huerto propio.",
       "price": 6,
-      "imageUrl": "https://picsum.photos/seed/mp-2-12/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=32",
       "isAvailable": true,
       "tags": [
         "Vegano",
@@ -2013,7 +2013,7 @@
       "name": "Jamón ibérico de bellota al corte",
       "description": "Corte a cuchillo, 36 meses de curación.",
       "price": 22,
-      "imageUrl": "https://picsum.photos/seed/mp-3-1/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=33",
       "isAvailable": true,
       "tags": [
         "Recomendado chef"
@@ -2028,7 +2028,7 @@
       "name": "Boquerones en vinagre de la casa",
       "description": "Marinado tradicional de la bodega.",
       "price": 12,
-      "imageUrl": "https://picsum.photos/seed/mp-3-2/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=34",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -2043,7 +2043,7 @@
       "name": "Croquetas de jamón ibérico",
       "description": "Elaboración artesanal, seis unidades.",
       "price": 11,
-      "imageUrl": "https://picsum.photos/seed/mp-3-3/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=35",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -2059,7 +2059,7 @@
       "name": "Rabo de toro estofado al Pedro Ximénez",
       "description": "Guiso lento con reducción de vino dulce.",
       "price": 24,
-      "imageUrl": "https://picsum.photos/seed/mp-3-4/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=36",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -2072,7 +2072,7 @@
       "name": "Pescaíto frito andaluz",
       "description": "Fritura variada de pescado de la bahía.",
       "price": 19,
-      "imageUrl": "https://picsum.photos/seed/mp-3-5/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=37",
       "isAvailable": true,
       "tags": [],
       "allergens": [
@@ -2088,7 +2088,7 @@
       "name": "Tabla de quesos y embutidos de cava",
       "description": "Selección de la bodega para compartir.",
       "price": 21,
-      "imageUrl": "https://picsum.photos/seed/mp-3-6/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=38",
       "isAvailable": true,
       "tags": [
         "Vegetariano"
@@ -2105,7 +2105,7 @@
       "name": "Copa de manzanilla en rama",
       "description": "De las soleras propias de la bodega.",
       "price": 6,
-      "imageUrl": "https://picsum.photos/seed/mp-3-7/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=39",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -2118,7 +2118,7 @@
       "name": "Copa de Pedro Ximénez Gran Cru",
       "description": "Vino dulce de guarda extra añejo.",
       "price": 9,
-      "imageUrl": "https://picsum.photos/seed/mp-3-8/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=40",
       "isAvailable": true,
       "tags": [],
       "allergens": [],
@@ -2131,7 +2131,7 @@
       "name": "Cata dirigida de 4 copas",
       "description": "Recorrido guiado por el sumiller de la bodega.",
       "price": 35,
-      "imageUrl": "https://picsum.photos/seed/mp-3-9/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/wine,glass?lock=41",
       "isAvailable": true,
       "tags": [
         "Recomendado chef"
@@ -2146,7 +2146,7 @@
       "name": "Espuma de txakoli y perla de algas",
       "description": "Prototipo 3 del ciclo actual de I+D.",
       "price": 14,
-      "imageUrl": "https://picsum.photos/seed/mp-4-1/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=42",
       "isAvailable": true,
       "tags": [
         "Prototipo"
@@ -2161,7 +2161,7 @@
       "name": "Esferificación de aceituna verde",
       "description": "Técnica de esferificación inversa, ciclo I+D.",
       "price": 12,
-      "imageUrl": "https://picsum.photos/seed/mp-4-2/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=43",
       "isAvailable": true,
       "tags": [
         "Prototipo",
@@ -2177,7 +2177,7 @@
       "name": "Gazpacho nitro de tomate ahumado",
       "description": "Elaboración con nitrógeno líquido en sala.",
       "price": 15,
-      "imageUrl": "https://picsum.photos/seed/mp-4-3/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=44",
       "isAvailable": true,
       "tags": [
         "Prototipo"
@@ -2192,7 +2192,7 @@
       "name": "Costilla a baja temperatura 48h",
       "description": "Ensayo de cocción larga con humo de sarmiento.",
       "price": 28,
-      "imageUrl": "https://picsum.photos/seed/mp-4-4/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=45",
       "isAvailable": true,
       "tags": [
         "Prototipo"
@@ -2207,7 +2207,7 @@
       "name": "Risotto de cenizas y trufa de temporada",
       "description": "Prototipo de textura con ceniza comestible.",
       "price": 25,
-      "imageUrl": "https://picsum.photos/seed/mp-4-5/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=46",
       "isAvailable": true,
       "tags": [
         "Prototipo",
@@ -2225,7 +2225,7 @@
       "name": "Huevo a baja temperatura y humo frío",
       "description": "Ensayo de técnica de ahumado en sala.",
       "price": 18,
-      "imageUrl": "https://picsum.photos/seed/mp-4-6/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/gourmet,dish?lock=47",
       "isAvailable": true,
       "tags": [
         "Prototipo"
@@ -2242,7 +2242,7 @@
       "name": "Esfera de chocolate y aire de cacao",
       "description": "Prototipo de textura aireada de cacao 70%.",
       "price": 13,
-      "imageUrl": "https://picsum.photos/seed/mp-4-7/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=48",
       "isAvailable": true,
       "tags": [
         "Prototipo",
@@ -2260,7 +2260,7 @@
       "name": "Helado nitro en sala",
       "description": "Elaborado al momento frente al comensal.",
       "price": 12,
-      "imageUrl": "https://picsum.photos/seed/mp-4-8/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=49",
       "isAvailable": true,
       "tags": [
         "Prototipo"
@@ -2277,7 +2277,7 @@
       "name": "Tierra de frutos secos y miel fermentada",
       "description": "Postre de texturas con miel fermentada propia.",
       "price": 11,
-      "imageUrl": "https://picsum.photos/seed/mp-4-9/640/480",
+      "imageUrl": "https://loremflickr.com/640/480/dessert?lock=50",
       "isAvailable": true,
       "tags": [
         "Prototipo",
@@ -2438,20 +2438,6 @@
       "userId": "3"
     },
     {
-      "id": "emp-2",
-      "name": "Nuria García",
-      "email": "nuria.garcia@restaurantcmr.com",
-      "phone": "+34 611 220 012",
-      "roleId": "role-4",
-      "restaurantId": "1",
-      "area": "floor",
-      "status": "active",
-      "hiredAt": "2022-05-14",
-      "restaurantName": "L'Étoile Atelier",
-      "roleName": "Camarero",
-      "userId": "4"
-    },
-    {
       "id": "emp-3",
       "name": "Laia Ferrer",
       "email": "laia.ferrer@restaurantcmr.com",
@@ -2519,20 +2505,6 @@
       "hiredAt": "2018-06-30",
       "restaurantName": "Bodega San Telmo Grand Cru",
       "roleName": "Gerente de sede",
-      "userId": null
-    },
-    {
-      "id": "emp-8",
-      "name": "Curro Salas",
-      "email": "curro.salas@restaurantcmr.com",
-      "phone": "+34 611 220 018",
-      "roleId": "role-5",
-      "restaurantId": "3",
-      "area": "floor",
-      "status": "active",
-      "hiredAt": "2022-01-11",
-      "restaurantName": "Bodega San Telmo Grand Cru",
-      "roleName": "Sumiller",
       "userId": null
     },
     {
@@ -3789,7 +3761,6 @@
       "id": "2QwPYvlIm6M"
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json",
   "customers": [
     {
       "id": "cus-1",
@@ -3798,5 +3769,6 @@
       "password": "cliente1234"
     }
   ],
-  "dailyClosures": []
+  "dailyClosures": [],
+  "$schema": "./node_modules/json-server/schema.json"
 }

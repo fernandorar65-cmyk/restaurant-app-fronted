@@ -81,7 +81,7 @@ function logout(): void {
         </RouterLink>
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-12 text-base flex items-center justify-center font-semibold text-on-surface hover:bg-surface-container-high"
           @click="logout"
         >
           Cerrar sesión
@@ -104,7 +104,7 @@ function logout(): void {
           v-for="option in ([['login', 'Ingresar'], ['register', 'Crear cuenta']] as const)"
           :key="option[0]"
           type="button"
-          class="font-label flex-1 rounded-lg py-2 text-xs font-semibold"
+          class="font-label min-h-11 flex-1 rounded-lg text-sm font-semibold"
           :class="mode === option[0] ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant'"
           @click="mode = option[0]"
         >
@@ -117,21 +117,21 @@ function logout(): void {
           v-if="mode === 'register'"
           v-model="form.name"
           autocomplete="name"
-          class="w-full rounded-xl bg-surface-container-lowest px-4 py-3 text-sm text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Tu nombre"
           type="text"
         />
         <input
           v-model="form.email"
           autocomplete="email"
-          class="w-full rounded-xl bg-surface-container-lowest px-4 py-3 text-sm text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Correo"
           type="email"
         />
         <input
           v-model="form.password"
           :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-          class="w-full rounded-xl bg-surface-container-lowest px-4 py-3 text-sm text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Contraseña (mín. 8 caracteres)"
           type="password"
         />
@@ -140,7 +140,7 @@ function logout(): void {
         </p>
         <button
           type="submit"
-          class="font-label w-full rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-60"
+          class="font-label w-full rounded-xl bg-primary min-h-12 text-base flex items-center justify-center font-semibold text-on-primary hover:bg-primary-container disabled:opacity-60"
           :disabled="isSubmitting"
         >
           {{ isSubmitting ? 'Un momento…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta' }}
@@ -154,7 +154,7 @@ function logout(): void {
       <button
         v-if="diner.hasTable"
         type="button"
-        class="font-label w-full text-center text-xs font-semibold text-primary underline-offset-2 hover:underline"
+        class="font-label min-h-11 w-full text-center text-sm font-semibold text-primary underline-offset-2 hover:underline"
         @click="diner.confirmTable(); goBack()"
       >
         Prefiero seguir como invitado

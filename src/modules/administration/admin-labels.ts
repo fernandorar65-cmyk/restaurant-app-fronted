@@ -1,3 +1,4 @@
+import type { StatusTone } from '@/components/base/StatusBadge.vue'
 import type { EmployeeArea, EmployeeStatus, InventoryStatus } from '@/modules/administration/types'
 
 export const employeeAreaLabel: Record<EmployeeArea, string> = {
@@ -26,7 +27,19 @@ export const inventoryStatusLabel: Record<InventoryStatus, string> = {
 }
 
 export const inventoryStatusClass: Record<InventoryStatus, string> = {
-  ok: 'bg-emerald-100 text-emerald-800',
+  ok: 'bg-success-container text-on-success-container',
   low: 'bg-tertiary-fixed text-on-tertiary-container',
   critical: 'bg-error-container text-on-error-container',
+}
+
+export const inventoryStatusTone: Record<InventoryStatus, StatusTone> = {
+  ok: 'success',
+  low: 'warning',
+  critical: 'danger',
+}
+
+export const employeeStatusTone: Record<EmployeeStatus, StatusTone> = {
+  active: 'success',
+  'on-leave': 'warning',
+  inactive: 'muted',
 }

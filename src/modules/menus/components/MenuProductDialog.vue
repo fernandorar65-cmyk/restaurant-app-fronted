@@ -86,7 +86,7 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,32rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 32rem"
     aria-labelledby="product-dialog-title"
     @close="emit('close')"
   >
@@ -96,10 +96,10 @@ onMounted(async () => {
       </h2>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
         <input
           v-model="name"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           required
           type="text"
         />
@@ -112,41 +112,41 @@ onMounted(async () => {
           alt="Vista previa"
           class="h-16 w-16 shrink-0 rounded-xl object-cover"
         />
-        <div v-else class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-surface-container text-[10px] text-on-surface-variant">
+        <div v-else class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-surface-container text-xs text-on-surface-variant">
           Sin foto
         </div>
         <label class="block flex-1 space-y-1">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Foto</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Foto</span>
           <input accept="image/*" class="block w-full text-xs text-on-surface-variant file:mr-2 file:rounded-lg file:border-0 file:bg-surface-container file:px-3 file:py-1.5 file:text-xs file:font-semibold" type="file" @change="onImageSelected" />
-          <span v-if="imageError" class="block text-[11px] text-error">{{ imageError }}</span>
+          <span v-if="imageError" class="block text-xs text-error">{{ imageError }}</span>
         </label>
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Descripción</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Descripción</span>
         <textarea
           v-model="description"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           rows="2"
         />
       </label>
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Precio ({{ currency }})</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Precio ({{ currency }})</span>
           <input
             v-model.number="price"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             min="0"
             step="0.5"
             type="number"
           />
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Categoría</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Categoría</span>
           <select
             v-model="categoryId"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
           </select>
@@ -154,24 +154,24 @@ onMounted(async () => {
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
           Etiquetas (separadas por coma)
         </span>
         <input
           v-model="tagsInput"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Vegetariano, Recomendado chef"
           type="text"
         />
       </label>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
           Alérgenos (separados por coma)
         </span>
         <input
           v-model="allergensInput"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Gluten, Lácteos"
           type="text"
         />
@@ -182,14 +182,14 @@ onMounted(async () => {
           <input v-model="isActive" class="mt-0.5 h-4 w-4 rounded accent-primary" type="checkbox" />
           <span class="text-sm text-on-surface">
             Activo
-            <span class="block text-[11px] text-on-surface-variant">Se muestra en la carta. Desmarca para ocultarlo sin borrarlo.</span>
+            <span class="block text-xs text-on-surface-variant">Se muestra en la carta. Desmarca para ocultarlo sin borrarlo.</span>
           </span>
         </label>
         <label class="flex items-start gap-2">
           <input v-model="isAvailable" class="mt-0.5 h-4 w-4 rounded accent-primary" type="checkbox" />
           <span class="text-sm text-on-surface">
             Disponible
-            <span class="block text-[11px] text-on-surface-variant">Se puede pedir. Si no, aparece como "Agotado".</span>
+            <span class="block text-xs text-on-surface-variant">Se puede pedir. Si no, aparece como "Agotado".</span>
           </span>
         </label>
       </div>
@@ -197,14 +197,14 @@ onMounted(async () => {
       <div class="flex items-center justify-end gap-2 pt-1">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="font-label rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
         >
           Guardar
         </button>

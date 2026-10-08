@@ -57,7 +57,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-[#f8f9fa] text-on-surface antialiased">
+  <div class="flex min-h-dvh bg-background text-on-surface antialiased">
     <PortalSidebar :open="isSidebarOpen" @close="closeSidebar" />
     <div class="flex min-w-0 flex-1 flex-col">
       <PortalHeader @open-menu="openSidebar" />

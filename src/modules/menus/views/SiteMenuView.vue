@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -28,10 +29,13 @@ import type { Menu, MenuCategory, MenuProduct, MenuProductDraft, MenuStatus } fr
 import { fetchRestaurantById } from '@/modules/restaurants/api'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { HttpError } from '@/services/http'
+import { useConfirmStore } from '@/stores/confirm'
 import { useSessionStore } from '@/stores/session'
 import { formatMoney } from '@/utils/money'
 
 usePageTitle('Gestión de menú')
+
+const confirm = useConfirmStore()
 
 const MENU_STATUS_LABELS: Record<MenuStatus, string> = {
   draft: 'Borrador',
@@ -254,7 +258,14 @@ async function saveProduct(draft: MenuProductDraft): Promise<void> {
 }
 
 async function removeProduct(product: MenuProduct): Promise<void> {
-  if (!window.confirm(`¿Eliminar "${product.name}"? Si solo quieres ocultarlo, desactívalo.`)) {
+  const accepted = await confirm.ask({
+    title: `¿Eliminar "${product.name}"?`,
+    message: 'Se borra de la carta. Si solo quieres ocultarlo por un tiempo, desmarca "Activo".',
+    confirmLabel: 'Eliminar producto',
+    tone: 'danger',
+  })
+
+  if (!accepted) {
     return
   }
 
@@ -267,7 +278,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
 
 <template>
   <div class="mx-auto w-full max-w-7xl space-y-6 px-6 py-8 lg:px-12">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando menú…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError && !restaurant"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -286,7 +297,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
         <template #actions>
           <button
             type="button"
-            class="font-label rounded-xl bg-surface-container-lowest px-4 py-2.5 text-xs font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-xl bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             :disabled="!selectedMenu"
             @click="isPreviewOpen = true"
           >
@@ -294,14 +305,14 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-surface-container-lowest px-4 py-2.5 text-xs font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-xl bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             @click="openNewCategory"
           >
             + Categoría
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
             @click="openNewProduct"
           >
             + Producto
@@ -323,10 +334,10 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
 
       <div class="flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-3 shadow-sm sm:flex-row sm:items-center">
         <label class="flex items-center gap-2">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Menú</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Menú</span>
           <select
             v-model="selectedMenuId"
-            class="rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="menu in menus" :key="menu.id" :value="menu.id">
               {{ menu.name }} ({{ MENU_STATUS_LABELS[menu.status] }})
@@ -335,7 +346,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
         </label>
         <select
           v-if="selectedMenuId"
-          class="rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           :value="menus.find((menu) => menu.id === selectedMenuId)?.status"
           @change="
             changeMenuStatus(
@@ -349,7 +360,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
         <form class="flex items-center gap-2 sm:ml-auto" @submit.prevent="createMenuHandler">
           <input
             v-model="newMenuName"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary sm:w-56"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary sm:w-56"
             placeholder="Nombre del nuevo menú..."
             type="text"
           />
@@ -368,7 +379,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
       <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por categoría">
         <button
           type="button"
-          class="font-label rounded-lg px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase"
+          class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
           :class="
             activeCategoryId === null
               ? 'bg-primary-container text-on-primary-container'
@@ -381,7 +392,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
         <div v-for="category in visibleCategories" :key="category.id" class="flex items-center gap-1">
           <button
             type="button"
-            class="font-label rounded-lg px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase"
+            class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
             :class="
               activeCategoryId === category.id
                 ? 'bg-primary-container text-on-primary-container'
@@ -393,7 +404,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="rounded-lg px-1 py-1 text-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
             title="Mover antes"
             :aria-label="`Mover ${category.name} antes`"
             @click="moveCategory(category, -1)"
@@ -402,7 +413,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="rounded-lg px-1 py-1 text-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
             title="Mover después"
             :aria-label="`Mover ${category.name} después`"
             @click="moveCategory(category, 1)"
@@ -411,7 +422,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
             title="Editar categoría"
             @click="openEditCategory(category)"
           >
@@ -425,7 +436,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="rounded-lg p-1.5 text-on-surface-variant hover:bg-error-container hover:text-on-error-container"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container"
             title="Eliminar categoría"
             @click="removeCategory(category)"
           >
@@ -450,7 +461,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           <img :src="product.imageUrl" :alt="product.name" class="h-28 w-full rounded-xl object-cover" loading="lazy" />
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="font-label text-[10px] font-semibold tracking-wide text-tertiary uppercase">
+              <p class="font-label text-xs font-semibold tracking-wide text-tertiary uppercase">
                 {{ categoryName(product.categoryId) }}
               </p>
               <h3 class="font-headline text-sm font-semibold text-on-surface">{{ product.name }}</h3>
@@ -462,19 +473,19 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
             <span
               v-for="tag in product.tags"
               :key="tag"
-              class="font-label rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary"
+              class="font-label rounded bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary"
             >
               {{ tag }}
             </span>
             <span
               v-if="!product.isActive"
-              class="font-label rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-semibold text-on-surface-variant uppercase"
+              class="font-label rounded bg-surface-container-high px-1.5 py-0.5 text-xs font-semibold text-on-surface-variant uppercase"
             >
               Oculto
             </span>
             <span
               v-else-if="!product.isAvailable"
-              class="font-label rounded bg-error-container px-1.5 py-0.5 text-[10px] font-semibold text-on-error-container uppercase"
+              class="font-label rounded bg-error-container px-1.5 py-0.5 text-xs font-semibold text-on-error-container uppercase"
             >
               Agotado
             </span>
@@ -502,7 +513,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           <div class="flex items-center justify-end gap-2 border-t border-outline-variant/50 pt-3">
             <button
               type="button"
-              class="rounded-lg px-2 py-1 text-xs text-on-surface-variant hover:bg-surface-container"
+              class="rounded-lg min-h-9 px-2.5 py-1 text-sm text-on-surface-variant hover:bg-surface-container"
               :aria-label="`Subir ${product.name}`"
               title="Subir en la categoría"
               @click="moveProduct(product, -1)"
@@ -511,7 +522,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
             </button>
             <button
               type="button"
-              class="mr-auto rounded-lg px-2 py-1 text-xs text-on-surface-variant hover:bg-surface-container"
+              class="mr-auto rounded-lg min-h-9 px-2.5 py-1 text-sm text-on-surface-variant hover:bg-surface-container"
               :aria-label="`Bajar ${product.name}`"
               title="Bajar en la categoría"
               @click="moveProduct(product, 1)"
@@ -520,14 +531,14 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+              class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
               @click="openEditProduct(product)"
             >
               Editar
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-error-container px-3 py-1.5 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+              class="font-label rounded-lg bg-error-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error-container hover:bg-error/20"
               @click="removeProduct(product)"
             >
               Eliminar

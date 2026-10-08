@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import { cancelAttention, closeAttention, errorMessage, isAttentionActive } from '@/modules/orders/api'
-import { attentionStatusBadgeClass, attentionStatusLabel, orderedProductStatusLabel } from '@/modules/orders/order-status-labels'
+import { attentionStatusLabel, attentionStatusTone, orderedProductStatusLabel } from '@/modules/orders/order-status-labels'
 import type { Attention, OrderedProduct } from '@/modules/orders/types'
 import { computeAccount } from '@/modules/payments/account'
 import {
@@ -11,8 +12,8 @@ import {
   nextPaymentStatuses,
   PAYMENT_METHODS,
   paymentMethodLabel,
-  paymentStatusBadgeClass,
   paymentStatusLabel,
+  paymentStatusTone,
   updatePaymentStatus,
 } from '@/modules/payments/api'
 import type { Payment, PaymentMethod, PaymentStatus } from '@/modules/payments/types'
@@ -33,19 +34,28 @@ const emit = defineEmits<{
   changed: []
 }>()
 
-type PayMode = 'amount' | 'products'
+type PayMode = 'all' | 'amount' | 'products'
 
 const session = useSessionStore()
 const toast = useToastStore()
 const dialogEl = ref<HTMLDialogElement | null>(null)
 const payments = ref<Payment[]>([])
 const isLoadingPayments = ref(true)
-const mode = ref<PayMode>('amount')
+const payChoice = ref<PayMode>('all')
 const amount = ref(0)
 /** Monto asignado a cada producto en el modo "por productos". */
 const allocationDraft = ref<Record<string, number>>({})
 const method = ref<PaymentMethod>('card')
-const initialStatus = ref<PaymentStatus>('paid')
+const isPendingConfirmation = ref(false)
+
+const METHOD_ICON: Record<PaymentMethod, string> = {
+  cash: '💵',
+  card: '💳',
+  yape: '📱',
+  plin: '📲',
+  transfer: '🏦',
+  other: '➕',
+}
 const payerName = ref('')
 const externalReference = ref('')
 const isSubmitting = ref(false)
@@ -65,7 +75,13 @@ const discardedProducts = computed(() =>
 const allocationTotal = computed(() =>
   roundMoney(Object.values(allocationDraft.value).reduce((sum, value) => sum + (Number(value) || 0), 0)),
 )
-const amountToCharge = computed(() => (mode.value === 'products' ? allocationTotal.value : roundMoney(Number(amount.value) || 0)))
+const amountToCharge = computed(() => {
+  if (payChoice.value === 'all') {
+    return account.value.remaining
+  }
+
+  return payChoice.value === 'products' ? allocationTotal.value : roundMoney(Number(amount.value) || 0)
+})
 const needsReference = computed(() => method.value !== 'cash')
 
 function closeDialog(): void {
@@ -77,7 +93,8 @@ function resetForm(): void {
   allocationDraft.value = {}
   payerName.value = ''
   externalReference.value = ''
-  initialStatus.value = 'paid'
+  isPendingConfirmation.value = false
+  payChoice.value = 'all'
   requestId = createId('pay')
 }
 
@@ -134,14 +151,14 @@ async function registerPayment(): Promise<void> {
     const payment = await createPayment({
       attentionId: props.attention.id,
       allocations:
-        mode.value === 'products'
+        payChoice.value === 'products'
           ? Object.entries(allocationDraft.value)
               .filter(([, allocated]) => Number(allocated) > 0)
               .map(([orderedProductId, allocated]) => ({ orderedProductId, amount: roundMoney(Number(allocated)) }))
           : [],
       amount: value,
       method: method.value,
-      status: initialStatus.value,
+      status: isPendingConfirmation.value ? 'pending' : 'paid',
       payerName: payerName.value.trim() || null,
       processedByEmployeeName: staffName.value,
       externalReference: externalReference.value.trim() || null,
@@ -196,10 +213,11 @@ async function confirmCancel(): Promise<void> {
   }
 }
 
-watch(mode, () => {
+function choosePay(choice: PayMode): void {
+  payChoice.value = choice
   allocationDraft.value = {}
   amount.value = account.value.remaining
-})
+}
 
 onMounted(async () => {
   await nextTick()
@@ -212,21 +230,21 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,36rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog app-dialog--side overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 36rem"
     aria-labelledby="account-dialog-title"
     @close="emit('close')"
   >
     <div class="flex max-h-[min(92vh,860px)] flex-col">
       <header class="flex items-start justify-between gap-4 px-5 pt-5 pb-4 sm:px-6">
         <div>
-          <p class="font-label text-[11px] font-semibold tracking-widest text-tertiary uppercase">Cuenta de mesa</p>
+          <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Cuenta de mesa</p>
           <h2 id="account-dialog-title" class="font-headline mt-0.5 text-2xl leading-tight font-semibold">
             Mesa {{ attention.tableNumber }}
           </h2>
         </div>
         <button
           type="button"
-          class="rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           aria-label="Cerrar"
           @click="closeDialog"
         >
@@ -238,9 +256,7 @@ onMounted(async () => {
 
       <div class="space-y-5 overflow-y-auto px-5 pb-5 sm:px-6">
         <div class="flex items-center gap-2">
-          <span class="font-label inline-flex rounded-lg px-2.5 py-1 text-[11px] font-semibold" :class="attentionStatusBadgeClass[attention.status]">
-            {{ attentionStatusLabel[attention.status] }}
-          </span>
+          <StatusBadge :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
           <span v-if="attention.status === 'account-requested'" class="text-xs font-semibold text-tertiary">
             El comensal solicitó la cuenta
           </span>
@@ -250,7 +266,7 @@ onMounted(async () => {
           <li v-for="item in account.products" :key="item.product.id" class="flex items-center justify-between gap-3 text-sm">
             <span class="min-w-0">
               <span class="text-on-surface">{{ item.product.quantity }}× {{ item.product.name }}</span>
-              <span v-if="item.allocated > 0" class="block text-[11px] text-on-surface-variant">
+              <span v-if="item.allocated > 0" class="block text-xs text-on-surface-variant">
                 Pagado {{ formatMoney(item.allocated, currency) }} · pendiente {{ formatMoney(item.pending, currency) }}
               </span>
             </span>
@@ -258,147 +274,177 @@ onMounted(async () => {
           </li>
           <li v-for="product in discardedProducts" :key="product.id" class="flex items-center justify-between gap-3 text-sm">
             <span class="text-on-surface-variant line-through">{{ product.quantity }}× {{ product.name }}</span>
-            <span class="text-[11px] text-on-surface-variant">{{ orderedProductStatusLabel[product.status] }} · no se cobra</span>
+            <span class="text-xs text-on-surface-variant">{{ orderedProductStatusLabel[product.status] }} · no se cobra</span>
           </li>
         </ul>
 
         <dl class="grid grid-cols-3 gap-2.5 border-t border-outline-variant/50 pt-4">
           <div class="rounded-xl bg-surface px-3 py-3">
-            <dt class="font-label text-[10px] font-semibold tracking-wider text-on-surface-variant uppercase">Total</dt>
+            <dt class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Total</dt>
             <dd class="mt-1 text-sm font-semibold text-on-surface">{{ formatMoney(account.total, currency) }}</dd>
           </div>
           <div class="rounded-xl bg-surface px-3 py-3">
-            <dt class="font-label text-[10px] font-semibold tracking-wider text-on-surface-variant uppercase">Pagado</dt>
-            <dd class="mt-1 text-sm font-semibold text-emerald-700">{{ formatMoney(account.paid, currency) }}</dd>
+            <dt class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Pagado</dt>
+            <dd class="mt-1 text-sm font-semibold text-success">{{ formatMoney(account.paid, currency) }}</dd>
           </div>
           <div class="rounded-xl bg-surface px-3 py-3">
-            <dt class="font-label text-[10px] font-semibold tracking-wider text-on-surface-variant uppercase">Pendiente</dt>
+            <dt class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Pendiente</dt>
             <dd class="mt-1 text-sm font-semibold" :class="account.remaining > 0 ? 'text-error' : 'text-on-surface'">
               {{ formatMoney(account.remaining, currency) }}
             </dd>
           </div>
         </dl>
 
-        <section v-if="isActive && account.remaining > MONEY_EPSILON" class="space-y-3 rounded-xl bg-surface p-4">
-          <div class="flex items-center justify-between gap-2">
-            <h3 class="font-label text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">Registrar pago</h3>
-            <div class="flex gap-1 rounded-lg bg-surface-container p-0.5" role="tablist" aria-label="Tipo de pago">
+        <section v-if="isActive && account.remaining > MONEY_EPSILON" class="space-y-5 rounded-2xl bg-surface p-4" aria-label="Registrar pago">
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-on-surface">1. ¿Cuánto paga?</p>
+            <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-container p-1" role="radiogroup" aria-label="Qué se cobra">
               <button
-                v-for="option in ([['amount', 'Monto'], ['products', 'Por productos']] as const)"
+                v-for="option in ([['all', 'Todo'], ['amount', 'Un monto'], ['products', 'Por productos']] as const)"
                 :key="option[0]"
                 type="button"
-                class="font-label rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                :class="mode === option[0] ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant'"
-                @click="mode = option[0]"
+                role="radio"
+                class="font-label min-h-11 rounded-lg text-sm font-semibold transition-colors"
+                :class="payChoice === option[0] ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
+                :aria-checked="payChoice === option[0]"
+                @click="choosePay(option[0])"
               >
                 {{ option[1] }}
               </button>
             </div>
-          </div>
 
-          <template v-if="mode === 'amount'">
-            <div class="flex flex-wrap items-center gap-2">
-              <input
-                v-model.number="amount"
-                class="w-32 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
-                :max="account.remaining"
-                min="0"
-                step="0.01"
-                type="number"
-                aria-label="Monto"
-              />
-              <span class="text-[11px] text-on-surface-variant">Dividir el saldo entre</span>
-              <button
-                v-for="parts in [2, 3, 4]"
-                :key="parts"
-                type="button"
-                class="font-label rounded-lg bg-surface-container px-2 py-1 text-[11px] font-semibold hover:bg-surface-container-high"
-                @click="splitTotal(parts)"
-              >
-                {{ parts }}
-              </button>
-            </div>
-          </template>
+            <p v-if="payChoice === 'all'" class="rounded-xl bg-surface-container-lowest px-4 py-3 text-sm text-on-surface-variant">
+              Se cobra el saldo completo: <strong class="text-on-surface">{{ formatMoney(account.remaining, currency) }}</strong>.
+            </p>
 
-          <ul v-else class="space-y-2">
-            <li v-for="item in payableProducts" :key="item.product.id" class="space-y-1.5 rounded-lg bg-surface-container-lowest p-2.5">
-              <label class="flex items-center justify-between gap-2 text-sm">
-                <span class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    class="accent-primary"
-                    :checked="item.product.id in allocationDraft"
-                    @change="toggleProduct(item.product.id, item.pending)"
-                  />
-                  {{ item.product.quantity }}× {{ item.product.name }}
-                </span>
-                <span class="text-xs text-on-surface-variant">pendiente {{ formatMoney(item.pending, currency) }}</span>
-              </label>
-              <div v-if="item.product.id in allocationDraft" class="flex flex-wrap items-center gap-2 pl-6">
+            <div v-else-if="payChoice === 'amount'" class="space-y-2">
+              <label class="flex items-center gap-2">
+                <span class="sr-only">Monto</span>
                 <input
-                  v-model.number="allocationDraft[item.product.id]"
-                  class="w-24 rounded-lg bg-surface px-2 py-1 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
-                  :max="item.pending"
+                  v-model.number="amount"
+                  class="min-h-12 w-40 rounded-xl bg-surface-container-lowest px-4 text-lg font-semibold text-on-surface shadow-inner outline-none ring-1 ring-outline-variant/50 focus:ring-2 focus:ring-primary"
+                  :max="account.remaining"
                   min="0"
                   step="0.01"
                   type="number"
-                  :aria-label="`Monto para ${item.product.name}`"
+                  inputmode="decimal"
                 />
-                <span class="text-[11px] text-on-surface-variant">Dividir entre</span>
+                <span class="text-sm text-on-surface-variant">de {{ formatMoney(account.remaining, currency) }}</span>
+              </label>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-sm text-on-surface-variant">Dividir entre</span>
                 <button
-                  v-for="parts in [2, 3, 4]"
+                  v-for="parts in [2, 3, 4, 5]"
                   :key="parts"
                   type="button"
-                  class="font-label rounded bg-surface-container px-1.5 py-0.5 text-[11px] font-semibold hover:bg-surface-container-high"
-                  @click="splitProduct(item.product.id, item.pending, parts)"
+                  class="font-label min-h-11 min-w-11 rounded-xl bg-surface-container-lowest px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
+                  @click="splitTotal(parts)"
                 >
                   {{ parts }}
                 </button>
               </div>
-            </li>
-          </ul>
+            </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <select
-              v-model="method"
-              class="rounded-lg bg-surface-container-lowest px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
-              aria-label="Método de pago"
-            >
-              <option v-for="option in PAYMENT_METHODS" :key="option" :value="option">{{ paymentMethodLabel[option] }}</option>
-            </select>
-            <select
-              v-model="initialStatus"
-              class="rounded-lg bg-surface-container-lowest px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
-              aria-label="Estado del pago"
-            >
-              <option value="paid">Pagado</option>
-              <option value="pending">Pendiente de confirmar</option>
-            </select>
+            <ul v-else class="space-y-2">
+              <li v-for="item in payableProducts" :key="item.product.id" class="space-y-2 rounded-xl bg-surface-container-lowest p-3">
+                <label class="flex min-h-11 items-center justify-between gap-3 text-sm">
+                  <span class="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      class="h-5 w-5 accent-primary"
+                      :checked="item.product.id in allocationDraft"
+                      @change="toggleProduct(item.product.id, item.pending)"
+                    />
+                    <span class="text-on-surface">{{ item.product.quantity }}× {{ item.product.name }}</span>
+                  </span>
+                  <span class="text-on-surface-variant">{{ formatMoney(item.pending, currency) }}</span>
+                </label>
+                <div v-if="item.product.id in allocationDraft" class="flex flex-wrap items-center gap-2 pl-8">
+                  <input
+                    v-model.number="allocationDraft[item.product.id]"
+                    class="min-h-11 w-28 rounded-xl bg-surface px-3 text-sm text-on-surface shadow-inner outline-none ring-1 ring-outline-variant/50 focus:ring-2 focus:ring-primary"
+                    :max="item.pending"
+                    min="0"
+                    step="0.01"
+                    type="number"
+                    inputmode="decimal"
+                    :aria-label="`Monto para ${item.product.name}`"
+                  />
+                  <span class="text-sm text-on-surface-variant">Compartir entre</span>
+                  <button
+                    v-for="parts in [2, 3, 4]"
+                    :key="parts"
+                    type="button"
+                    class="font-label min-h-11 min-w-11 rounded-xl bg-surface px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
+                    @click="splitProduct(item.product.id, item.pending, parts)"
+                  >
+                    {{ parts }}
+                  </button>
+                </div>
+              </li>
+            </ul>
           </div>
-          <input
-            v-if="needsReference"
-            v-model="externalReference"
-            class="w-full rounded-lg bg-surface-container-lowest px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
-            placeholder="Referencia / N.º de operación (opcional)"
-            type="text"
-          />
-          <input
-            v-model="payerName"
-            class="w-full rounded-lg bg-surface-container-lowest px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
-            placeholder="Nombre de quien paga (opcional)"
-            type="text"
-          />
+
+          <div class="space-y-2">
+            <p class="text-sm font-semibold text-on-surface">2. ¿Cómo paga?</p>
+            <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Método de pago">
+              <button
+                v-for="option in PAYMENT_METHODS"
+                :key="option"
+                type="button"
+                role="radio"
+                class="font-label flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-sm font-semibold ring-2 transition-colors"
+                :class="method === option ? 'bg-primary-fixed text-on-primary-fixed ring-primary' : 'bg-surface-container-lowest text-on-surface ring-transparent hover:ring-outline-variant'"
+                :aria-checked="method === option"
+                @click="method = option"
+              >
+                <span aria-hidden="true" class="text-lg leading-none">{{ METHOD_ICON[option] }}</span>
+                {{ paymentMethodLabel[option] }}
+              </button>
+            </div>
+            <input
+              v-if="needsReference"
+              v-model="externalReference"
+              class="min-h-11 w-full rounded-xl bg-surface-container-lowest px-3 text-sm text-on-surface shadow-inner outline-none ring-1 ring-outline-variant/50 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary"
+              placeholder="N.º de operación (opcional)"
+              type="text"
+            />
+          </div>
+
+          <details class="group rounded-xl bg-surface-container-lowest px-3">
+            <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-semibold text-on-surface-variant">
+              Más opciones
+              <span class="transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="space-y-3 pb-3">
+              <input
+                v-model="payerName"
+                class="min-h-11 w-full rounded-xl bg-surface px-3 text-sm text-on-surface shadow-inner outline-none ring-1 ring-outline-variant/50 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary"
+                placeholder="Nombre de quien paga"
+                type="text"
+              />
+              <label class="flex min-h-11 items-center gap-3 text-sm text-on-surface">
+                <input v-model="isPendingConfirmation" type="checkbox" class="h-5 w-5 accent-primary" />
+                Todavía no llegó (ej: transferencia por confirmar)
+              </label>
+            </div>
+          </details>
+
           <button
             type="button"
-            class="font-label w-full rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container disabled:opacity-60"
+            class="font-label flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-base font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
             :disabled="isSubmitting || amountToCharge <= 0 || amountToCharge > account.remaining + MONEY_EPSILON"
             @click="registerPayment"
           >
-            {{ initialStatus === 'paid' ? 'Cobrar' : 'Registrar pendiente' }} {{ formatMoney(amountToCharge, currency) }}
+            {{ isPendingConfirmation ? 'Registrar como pendiente' : 'Cobrar' }} {{ formatMoney(amountToCharge, currency) }} · {{ paymentMethodLabel[method] }}
           </button>
-          <p v-if="amountToCharge > account.remaining + MONEY_EPSILON" class="text-xs text-error">
-            El monto supera el saldo pendiente.
+          <p v-if="amountToCharge > account.remaining + MONEY_EPSILON" class="text-sm text-error" role="alert">
+            El monto supera el saldo pendiente ({{ formatMoney(account.remaining, currency) }}).
           </p>
+          <p v-else-if="amountToCharge > 0 && amountToCharge + MONEY_EPSILON < account.remaining" class="text-sm text-on-surface-variant">
+            Quedarán {{ formatMoney(account.remaining - amountToCharge, currency) }} pendientes.
+          </p>
+          <p v-else-if="amountToCharge > 0 && !isPendingConfirmation" class="text-sm text-success">Con este pago la cuenta queda saldada y se cierra.</p>
         </section>
 
         <p v-if="submitError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container" role="alert">
@@ -406,7 +452,7 @@ onMounted(async () => {
         </p>
 
         <section v-if="!isLoadingPayments && payments.length > 0" class="space-y-2">
-          <h3 class="font-label text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">Historial de pagos</h3>
+          <h3 class="font-label text-xs font-semibold tracking-widest text-on-surface-variant uppercase">Historial de pagos</h3>
           <ul class="space-y-2">
             <li v-for="payment in payments" :key="payment.id" class="space-y-1.5 rounded-lg bg-surface p-2.5">
               <div class="flex items-center justify-between gap-2 text-sm">
@@ -418,10 +464,8 @@ onMounted(async () => {
                   {{ formatMoney(payment.amount, currency) }}
                 </span>
               </div>
-              <div class="flex flex-wrap items-center gap-2 text-[11px] text-on-surface-variant">
-                <span class="font-label rounded px-1.5 py-0.5 font-bold uppercase" :class="paymentStatusBadgeClass[payment.status]">
-                  {{ paymentStatusLabel[payment.status] }}
-                </span>
+              <div class="flex flex-wrap items-center gap-2 text-xs text-on-surface-variant">
+                <StatusBadge :tone="paymentStatusTone[payment.status]" :label="paymentStatusLabel[payment.status]" />
                 <span>{{ formatTime(payment.createdAt, timezone) }}</span>
                 <span v-if="payment.processedByEmployeeName">· {{ payment.processedByEmployeeName }}</span>
                 <span v-if="payment.externalReference">· Ref. {{ payment.externalReference }}</span>
@@ -432,7 +476,7 @@ onMounted(async () => {
                   v-for="status in nextPaymentStatuses(payment.status)"
                   :key="status"
                   type="button"
-                  class="font-label rounded bg-surface-container px-2 py-0.5 text-[11px] font-semibold hover:bg-surface-container-high"
+                  class="font-label rounded bg-surface-container px-2 py-0.5 text-xs font-semibold hover:bg-surface-container-high"
                   @click="changePaymentStatus(payment, status)"
                 >
                   Marcar {{ paymentStatusLabel[status].toLowerCase() }}
@@ -445,17 +489,17 @@ onMounted(async () => {
         <div v-if="isCancelling" class="space-y-2 rounded-xl bg-error-container/40 p-3">
           <input
             v-model="cancelReason"
-            class="w-full rounded-lg bg-surface-container-lowest px-3 py-1.5 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             placeholder="Motivo de la cancelación"
             type="text"
           />
           <div class="flex justify-end gap-2">
-            <button type="button" class="font-label text-[11px] font-semibold text-on-surface-variant" @click="isCancelling = false">
+            <button type="button" class="font-label text-xs font-semibold text-on-surface-variant" @click="isCancelling = false">
               Volver
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-error px-2.5 py-1 text-[11px] font-semibold text-on-error disabled:opacity-50"
+              class="font-label rounded-lg bg-error min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error disabled:opacity-50"
               :disabled="!cancelReason.trim()"
               @click="confirmCancel"
             >
@@ -469,7 +513,7 @@ onMounted(async () => {
         <button
           v-if="isActive && account.paid === 0 && !isCancelling"
           type="button"
-          class="font-label rounded-xl bg-surface-container px-3 py-2.5 text-xs font-semibold text-error hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
           @click="isCancelling = true"
         >
           Cancelar atención
@@ -477,14 +521,14 @@ onMounted(async () => {
         <button
           v-if="isActive && account.total === 0 && !isLoadingPayments"
           type="button"
-          class="font-label rounded-xl bg-primary px-3 py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
           @click="closeWithoutCharge"
         >
           Cerrar sin cargo
         </button>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container px-4 py-2.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cerrar

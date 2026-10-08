@@ -1,3 +1,4 @@
+import type { StatusTone } from '@/components/base/StatusBadge.vue'
 import type { AttentionStatus, OrderedProductStatus } from '@/modules/orders/types'
 
 export const attentionStatusLabel: Record<AttentionStatus, string> = {
@@ -47,7 +48,7 @@ export const orderedProductBadgeClass: Record<OrderedProductStatus, string> = {
   confirmed: 'bg-primary-fixed text-on-primary-fixed',
   preparing: 'bg-primary text-on-primary',
   ready: 'bg-tertiary-fixed text-on-tertiary-container',
-  delivered: 'bg-emerald-100 text-emerald-800',
+  delivered: 'bg-success-container text-on-success-container',
   rejected: 'bg-error-container text-on-error-container',
   cancelled: 'bg-surface-container-high text-on-surface-variant',
 }
@@ -104,4 +105,22 @@ export function isPendingProduct(status: OrderedProductStatus): boolean {
 
 export function isBillableProduct(status: OrderedProductStatus): boolean {
   return status !== 'rejected' && status !== 'cancelled'
+}
+
+/** Tono visual único por estado (se usa con StatusBadge, que agrega el ícono). */
+export const attentionStatusTone: Record<AttentionStatus, StatusTone> = {
+  open: 'info',
+  'account-requested': 'warning',
+  closed: 'muted',
+  cancelled: 'danger',
+}
+
+export const orderedProductStatusTone: Record<OrderedProductStatus, StatusTone> = {
+  sent: 'neutral',
+  confirmed: 'info',
+  preparing: 'progress',
+  ready: 'success',
+  delivered: 'muted',
+  rejected: 'danger',
+  cancelled: 'muted',
 }

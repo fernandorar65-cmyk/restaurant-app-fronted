@@ -65,11 +65,11 @@ const seats = computed(() => {
     </span>
     <span
       v-if="table.status !== 'active'"
-      class="font-label rounded bg-error-container px-1.5 text-[10px] font-semibold tracking-wide text-on-error-container uppercase"
+      class="font-label rounded bg-error-container px-1.5 text-xs font-semibold tracking-wide text-on-error-container uppercase"
     >
       {{ tableStatusLabel[table.status] }}
     </span>
-    <span v-else class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">
+    <span v-else class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
       {{ table.occupiedSeats }}/{{ table.seats }} sillas
     </span>
   </button>

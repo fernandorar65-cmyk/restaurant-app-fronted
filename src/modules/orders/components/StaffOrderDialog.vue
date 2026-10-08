@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 
 import { fetchCustomerMenu } from '@/modules/menus/api'
+import QuantityStepper from '@/modules/menus/components/QuantityStepper.vue'
 import type { MenuCategory, MenuProduct } from '@/modules/menus/types'
 import {
   addOrderedProducts,
@@ -94,6 +95,28 @@ function changeQuantity(product: MenuProduct, delta: number): void {
   }
 }
 
+function hasOpenAttention(table: LiveTable): boolean {
+  return activeAttentions.value.some((item) => item.tableNumber === table.number)
+}
+
+function tableStateLabel(table: LiveTable): string {
+  if (table.status !== 'active') {
+    return tableStatusLabel[table.status]
+  }
+
+  return hasOpenAttention(table) ? 'Ocupada' : 'Libre'
+}
+
+function tableButtonClass(table: LiveTable): string {
+  if (tableNumber.value === table.number) {
+    return 'bg-primary text-on-primary ring-primary'
+  }
+
+  return hasOpenAttention(table)
+    ? 'bg-primary-fixed text-on-primary-fixed ring-transparent hover:ring-primary'
+    : 'bg-surface-container-lowest text-on-surface ring-outline-variant/50 hover:ring-primary'
+}
+
 function tableOptionLabel(table: LiveTable): string {
   const attention = activeAttentions.value.find((item) => item.tableNumber === table.number)
   const status = table.status === 'active' ? '' : ` · ${tableStatusLabel[table.status]}`
@@ -177,14 +200,14 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,40rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 40rem"
     aria-labelledby="staff-order-title"
     @close="emit('close')"
   >
     <div class="flex max-h-[min(92vh,820px)] flex-col">
       <header class="flex items-start justify-between gap-4 px-5 pt-5 pb-3 sm:px-6">
         <div>
-          <p class="font-label text-[11px] font-semibold tracking-widest text-tertiary uppercase">Pedido manual</p>
+          <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Pedido manual</p>
           <h2 id="staff-order-title" class="font-headline mt-0.5 text-2xl leading-tight font-semibold">
             Cargar pedido para una mesa
           </h2>
@@ -192,7 +215,7 @@ onMounted(async () => {
         </div>
         <button
           type="button"
-          class="rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           aria-label="Cerrar"
           @click="closeDialog"
         >
@@ -206,18 +229,25 @@ onMounted(async () => {
         <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando carta y mesas…</p>
 
         <template v-else>
-          <label class="block space-y-1">
-            <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Mesa</span>
-            <select
-              v-model="tableNumber"
-              class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
-            >
-              <option value="" disabled>Elige una mesa</option>
-              <option v-for="table in tables" :key="table.number" :value="table.number" :disabled="table.status !== 'active'">
-                {{ tableOptionLabel(table) }}
-              </option>
-            </select>
-          </label>
+          <fieldset class="space-y-2">
+            <legend class="text-sm font-semibold text-on-surface">1. Elige la mesa</legend>
+            <div class="grid grid-cols-4 gap-2 sm:grid-cols-6">
+              <button
+                v-for="table in tables"
+                :key="table.number"
+                type="button"
+                class="font-label flex min-h-14 flex-col items-center justify-center rounded-xl text-base font-bold ring-2 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                :class="tableButtonClass(table)"
+                :disabled="table.status !== 'active'"
+                :aria-pressed="tableNumber === table.number"
+                :aria-label="tableOptionLabel(table)"
+                @click="tableNumber = table.number"
+              >
+                {{ table.number }}
+                <span class="text-xs font-medium opacity-80">{{ tableStateLabel(table) }}</span>
+              </button>
+            </div>
+          </fieldset>
           <p v-if="selectedAttention" class="rounded-lg bg-primary-fixed px-3 py-2 text-xs text-on-primary-fixed">
             Se agregará a la atención abierta de la mesa {{ selectedAttention.tableNumber }}.
           </p>
@@ -225,9 +255,10 @@ onMounted(async () => {
             Se abrirá una nueva atención para la mesa {{ selectedTable.number }}.
           </p>
 
+          <p class="text-sm font-semibold text-on-surface">2. Agrega productos</p>
           <input
             v-model="search"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
             placeholder="Buscar producto…"
             type="search"
           />
@@ -235,7 +266,7 @@ onMounted(async () => {
           <p v-if="products.length === 0" class="text-sm text-on-surface-variant">La sede no tiene un menú activo con productos.</p>
 
           <section v-for="group in productsByCategory" :key="group.category.id" class="space-y-2">
-            <h3 class="font-label text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">
+            <h3 class="font-label text-xs font-semibold tracking-widest text-on-surface-variant uppercase">
               {{ group.category.name }}
             </h3>
             <ul class="space-y-1.5">
@@ -248,35 +279,22 @@ onMounted(async () => {
                   <p class="truncate text-sm font-semibold text-on-surface">{{ product.name }}</p>
                   <p class="text-xs text-on-surface-variant">{{ formatMoney(product.price, restaurant.currency) }}</p>
                 </div>
-                <span v-if="!product.isAvailable" class="font-label text-[11px] font-semibold text-on-surface-variant uppercase">
+                <span v-if="!product.isAvailable" class="font-label text-xs font-semibold text-on-surface-variant uppercase">
                   Agotado
                 </span>
-                <div v-else class="flex items-center gap-2 rounded-full bg-surface-container px-1 py-1">
-                  <button
-                    type="button"
-                    class="flex h-7 w-7 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40"
-                    :disabled="quantityOf(product.id) === 0"
-                    :aria-label="`Quitar ${product.name}`"
-                    @click="changeQuantity(product, -1)"
-                  >
-                    −
-                  </button>
-                  <span class="w-4 text-center text-sm font-bold">{{ quantityOf(product.id) }}</span>
-                  <button
-                    type="button"
-                    class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-on-primary hover:bg-primary-container"
-                    :aria-label="`Agregar ${product.name}`"
-                    @click="changeQuantity(product, 1)"
-                  >
-                    +
-                  </button>
-                </div>
+                <QuantityStepper
+                  v-else
+                  :quantity="quantityOf(product.id)"
+                  :label="product.name"
+                  @increase="changeQuantity(product, 1)"
+                  @decrease="changeQuantity(product, -1)"
+                />
               </li>
             </ul>
           </section>
 
           <section v-if="lines.length > 0" class="space-y-2 rounded-xl bg-surface-container-low p-3">
-            <h3 class="font-label text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">Resumen</h3>
+            <h3 class="font-label text-xs font-semibold tracking-widest text-on-surface-variant uppercase">Resumen</h3>
             <div v-for="line in lines" :key="line.product.id" class="space-y-1">
               <div class="flex items-center justify-between text-sm">
                 <span>{{ line.quantity }}× {{ line.product.name }}</span>
@@ -284,7 +302,7 @@ onMounted(async () => {
               </div>
               <input
                 v-model="line.notes"
-                class="w-full rounded-lg bg-surface-container-lowest px-3 py-1.5 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
+                class="w-full rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
                 placeholder="Observación (ej: sin cebolla)"
                 type="text"
               />
@@ -301,14 +319,14 @@ onMounted(async () => {
         <span class="font-headline text-lg font-semibold">{{ formatMoney(total, restaurant.currency) }}</span>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
           :disabled="isSubmitting || !tableNumber || lines.length === 0"
           @click="submit"
         >

@@ -40,6 +40,20 @@ function validateForm(): boolean {
   return !fieldErrors.email && !fieldErrors.password
 }
 
+const DEMO_ACCOUNTS = [
+  { role: 'Propietario', hint: 'Todo el sistema', email: 'admin@restaurant.com', password: 'admin1234' },
+  { role: 'Camarero', hint: 'Pedidos y entregas', email: 'mozo@restaurant.com', password: 'demo1234' },
+  { role: 'Cocina', hint: 'Cola de cocina', email: 'cocina@restaurant.com', password: 'demo1234' },
+  { role: 'Caja', hint: 'Cuentas y cierre', email: 'caja@restaurant.com', password: 'demo1234' },
+] as const
+
+/** Completa el formulario con una cuenta demo y entra directamente. */
+async function useDemo(account: (typeof DEMO_ACCOUNTS)[number]): Promise<void> {
+  form.email = account.email
+  form.password = account.password
+  await onSubmit()
+}
+
 async function onSubmit(): Promise<void> {
   formError.value = null
 
@@ -132,12 +146,20 @@ async function onSubmit(): Promise<void> {
       </div>
     </form>
 
-    <div class="mt-8 space-y-1 rounded-xl bg-surface-container-low/70 p-4 text-xs leading-relaxed text-secondary">
-      <p class="text-center font-semibold text-on-surface">Cuentas demo</p>
-      <p><span class="font-semibold text-on-surface">admin@restaurant.com</span> / admin1234 · Propietario</p>
-      <p><span class="font-semibold text-on-surface">cocina@restaurant.com</span> / demo1234 · Jefe de cocina</p>
-      <p><span class="font-semibold text-on-surface">mozo@restaurant.com</span> / demo1234 · Camarero</p>
-      <p><span class="font-semibold text-on-surface">caja@restaurant.com</span> / demo1234 · Cajero</p>
-    </div>
+    <section class="mt-8 space-y-3" aria-labelledby="demo-accounts-title">
+      <h2 id="demo-accounts-title" class="text-sm font-semibold text-on-surface">Probar con una cuenta demo</h2>
+      <div class="grid grid-cols-2 gap-2">
+        <button
+          v-for="account in DEMO_ACCOUNTS"
+          :key="account.email"
+          type="button"
+          class="flex min-h-14 flex-col items-start justify-center rounded-xl bg-surface-container-low px-3 py-2 text-left ring-1 ring-outline-variant/40 transition-colors hover:bg-surface-container hover:ring-primary"
+          @click="useDemo(account)"
+        >
+          <span class="text-sm font-semibold text-on-surface">{{ account.role }}</span>
+          <span class="text-xs text-on-surface-variant">{{ account.hint }}</span>
+        </button>
+      </div>
+    </section>
   </AuthConsoleLayout>
 </template>

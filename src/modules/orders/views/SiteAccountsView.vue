@@ -2,13 +2,15 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import StatusBadge from '@/components/base/StatusBadge.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import { useNow } from '@/composables/useNow'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { useSiteContext } from '@/composables/useSiteContext'
 import { errorMessage, fetchAllStatusHistory, fetchAttentionsWithProductsBySite, isAttentionActive } from '@/modules/orders/api'
 import AccountDialog from '@/modules/orders/components/AccountDialog.vue'
-import { attentionStatusBadgeClass, attentionStatusLabel } from '@/modules/orders/order-status-labels'
+import { attentionStatusLabel, attentionStatusTone } from '@/modules/orders/order-status-labels'
 import type { AttentionWithProducts } from '@/modules/orders/types'
 import { computeAccount } from '@/modules/payments/account'
 import type { AccountSummary } from '@/modules/payments/account'
@@ -127,7 +129,7 @@ watch(
 
 <template>
   <div class="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 lg:px-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando cuentas…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -145,7 +147,7 @@ watch(
       >
         <template #actions>
           <div class="rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm">
-            <span class="font-label block text-[10px] font-semibold tracking-wider text-on-surface-variant uppercase">
+            <span class="font-label block text-xs font-semibold tracking-wider text-on-surface-variant uppercase">
               Pendiente por cobrar
             </span>
             <span class="font-headline text-lg font-semibold text-on-surface">{{ formatMoney(openTotal, currency) }}</span>
@@ -177,14 +179,17 @@ watch(
           >
             <div class="flex items-center justify-between">
               <span class="font-headline text-base font-bold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
-              <span v-if="row.requestedAt" class="font-label text-[11px] font-semibold text-on-tertiary-container">
+              <span v-if="row.requestedAt" class="font-label text-xs font-semibold text-on-tertiary-container">
                 pidió {{ formatElapsed(row.requestedAt, now) }}
               </span>
             </div>
             <p class="text-xs text-on-surface-variant">
               Total {{ formatMoney(row.account.total, currency) }} · pagado {{ formatMoney(row.account.paid, currency) }}
             </p>
-            <p class="font-headline text-xl font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
+            <div class="flex items-end justify-between gap-2">
+              <p class="font-headline text-2xl font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
+              <span class="font-label rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-on-primary">Cobrar →</span>
+            </div>
           </button>
         </div>
       </section>
@@ -204,8 +209,13 @@ watch(
               <span class="font-headline text-sm font-bold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
               <span class="text-xs text-on-surface-variant">{{ row.attention.products.length }} productos</span>
             </div>
-            <p class="font-headline text-lg font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
-            <p v-if="row.account.paid > 0" class="text-xs text-emerald-700">Pagado {{ formatMoney(row.account.paid, currency) }}</p>
+            <div class="flex items-end justify-between gap-2">
+              <div>
+                <p class="font-headline text-xl font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
+                <p v-if="row.account.paid > 0" class="text-sm text-success">Pagado {{ formatMoney(row.account.paid, currency) }}</p>
+              </div>
+              <span class="text-sm font-semibold text-primary">Ver cuenta →</span>
+            </div>
           </button>
         </div>
       </section>
@@ -213,7 +223,7 @@ watch(
       <section class="space-y-3">
         <button
           type="button"
-          class="font-label rounded-full px-3 py-1.5 text-[11px] font-semibold"
+          class="font-label rounded-full min-h-9 px-3 py-1.5 text-sm font-semibold"
           :class="showClosed ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
           @click="showClosed = !showClosed"
         >
@@ -228,9 +238,7 @@ watch(
             @click="openAccount(row.attention)"
           >
             <span class="text-sm font-semibold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
-            <span class="font-label rounded-lg px-2 py-0.5 text-[10px] font-semibold" :class="attentionStatusBadgeClass[row.attention.status]">
-              {{ attentionStatusLabel[row.attention.status] }}
-            </span>
+            <StatusBadge :tone="attentionStatusTone[row.attention.status]" :label="attentionStatusLabel[row.attention.status]" />
             <span class="text-sm font-semibold text-on-surface">{{ formatMoney(row.account.paid, currency) }}</span>
           </button>
         </div>

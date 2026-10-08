@@ -33,7 +33,7 @@ function togglePasswordVisibility(): void {
 
 <template>
   <div class="space-y-1.5">
-    <label :for="id" class="font-label block text-[11px] font-bold tracking-widest text-on-surface uppercase">
+    <label :for="id" class="font-label block text-xs font-bold tracking-widest text-on-surface uppercase">
       {{ label }}
     </label>
     <div class="relative flex items-center">

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import AdminPageHeader from '@/components/base/AdminPageHeader.vue'
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { inventoryStatusClass, inventoryStatusLabel } from '@/modules/administration/admin-labels'
+import { inventoryStatusLabel, inventoryStatusTone } from '@/modules/administration/admin-labels'
 import {
   createInventoryItem,
   fetchInventoryItems,
@@ -147,7 +149,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingItem = null"
         >
           + Insumo
@@ -155,7 +157,7 @@ onMounted(() => {
       </template>
     </AdminPageHeader>
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando inventario…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -172,7 +174,7 @@ onMounted(() => {
       <div class="flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-3 shadow-sm sm:flex-row sm:flex-wrap sm:items-center">
         <select
           v-model="restaurantFilter"
-          class="rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           aria-label="Sede"
         >
           <option value="all">Todas mis sedes</option>
@@ -180,7 +182,7 @@ onMounted(() => {
         </select>
         <button
           type="button"
-          class="font-label rounded-full px-3 py-1.5 text-[11px] font-semibold"
+          class="font-label rounded-full min-h-9 px-3 py-1.5 text-sm font-semibold"
           :class="alertOnly ? 'bg-error-container text-on-error-container' : 'bg-surface-container text-on-surface-variant'"
           @click="alertOnly = !alertOnly"
         >
@@ -188,7 +190,7 @@ onMounted(() => {
         </button>
         <button
           type="button"
-          class="font-label rounded-full px-3 py-1.5 text-[11px] font-semibold"
+          class="font-label rounded-full min-h-9 px-3 py-1.5 text-sm font-semibold"
           :class="showInactive ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
           @click="showInactive = !showInactive"
         >
@@ -196,25 +198,25 @@ onMounted(() => {
         </button>
       </div>
 
-      <div class="overflow-x-auto rounded-2xl bg-surface-container-lowest shadow-sm">
-        <table class="w-full min-w-[820px] text-left text-sm">
+      <div class="md:overflow-x-auto md:rounded-2xl md:bg-surface-container-lowest md:shadow-sm">
+        <table class="responsive-table w-full md:min-w-[820px] text-left text-sm">
           <thead class="bg-surface-container-low text-on-surface-variant">
             <tr>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Insumo</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Sede</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Cantidad</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Estado</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Insumo</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Sede</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Cantidad</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Estado</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/40">
             <tr v-for="item in filteredItems" :key="item.id" :class="item.isActive ? '' : 'opacity-50'">
-              <td class="px-4 py-3">
+              <td class="cell-main px-4 py-3">
                 <p class="font-semibold text-on-surface">{{ item.name }}</p>
                 <p class="text-xs text-on-surface-variant">{{ item.supplier || 'Sin proveedor' }}</p>
               </td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ restaurantName(item.restaurantId) }}</td>
-              <td class="px-4 py-3">
+              <td class="px-4 py-3 text-on-surface-variant" data-label="Sede">{{ restaurantName(item.restaurantId) }}</td>
+              <td class="px-4 py-3" data-label="Cantidad">
                 <div class="flex items-center gap-1.5">
                   <input
                     class="w-20 rounded-lg bg-surface px-2 py-1 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
@@ -230,41 +232,37 @@ onMounted(() => {
                   <button
                     v-if="stockDraft[item.id] !== undefined && stockDraft[item.id] !== item.stock"
                     type="button"
-                    class="font-label rounded-lg bg-primary px-2 py-1 text-[11px] font-semibold text-on-primary"
+                    class="font-label rounded-lg bg-primary min-h-9 px-2.5 py-1 text-sm font-semibold text-on-primary"
                     @click="setStock(item, stockDraft[item.id] ?? item.stock)"
                   >
                     Guardar
                   </button>
                 </div>
               </td>
-              <td class="px-4 py-3">
-                <span v-if="!item.isActive" class="font-label rounded-md bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant uppercase">
-                  Inactivo
-                </span>
-                <span v-else class="font-label rounded-md px-2 py-0.5 text-[10px] font-bold uppercase" :class="inventoryStatusClass[item.status]">
-                  {{ inventoryStatusLabel[item.status] }}
-                </span>
+              <td class="px-4 py-3" data-label="Estado">
+                <StatusBadge v-if="!item.isActive" tone="muted" label="Inactivo" />
+                <StatusBadge v-else :tone="inventoryStatusTone[item.status]" :label="inventoryStatusLabel[item.status]" />
               </td>
-              <td class="px-4 py-3">
+              <td class="cell-actions px-4 py-3">
                 <div class="flex justify-end gap-1.5">
                   <button
                     v-if="item.isActive && item.status !== 'ok'"
                     type="button"
-                    class="font-label rounded-lg bg-primary px-2.5 py-1.5 text-[11px] font-semibold text-on-primary hover:bg-primary-container"
+                    class="font-label rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
                     @click="restock(item)"
                   >
                     Reabastecer
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="editingItem = item"
                   >
                     Editar
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="toggleActive(item)"
                   >
                     {{ item.isActive ? 'Desactivar' : 'Activar' }}

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
+import BaseButton from '@/components/base/BaseButton.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import DinerNotice from '@/components/feedback/DinerNotice.vue'
 import { useNow } from '@/composables/useNow'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -14,17 +17,18 @@ import {
   requestAccount,
 } from '@/modules/orders/api'
 import {
-  attentionStatusBadgeClass,
   attentionStatusLabel,
+  attentionStatusTone,
   isBillableProduct,
-  orderedProductBadgeClass,
   orderedProductStatusHint,
   orderedProductStatusLabel,
   orderedProductStatusSteps,
+  orderedProductStatusTone,
 } from '@/modules/orders/order-status-labels'
 import { groupByRound } from '@/modules/orders/rounds'
 import type { Attention, OrderedProduct, OrderedProductStatus } from '@/modules/orders/types'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
+import { useConfirmStore } from '@/stores/confirm'
 import { useDinerStore } from '@/stores/diner'
 import { useToastStore } from '@/stores/toast'
 import { formatMoney } from '@/utils/money'
@@ -36,6 +40,7 @@ const route = useRoute()
 const router = useRouter()
 const diner = useDinerStore()
 const toast = useToastStore()
+const confirm = useConfirmStore()
 const now = useNow(30000)
 
 const attention = ref<Attention | null>(null)
@@ -60,6 +65,44 @@ const isMyTable = computed(
     diner.restaurantId === attention.value.restaurantId &&
     diner.tableNumber === attention.value.tableNumber,
 )
+
+/** Resumen en una frase de lo más relevante para el comensal ahora mismo. */
+const summary = computed(() => {
+  const active = products.value.filter((product) => isBillableProduct(product.status))
+  const count = (status: OrderedProductStatus) => active.filter((product) => product.status === status).length
+  const ready = count('ready')
+  const preparing = count('preparing')
+  const confirmed = count('confirmed')
+  const sent = count('sent')
+
+  if (ready > 0) {
+    return { tone: 'success', title: `¡${ready === 1 ? 'Un producto está listo' : `${ready} productos están listos`}!`, text: 'En un momento te los llevan a la mesa.' }
+  }
+
+  if (preparing > 0) {
+    return { tone: 'progress', title: 'Tu pedido se está preparando', text: `La cocina está con ${preparing} producto(s).` }
+  }
+
+  if (confirmed > 0) {
+    return { tone: 'progress', title: 'Pedido confirmado', text: 'Pasa a cocina en unos instantes.' }
+  }
+
+  if (sent > 0) {
+    return { tone: 'waiting', title: 'Esperando confirmación', text: 'El restaurante está revisando tu pedido.' }
+  }
+
+  if (active.length > 0) {
+    return { tone: 'success', title: 'Todo servido. ¡Buen provecho!', text: '¿Te apetece algo más? Puedes seguir pidiendo.' }
+  }
+
+  return { tone: 'waiting', title: 'Aún no hay productos', text: 'Elige algo de la carta para empezar.' }
+})
+
+const summaryClass: Record<string, string> = {
+  success: 'bg-success-container text-on-success-container',
+  progress: 'bg-primary-fixed text-on-primary-fixed',
+  waiting: 'bg-surface-container text-on-surface',
+}
 
 function stepIndex(status: OrderedProductStatus): number {
   return orderedProductStatusSteps.indexOf(status)
@@ -133,6 +176,16 @@ async function askForAccount(): Promise<void> {
     return
   }
 
+  const accepted = await confirm.ask({
+    title: '¿Pedir la cuenta?',
+    message: 'Avisaremos al personal para que venga a cobrarte. Si luego quieres algo más, todavía podrás pedirlo.',
+    confirmLabel: 'Sí, pedir la cuenta',
+  })
+
+  if (!accepted) {
+    return
+  }
+
   isRequestingAccount.value = true
   actionError.value = null
 
@@ -173,8 +226,8 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-6 pb-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando pedido…</p>
+  <div class="space-y-5">
+    <SkeletonBlock v-if="isLoading" variant="list" :rows="4" />
     <DinerNotice v-else-if="hasConnectionError" kind="connection" @retry="loadAttention" />
     <DinerNotice
       v-else-if="!attention"
@@ -186,38 +239,46 @@ watch(
     <template v-else>
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p class="font-label text-[11px] font-semibold tracking-widest text-primary uppercase">Mesa {{ attention.tableNumber }}</p>
-          <h1 class="font-headline text-2xl font-semibold text-on-surface">Tu pedido</h1>
+          <p class="text-sm font-medium text-on-surface-variant">Mesa {{ attention.tableNumber }}</p>
+          <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu pedido</h1>
         </div>
-        <span class="font-label inline-flex rounded-lg px-3 py-1 text-xs font-semibold" :class="attentionStatusBadgeClass[attention.status]">
-          {{ attentionStatusLabel[attention.status] }}
-        </span>
+        <StatusBadge size="md" :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
       </div>
 
-      <p
-        v-if="attention.status === 'account-requested'"
-        class="rounded-xl bg-tertiary-fixed px-4 py-3 text-sm text-on-tertiary-container"
+      <div
+        v-if="isActive && products.length > 0"
+        class="flex items-center gap-4 rounded-3xl p-5"
+        :class="summaryClass[summary.tone]"
+        role="status"
+        aria-live="polite"
       >
-        Pediste la cuenta: el personal ya fue avisado y vendrá a cobrarte. Si quieres, todavía puedes pedir algo más.
-      </p>
+        <span class="relative flex h-3 w-3 shrink-0" aria-hidden="true">
+          <span v-if="summary.tone !== 'waiting'" class="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-40" />
+          <span class="relative inline-flex h-3 w-3 rounded-full bg-current" />
+        </span>
+        <div>
+          <p class="font-headline text-xl font-semibold">{{ summary.title }}</p>
+          <p class="text-sm opacity-90">{{ summary.text }}</p>
+        </div>
+      </div>
 
-      <div v-if="attention.status === 'closed'" class="space-y-3 rounded-2xl bg-surface-container-lowest p-6 text-center shadow-sm">
-        <p class="font-headline text-xl font-semibold text-on-surface">¡Gracias por tu visita!</p>
-        <p class="text-sm text-on-surface-variant">La cuenta de la mesa {{ attention.tableNumber }} quedó saldada.</p>
-        <div class="flex flex-wrap justify-center gap-2">
-          <RouterLink
-            class="font-label rounded-xl bg-surface-container px-4 py-2.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
-            :to="{ name: 'order-account', params: { attentionId: attention.id } }"
-          >
-            Ver el detalle de la cuenta
-          </RouterLink>
-          <button
-            type="button"
-            class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
-            @click="finishVisit"
-          >
-            Terminar
-          </button>
+      <div
+        v-if="attention.status === 'account-requested'"
+        class="flex items-start gap-3 rounded-2xl bg-warning-container p-4 text-on-warning-container"
+        role="status"
+      >
+        <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+        </svg>
+        <p class="text-sm"><strong>Pediste la cuenta.</strong> El personal ya fue avisado y vendrá a cobrarte. Todavía puedes pedir algo más.</p>
+      </div>
+
+      <div v-if="attention.status === 'closed'" class="space-y-4 rounded-3xl bg-success-container p-6 text-center text-on-success-container">
+        <p class="font-headline text-2xl font-semibold">¡Gracias por tu visita!</p>
+        <p class="text-sm">La cuenta de la mesa {{ attention.tableNumber }} quedó saldada.</p>
+        <div class="grid gap-2 sm:grid-cols-2">
+          <BaseButton variant="secondary" :to="{ name: 'order-account', params: { attentionId: attention.id } }">Ver el detalle</BaseButton>
+          <BaseButton variant="primary" @click="finishVisit">Terminar</BaseButton>
         </div>
       </div>
       <DinerNotice
@@ -227,72 +288,76 @@ watch(
         :message="attention.cancellationReason ?? 'Pide ayuda a un mozo si crees que es un error.'"
       />
 
-      <section v-for="(round, index) in rounds" :key="round.batchId" class="space-y-3 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-        <h2 class="font-headline flex items-center justify-between text-sm font-semibold text-on-surface">
-          <span>Ronda {{ index + 1 }}</span>
-          <span class="font-label text-[11px] font-medium text-on-surface-variant">{{ formatElapsed(round.requestedAt, now) }}</span>
+      <section
+        v-for="(round, index) in rounds"
+        :key="round.batchId"
+        class="space-y-4 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-1 ring-outline-variant/30"
+      >
+        <h2 class="flex items-center justify-between">
+          <span class="font-headline text-lg font-semibold text-on-surface">Ronda {{ index + 1 }}</span>
+          <span class="text-sm text-on-surface-variant">{{ formatElapsed(round.requestedAt, now) }}</span>
         </h2>
-        <ul class="space-y-4">
-          <li v-for="product in round.products" :key="product.id" class="space-y-1.5">
-            <div class="flex items-center justify-between gap-2 text-sm">
-              <span :class="isBillableProduct(product.status) ? 'text-on-surface' : 'text-on-surface-variant line-through'">
-                {{ product.quantity }}× {{ product.name }}
+        <ul class="divide-y divide-outline-variant/40">
+          <li v-for="product in round.products" :key="product.id" class="space-y-2 py-3 first:pt-0 last:pb-0">
+            <div class="flex items-start justify-between gap-3">
+              <span class="text-base" :class="isBillableProduct(product.status) ? 'text-on-surface' : 'text-on-surface-variant line-through'">
+                <span class="font-semibold">{{ product.quantity }}×</span> {{ product.name }}
               </span>
-              <span class="font-semibold text-on-surface">{{ formatMoney(product.subtotal, currency) }}</span>
+              <span class="shrink-0 text-base font-semibold text-on-surface">{{ formatMoney(product.subtotal, currency) }}</span>
             </div>
-            <div v-if="stepIndex(product.status) >= 0" class="flex gap-1" aria-hidden="true">
+            <div
+              v-if="stepIndex(product.status) >= 0"
+              class="flex gap-1"
+              role="progressbar"
+              :aria-valuenow="stepIndex(product.status) + 1"
+              aria-valuemin="1"
+              :aria-valuemax="orderedProductStatusSteps.length"
+              :aria-label="`Progreso de ${product.name}`"
+            >
               <span
                 v-for="(step, stepPosition) in orderedProductStatusSteps"
                 :key="step"
-                class="h-1.5 flex-1 rounded-full"
-                :class="stepPosition <= stepIndex(product.status) ? 'bg-primary' : 'bg-surface-container-high'"
+                class="h-1.5 flex-1 rounded-full transition-colors"
+                :class="stepPosition <= stepIndex(product.status) ? (product.status === 'ready' || product.status === 'delivered' ? 'bg-success' : 'bg-primary') : 'bg-surface-container-high'"
               />
             </div>
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-label rounded px-2 py-0.5 text-[10px] font-bold uppercase" :class="orderedProductBadgeClass[product.status]">
-                {{ orderedProductStatusLabel[product.status] }}
+            <div class="flex flex-wrap items-center gap-2">
+              <StatusBadge :tone="orderedProductStatusTone[product.status]" :label="orderedProductStatusLabel[product.status]" />
+              <span v-if="stepIndex(product.status) >= 0" class="text-xs font-semibold text-on-surface-variant">
+                Paso {{ stepIndex(product.status) + 1 }} de {{ orderedProductStatusSteps.length }}
               </span>
-              <span class="text-[11px]" :class="product.status === 'rejected' ? 'text-error' : 'text-on-surface-variant'">
+              <span class="text-sm" :class="product.status === 'rejected' ? 'text-error' : 'text-on-surface-variant'">
                 {{ product.status === 'rejected' ? (product.rejectionReason ?? orderedProductStatusHint.rejected) : orderedProductStatusHint[product.status] }}
               </span>
             </div>
-            <p v-if="product.notes" class="text-[11px] text-on-surface-variant">Nota: {{ product.notes }}</p>
+            <p v-if="product.notes" class="text-sm text-on-surface-variant">Observación: {{ product.notes }}</p>
           </li>
         </ul>
       </section>
 
-      <div class="flex items-center justify-between rounded-2xl bg-surface-container-lowest px-5 py-4 text-sm shadow-sm">
-        <span class="text-on-surface-variant">Total (sin productos rechazados)</span>
-        <span class="font-headline text-lg font-semibold text-on-surface">{{ formatMoney(total, currency) }}</span>
+      <div class="flex items-center justify-between rounded-2xl bg-surface-container-low px-5 py-4">
+        <span class="text-sm text-on-surface-variant">Total (sin productos rechazados)</span>
+        <span class="font-headline text-2xl font-semibold text-on-surface">{{ formatMoney(total, currency) }}</span>
       </div>
 
-      <p v-if="actionError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container" role="alert">
+      <p v-if="actionError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
         {{ actionError }}
       </p>
 
-      <div v-if="isActive" class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <RouterLink
-          v-if="isMyTable"
-          class="font-label rounded-xl bg-surface-container-lowest py-3 text-center text-sm font-semibold text-on-surface shadow-sm transition-colors hover:bg-surface-container"
-          :to="{ name: 'menu' }"
-        >
-          Pedir algo más
-        </RouterLink>
-        <button
+      <div v-if="isActive" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <BaseButton v-if="isMyTable" variant="secondary" size="lg" :to="{ name: 'menu' }">Pedir algo más</BaseButton>
+        <BaseButton
           v-if="attention.status === 'open'"
-          type="button"
-          class="font-label rounded-xl bg-surface-container-lowest py-3 text-sm font-semibold text-on-surface shadow-sm transition-colors hover:bg-surface-container disabled:opacity-60"
-          :disabled="isRequestingAccount"
+          variant="primary"
+          size="lg"
+          :loading="isRequestingAccount"
           @click="askForAccount"
         >
-          {{ isRequestingAccount ? 'Solicitando…' : 'Solicitar la cuenta' }}
-        </button>
-        <RouterLink
-          class="font-label rounded-xl bg-primary py-3 text-center text-sm font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
-          :to="{ name: 'order-account', params: { attentionId: attention.id } }"
-        >
+          Solicitar la cuenta
+        </BaseButton>
+        <BaseButton v-else variant="primary" size="lg" :to="{ name: 'order-account', params: { attentionId: attention.id } }">
           Ver la cuenta
-        </RouterLink>
+        </BaseButton>
       </div>
     </template>
   </div>

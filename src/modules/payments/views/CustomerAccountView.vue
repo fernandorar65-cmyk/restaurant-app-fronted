@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
+import BaseButton from '@/components/base/BaseButton.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import DinerNotice from '@/components/feedback/DinerNotice.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { usePolling } from '@/composables/usePolling'
@@ -12,12 +15,13 @@ import {
   isAttentionActive,
   requestAccount,
 } from '@/modules/orders/api'
-import { attentionStatusBadgeClass, attentionStatusLabel, orderedProductStatusLabel } from '@/modules/orders/order-status-labels'
+import { attentionStatusLabel, attentionStatusTone, orderedProductStatusLabel } from '@/modules/orders/order-status-labels'
 import type { Attention, OrderedProduct } from '@/modules/orders/types'
 import { computeAccount } from '@/modules/payments/account'
-import { fetchPaymentsByAttention, paymentMethodLabel, paymentStatusBadgeClass, paymentStatusLabel } from '@/modules/payments/api'
+import { fetchPaymentsByAttention, paymentMethodLabel, paymentStatusLabel, paymentStatusTone } from '@/modules/payments/api'
 import type { Payment } from '@/modules/payments/types'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
+import { useConfirmStore } from '@/stores/confirm'
 import { useDinerStore } from '@/stores/diner'
 import { useToastStore } from '@/stores/toast'
 import { formatMoney } from '@/utils/money'
@@ -28,6 +32,7 @@ usePageTitle('Mi cuenta')
 const route = useRoute()
 const diner = useDinerStore()
 const toast = useToastStore()
+const confirm = useConfirmStore()
 
 const attention = ref<Attention | null>(null)
 const products = ref<OrderedProduct[]>([])
@@ -86,6 +91,16 @@ async function askForAccount(): Promise<void> {
     return
   }
 
+  const accepted = await confirm.ask({
+    title: '¿Pedir la cuenta?',
+    message: 'Avisaremos al personal para que venga a cobrarte.',
+    confirmLabel: 'Sí, pedir la cuenta',
+  })
+
+  if (!accepted) {
+    return
+  }
+
   isRequesting.value = true
   actionError.value = null
 
@@ -111,102 +126,82 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-6 pb-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando cuenta…</p>
+  <div class="space-y-5">
+    <SkeletonBlock v-if="isLoading" variant="list" :rows="3" />
     <DinerNotice v-else-if="hasConnectionError" kind="connection" @retry="loadAccount" />
     <DinerNotice v-else-if="!attention" kind="info" title="No encontramos esta cuenta" message="Puede que el enlace no sea correcto." />
 
     <template v-else>
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p class="font-label text-[11px] font-semibold tracking-widest text-primary uppercase">Mesa {{ attention.tableNumber }}</p>
-          <h1 class="font-headline text-2xl font-semibold text-on-surface">Tu cuenta</h1>
+          <p class="text-sm font-medium text-on-surface-variant">Mesa {{ attention.tableNumber }}</p>
+          <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu cuenta</h1>
         </div>
-        <span class="font-label inline-flex rounded-lg px-3 py-1 text-xs font-semibold" :class="attentionStatusBadgeClass[attention.status]">
-          {{ attentionStatusLabel[attention.status] }}
-        </span>
+        <StatusBadge size="md" :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
       </div>
 
-      <div class="grid grid-cols-3 gap-3">
-        <div class="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">Total</span>
-          <p class="font-headline mt-1 text-lg font-semibold text-on-surface">{{ formatMoney(account.total, currency) }}</p>
+      <section class="rounded-3xl bg-on-surface p-5 text-surface shadow-sm" aria-label="Resumen de la cuenta">
+        <p class="text-sm opacity-80">Saldo pendiente</p>
+        <p class="font-headline mt-1 text-4xl font-semibold tabular-nums">{{ formatMoney(account.remaining, currency) }}</p>
+        <div class="mt-4 grid grid-cols-2 gap-3 border-t border-surface/20 pt-4 text-sm">
+          <div>
+            <p class="opacity-80">Total</p>
+            <p class="font-semibold tabular-nums">{{ formatMoney(account.total, currency) }}</p>
+          </div>
+          <div>
+            <p class="opacity-80">Pagado</p>
+            <p class="font-semibold tabular-nums">{{ formatMoney(account.paid, currency) }}</p>
+          </div>
         </div>
-        <div class="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">Pagado</span>
-          <p class="font-headline mt-1 text-lg font-semibold text-emerald-700">{{ formatMoney(account.paid, currency) }}</p>
-        </div>
-        <div class="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-          <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">Pendiente</span>
-          <p class="font-headline mt-1 text-lg font-semibold" :class="account.remaining > 0 ? 'text-error' : 'text-on-surface'">
-            {{ formatMoney(account.remaining, currency) }}
-          </p>
-        </div>
-      </div>
+      </section>
 
-      <section class="space-y-3 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-        <h2 class="font-headline text-sm font-semibold text-on-surface">Consumo</h2>
-        <ul class="space-y-2">
-          <li v-for="item in account.products" :key="item.product.id" class="flex items-center justify-between gap-2 text-sm">
-            <span class="text-on-surface">{{ item.product.quantity }}× {{ item.product.name }}</span>
-            <span class="font-semibold text-on-surface">{{ formatMoney(item.product.subtotal, currency) }}</span>
+      <section class="space-y-3 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-1 ring-outline-variant/30">
+        <h2 class="font-headline text-lg font-semibold text-on-surface">Consumo</h2>
+        <ul class="divide-y divide-outline-variant/40">
+          <li v-for="item in account.products" :key="item.product.id" class="flex items-center justify-between gap-3 py-2.5 text-base">
+            <span class="text-on-surface"><span class="font-semibold">{{ item.product.quantity }}×</span> {{ item.product.name }}</span>
+            <span class="font-semibold text-on-surface tabular-nums">{{ formatMoney(item.product.subtotal, currency) }}</span>
           </li>
-          <li v-for="product in discarded" :key="product.id" class="flex items-center justify-between gap-2 text-sm">
+          <li v-for="product in discarded" :key="product.id" class="flex items-center justify-between gap-3 py-2.5 text-base">
             <span class="text-on-surface-variant line-through">{{ product.quantity }}× {{ product.name }}</span>
-            <span class="text-[11px] text-on-surface-variant">{{ orderedProductStatusLabel[product.status] }} · no se cobra</span>
+            <span class="text-sm text-on-surface-variant">{{ orderedProductStatusLabel[product.status] }} · no se cobra</span>
           </li>
         </ul>
         <p v-if="products.length === 0" class="text-sm text-on-surface-variant">Todavía no hay consumo en esta mesa.</p>
       </section>
 
-      <section class="space-y-3 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-        <h2 class="font-headline text-sm font-semibold text-on-surface">Pagos registrados</h2>
+      <section class="space-y-3 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-1 ring-outline-variant/30">
+        <h2 class="font-headline text-lg font-semibold text-on-surface">Pagos registrados</h2>
         <p v-if="payments.length === 0" class="text-sm text-on-surface-variant">
           Todavía no hay pagos. El cobro lo registra el personal del restaurante.
         </p>
-        <ul v-else class="space-y-2">
-          <li v-for="payment in payments" :key="payment.id" class="flex items-center justify-between gap-2 text-sm">
-            <span class="text-on-surface-variant">
+        <ul v-else class="divide-y divide-outline-variant/40">
+          <li v-for="payment in payments" :key="payment.id" class="flex flex-wrap items-center justify-between gap-2 py-2.5">
+            <span class="text-sm text-on-surface-variant">
               {{ formatTime(payment.createdAt, timezone) }} · {{ paymentMethodLabel[payment.method] }}
               <template v-if="payment.payerName"> · {{ payment.payerName }}</template>
             </span>
             <span class="flex items-center gap-2">
-              <span class="font-label rounded px-1.5 py-0.5 text-[10px] font-bold uppercase" :class="paymentStatusBadgeClass[payment.status]">
-                {{ paymentStatusLabel[payment.status] }}
-              </span>
-              <span class="font-semibold text-on-surface">{{ formatMoney(payment.amount, currency) }}</span>
+              <StatusBadge :tone="paymentStatusTone[payment.status]" :label="paymentStatusLabel[payment.status]" />
+              <span class="font-semibold text-on-surface tabular-nums">{{ formatMoney(payment.amount, currency) }}</span>
             </span>
           </li>
         </ul>
       </section>
 
-      <p v-if="actionError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container" role="alert">
+      <p v-if="actionError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
         {{ actionError }}
       </p>
 
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <RouterLink
-          class="font-label rounded-xl bg-surface-container-lowest py-3 text-center text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
-          :to="{ name: 'order-status', params: { attentionId: attention.id } }"
-        >
-          Volver a mi pedido
-        </RouterLink>
-        <button
-          v-if="attention.status === 'open'"
-          type="button"
-          class="font-label rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-60"
-          :disabled="isRequesting"
-          @click="askForAccount"
-        >
-          {{ isRequesting ? 'Solicitando…' : 'Solicitar la cuenta' }}
-        </button>
-        <p
-          v-else-if="attention.status === 'account-requested'"
-          class="rounded-xl bg-tertiary-fixed px-4 py-3 text-center text-sm text-on-tertiary-container"
-        >
-          Cuenta solicitada: el personal vendrá a cobrarte.
-        </p>
-      </div>
+      <BaseButton v-if="attention.status === 'open'" variant="primary" size="lg" block :loading="isRequesting" @click="askForAccount">
+        Solicitar la cuenta
+      </BaseButton>
+      <p
+        v-else-if="attention.status === 'account-requested'"
+        class="rounded-2xl bg-warning-container px-4 py-3 text-center text-sm text-on-warning-container"
+      >
+        Cuenta solicitada: el personal vendrá a cobrarte.
+      </p>
     </template>
   </div>
 </template>

@@ -43,10 +43,10 @@ onMounted(async () => {
     <div class="flex max-h-[85vh] flex-col">
       <header class="flex items-center justify-between gap-2 border-b border-outline-variant/50 px-4 py-3">
         <div>
-          <p class="font-label text-[10px] font-bold tracking-widest text-primary uppercase">Vista del comensal</p>
+          <p class="font-label text-xs font-bold tracking-widest text-primary uppercase">Vista del comensal</p>
           <p class="font-headline text-sm font-semibold">{{ menuName }}</p>
         </div>
-        <button type="button" class="rounded-lg px-2 py-1 text-xs font-semibold hover:bg-surface-container" @click="dialogEl?.close()">
+        <button type="button" class="rounded-lg min-h-9 px-2.5 py-1 text-sm font-semibold hover:bg-surface-container" @click="dialogEl?.close()">
           Cerrar
         </button>
       </header>

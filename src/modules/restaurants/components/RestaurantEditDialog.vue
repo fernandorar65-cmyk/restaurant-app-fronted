@@ -53,7 +53,7 @@ function submit(): void {
 
   emit('save', {
     code: code.value.trim() || `SEDE-${Date.now().toString(36).toUpperCase()}`,
-    imageUrl: imageUrl.value.trim() || `https://picsum.photos/seed/${encodeURIComponent(name.value.trim())}/800/400`,
+    imageUrl: imageUrl.value.trim() || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=400&fit=crop&auto=format&q=70',
     currency: currency.value,
     timezone: timezone.value,
     name: name.value.trim(),
@@ -76,7 +76,7 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,28rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 28rem"
     aria-labelledby="restaurant-dialog-title"
     @close="emit('close')"
   >
@@ -86,20 +86,20 @@ onMounted(async () => {
       </h2>
 
       <label v-if="!restaurant" class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Código</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Código</span>
         <input
           v-model="code"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="LIM-01-MIR"
           type="text"
         />
       </label>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
         <input
           v-model="name"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           required
           type="text"
         />
@@ -107,18 +107,18 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Ciudad</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Ciudad</span>
           <input
             v-model="city"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             type="text"
           />
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Categoría</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Categoría</span>
           <select
             v-model="category"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="(label, key) in CATEGORY_LABELS" :key="key" :value="key">{{ label }}</option>
           </select>
@@ -126,28 +126,28 @@ onMounted(async () => {
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Dirección</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Dirección</span>
         <input
           v-model="address"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           type="text"
         />
       </label>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Cocina</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Cocina</span>
         <input
           v-model="cuisine"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           type="text"
         />
       </label>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Imagen (URL)</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Imagen (URL)</span>
         <input
           v-model="imageUrl"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="https://…"
           type="url"
         />
@@ -155,19 +155,19 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Moneda</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Moneda</span>
           <select
             v-model="currency"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="option in CURRENCY_OPTIONS" :key="option" :value="option">{{ option }}</option>
           </select>
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Zona horaria</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Zona horaria</span>
           <select
             v-model="timezone"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="option in TIMEZONE_OPTIONS" :key="option" :value="option">{{ option }}</option>
           </select>
@@ -176,25 +176,25 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Estado operativo</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Estado operativo</span>
           <select
             v-model="status"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="(label, key) in STATUS_LABELS" :key="key" :value="key">{{ label }}</option>
           </select>
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Descripción del estado</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Descripción del estado</span>
           <input
             v-model="statusLabel"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             type="text"
           />
         </label>
       </div>
 
-      <p class="text-[11px] text-on-surface-variant">
+      <p class="text-xs text-on-surface-variant">
         Una sede inactiva o suspendida no aparece para los comensales y no puede abrir pedidos nuevos.
       </p>
       <p v-if="formError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container">{{ formError }}</p>
@@ -202,14 +202,14 @@ onMounted(async () => {
       <div class="flex items-center justify-end gap-2 pt-1">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="font-label rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
         >
           Guardar
         </button>

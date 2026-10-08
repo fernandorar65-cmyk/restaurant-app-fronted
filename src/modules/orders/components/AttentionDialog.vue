@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import type { Permission } from '@/modules/auth/permissions'
 import {
   cancelAttention,
@@ -11,15 +12,15 @@ import {
   updateOrderedProductStatus,
 } from '@/modules/orders/api'
 import {
-  attentionStatusBadgeClass,
   attentionStatusLabel,
+  attentionStatusTone,
   canCancelOrderedProduct,
   canRejectOrderedProduct,
   isBillableProduct,
   nextOrderedProductActionLabel,
   nextOrderedProductStatus,
-  orderedProductBadgeClass,
   orderedProductStatusLabel,
+  orderedProductStatusTone,
 } from '@/modules/orders/order-status-labels'
 import { groupByRound, historyStatusLabel } from '@/modules/orders/rounds'
 import type { AttentionWithProducts, OrderedProduct, OrderedProductStatus, StatusHistoryEntry } from '@/modules/orders/types'
@@ -162,14 +163,14 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,36rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog app-dialog--side overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 36rem"
     aria-labelledby="attention-dialog-title"
     @close="emit('close')"
   >
     <div class="flex max-h-[min(92vh,820px)] flex-col">
       <header class="flex items-start justify-between gap-4 px-5 pt-5 pb-4 sm:px-6">
         <div>
-          <p class="font-label text-[11px] font-semibold tracking-widest text-tertiary uppercase">Atención de mesa</p>
+          <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Atención de mesa</p>
           <h2 id="attention-dialog-title" class="font-headline mt-0.5 text-2xl leading-tight font-semibold">
             Mesa {{ attention.tableNumber }}
           </h2>
@@ -177,7 +178,7 @@ onMounted(async () => {
         </div>
         <button
           type="button"
-          class="rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
           aria-label="Cerrar"
           @click="closeDialog"
         >
@@ -189,9 +190,7 @@ onMounted(async () => {
 
       <div class="space-y-4 overflow-y-auto px-5 pb-5 sm:px-6">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="font-label rounded-lg px-2.5 py-1 text-[11px] font-semibold" :class="attentionStatusBadgeClass[attention.status]">
-            {{ attentionStatusLabel[attention.status] }}
-          </span>
+          <StatusBadge :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
           <span v-if="attention.status === 'account-requested'" class="text-xs font-semibold text-tertiary">
             El comensal solicitó la cuenta
           </span>
@@ -203,9 +202,9 @@ onMounted(async () => {
         </p>
 
         <section v-for="(round, index) in rounds" :key="round.batchId" class="space-y-2">
-          <h3 class="font-label flex items-center gap-2 text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">
+          <h3 class="font-label flex items-center gap-2 text-xs font-semibold tracking-widest text-on-surface-variant uppercase">
             Ronda {{ index + 1 }} · {{ formatTime(round.requestedAt, timezone) }}
-            <span class="rounded bg-surface-container px-1.5 py-0.5 text-[10px] normal-case tracking-normal">
+            <span class="rounded bg-surface-container px-1.5 py-0.5 text-xs normal-case tracking-normal">
               {{ round.createdBy ? `Cargado por ${round.createdBy}` : 'Pedido por QR' }}
             </span>
           </h3>
@@ -222,15 +221,13 @@ onMounted(async () => {
               </div>
 
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="font-label rounded px-2 py-0.5 text-[10px] font-bold uppercase" :class="orderedProductBadgeClass[product.status]">
-                  {{ orderedProductStatusLabel[product.status] }}
-                </span>
+                <StatusBadge :tone="orderedProductStatusTone[product.status]" :label="orderedProductStatusLabel[product.status]" />
 
                 <div v-if="isActive && reasonFor?.productId !== product.id" class="flex flex-wrap items-center gap-1.5">
                   <button
                     v-if="session.can('orders.manage') && canRejectOrderedProduct(product.status)"
                     type="button"
-                    class="font-label rounded-lg bg-error-container px-2.5 py-1 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+                    class="font-label rounded-lg bg-error-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error-container hover:bg-error/20"
                     @click="askReason(product, 'rejected')"
                   >
                     Rechazar
@@ -238,7 +235,7 @@ onMounted(async () => {
                   <button
                     v-else-if="session.can('orders.manage') && canCancelOrderedProduct(product.status)"
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface-variant hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high"
                     @click="askReason(product, 'cancelled')"
                   >
                     Cancelar
@@ -246,7 +243,7 @@ onMounted(async () => {
                   <button
                     v-if="canAdvance(product)"
                     type="button"
-                    class="font-label rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+                    class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
                     :disabled="busyId === product.id"
                     @click="advance(product)"
                   >
@@ -255,28 +252,28 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <p v-if="product.rejectionReason" class="text-[11px] text-error">Motivo: {{ product.rejectionReason }}</p>
+              <p v-if="product.rejectionReason" class="text-xs text-error">Motivo: {{ product.rejectionReason }}</p>
 
               <div v-if="reasonFor?.productId === product.id" class="space-y-2 rounded-lg bg-error-container/40 p-2.5">
                 <label class="block space-y-1">
-                  <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">
+                  <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                     {{ reasonFor.action === 'rejected' ? 'Motivo del rechazo' : 'Motivo de la cancelación' }}
                   </span>
                   <input
                     v-model="reason"
-                    class="w-full rounded-lg bg-surface-container-lowest px-3 py-1.5 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+                    class="w-full rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
                     placeholder="Ej: producto agotado"
                     type="text"
                     @keydown.enter.prevent="confirmReason(product)"
                   />
                 </label>
                 <div class="flex justify-end gap-2">
-                  <button type="button" class="font-label text-[11px] font-semibold text-on-surface-variant" @click="reasonFor = null">
+                  <button type="button" class="font-label text-xs font-semibold text-on-surface-variant" @click="reasonFor = null">
                     Volver
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-error px-2.5 py-1 text-[11px] font-semibold text-on-error disabled:opacity-50"
+                    class="font-label rounded-lg bg-error min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error disabled:opacity-50"
                     :disabled="!reason.trim() || busyId === product.id"
                     @click="confirmReason(product)"
                   >
@@ -294,12 +291,12 @@ onMounted(async () => {
           <span class="font-headline text-lg font-semibold">{{ formatMoney(total, currency) }}</span>
         </div>
 
-        <button type="button" class="font-label text-[11px] font-semibold text-primary underline-offset-2 hover:underline" @click="toggleHistory">
+        <button type="button" class="font-label text-xs font-semibold text-primary underline-offset-2 hover:underline" @click="toggleHistory">
           {{ isHistoryOpen ? 'Ocultar historial' : 'Ver historial de estados' }}
         </button>
         <ul v-if="isHistoryOpen" class="space-y-1.5 rounded-xl bg-surface p-3">
           <li v-if="history.length === 0" class="text-xs text-on-surface-variant">Sin cambios registrados.</li>
-          <li v-for="entry in history" :key="entry.id" class="text-[11px] text-on-surface-variant">
+          <li v-for="entry in history" :key="entry.id" class="text-xs text-on-surface-variant">
             <span class="font-semibold text-on-surface">{{ formatTime(entry.changedAt, timezone) }}</span>
             · {{ productName(entry) }} → <span class="font-semibold text-on-surface">{{ historyStatusLabel(entry) }}</span>
             <template v-if="entry.userName"> · {{ entry.userName }}</template>
@@ -309,23 +306,23 @@ onMounted(async () => {
 
         <div v-if="isCancellingAttention" class="space-y-2 rounded-xl bg-error-container/40 p-3">
           <label class="block space-y-1">
-            <span class="font-label text-[10px] font-semibold tracking-wide text-on-surface-variant uppercase">
+            <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
               Motivo de la cancelación de la atención
             </span>
             <input
               v-model="cancelReason"
-              class="w-full rounded-lg bg-surface-container-lowest px-3 py-1.5 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+              class="w-full rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
               placeholder="Ej: los comensales se fueron antes de pedir"
               type="text"
             />
           </label>
           <div class="flex justify-end gap-2">
-            <button type="button" class="font-label text-[11px] font-semibold text-on-surface-variant" @click="isCancellingAttention = false">
+            <button type="button" class="font-label text-xs font-semibold text-on-surface-variant" @click="isCancellingAttention = false">
               Volver
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-error px-2.5 py-1 text-[11px] font-semibold text-on-error disabled:opacity-50"
+              class="font-label rounded-lg bg-error min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error disabled:opacity-50"
               :disabled="!cancelReason.trim()"
               @click="confirmCancelAttention"
             >
@@ -339,7 +336,7 @@ onMounted(async () => {
         <button
           v-if="isActive && session.can('orders.manage') && !isCancellingAttention"
           type="button"
-          class="font-label rounded-xl bg-surface-container px-3 py-2.5 text-xs font-semibold text-error hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
           @click="isCancellingAttention = true"
         >
           Cancelar atención
@@ -347,14 +344,14 @@ onMounted(async () => {
         <button
           v-if="isActive && session.can('orders.manage')"
           type="button"
-          class="font-label rounded-xl bg-primary px-3 py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
           @click="emit('addProducts')"
         >
           + Agregar productos
         </button>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container px-4 py-2.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cerrar

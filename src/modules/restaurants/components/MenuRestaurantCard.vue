@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 const badgeClass: Record<RestaurantBadgeTone, string> = {
   amber: 'bg-amber-500 text-slate-950',
-  emerald: 'bg-emerald-600 text-white',
+  emerald: 'bg-success text-on-success',
   wine: 'bg-amber-700 text-white',
   blue: 'bg-blue-600 text-white',
 }
@@ -26,13 +26,13 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
       <img :alt="restaurant.name" class="h-full w-full object-cover object-center" :src="restaurant.imageUrl" />
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       <span
-        class="font-label absolute top-3 left-3 rounded px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shadow-sm"
+        class="font-label absolute top-3 left-3 rounded px-2.5 py-0.5 text-xs font-bold tracking-wide uppercase shadow-sm"
         :class="badgeClass[restaurant.badgeTone]"
       >
         {{ restaurant.badgeLabel }}
       </span>
       <div class="absolute right-4 bottom-3 left-4">
-        <p class="font-label text-[10px] font-bold tracking-widest text-amber-300 uppercase">{{ restaurant.cuisine }}</p>
+        <p class="font-label text-xs font-bold tracking-widest text-amber-300 uppercase">{{ restaurant.cuisine }}</p>
         <h2 class="font-headline text-xl leading-tight font-semibold tracking-tight text-white">{{ restaurant.name }}</h2>
       </div>
     </div>
@@ -51,7 +51,7 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
       </p>
       <button
         type="button"
-        class="font-label rounded-xl px-4 py-2.5 text-xs font-semibold shadow-sm transition-colors"
+        class="font-label min-h-12 rounded-xl px-4 text-base font-semibold shadow-sm transition-colors"
         :class="
           isSelected
             ? 'border border-primary bg-primary/10 text-primary'
@@ -59,7 +59,7 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
         "
         @click="emit('enter')"
       >
-        {{ isSelected ? 'Restaurante activo' : 'Ver menú' }}
+        {{ isSelected ? 'Ver la carta (sede actual)' : 'Ver la carta' }}
       </button>
     </div>
   </article>

@@ -86,7 +86,7 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,26rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 26rem"
     aria-labelledby="table-dialog-title"
     @close="emit('close')"
   >
@@ -97,29 +97,29 @@ onMounted(async () => {
 
       <div class="grid grid-cols-3 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Número</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Número</span>
           <input
             v-model="number"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             placeholder="13"
             required
             type="text"
           />
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Código</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Código</span>
           <input
             v-model="code"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             placeholder="M-13"
             type="text"
           />
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Sillas</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Sillas</span>
           <input
             v-model.number="seats"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             min="1"
             type="number"
           />
@@ -127,25 +127,25 @@ onMounted(async () => {
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Ubicación / nombre</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Ubicación / nombre</span>
         <input
           v-model="location"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           type="text"
         />
       </label>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Estado</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Estado</span>
         <select
           v-model="status"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
         >
           <option v-for="option in (['active', 'maintenance', 'inactive'] as const)" :key="option" :value="option">
             {{ tableStatusLabel[option] }}
           </option>
         </select>
-        <span class="block text-[11px] text-on-surface-variant">Una mesa en mantenimiento o inactiva no puede abrir pedidos.</span>
+        <span class="block text-xs text-on-surface-variant">Una mesa en mantenimiento o inactiva no puede abrir pedidos.</span>
       </label>
 
       <p v-if="formError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container">{{ formError }}</p>
@@ -153,14 +153,14 @@ onMounted(async () => {
       <div class="flex items-center justify-end gap-2 pt-1">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="font-label rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
         >
           {{ table ? 'Guardar' : 'Crear mesa' }}
         </button>

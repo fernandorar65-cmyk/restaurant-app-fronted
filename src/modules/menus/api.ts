@@ -281,7 +281,7 @@ export async function createMenuProduct(
       restaurantId,
       position,
       ...draft,
-      imageUrl: draft.imageUrl || `https://picsum.photos/seed/mp-${Date.now()}/640/480`,
+      imageUrl: draft.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=640&h=480&fit=crop&auto=format&q=70',
     },
   })
 

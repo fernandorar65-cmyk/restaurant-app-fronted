@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 const badgeClass: Record<RestaurantBadgeTone, string> = {
   amber: 'bg-amber-500 text-slate-950',
-  emerald: 'bg-emerald-600 text-white',
+  emerald: 'bg-success text-on-success',
   wine: 'bg-amber-700 text-white',
   blue: 'bg-blue-600 text-white',
 }
@@ -27,25 +27,25 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div class="absolute top-3 left-3 flex flex-wrap items-center gap-2">
         <span
-          class="font-label flex items-center rounded px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shadow-sm"
+          class="font-label flex items-center rounded px-2.5 py-0.5 text-xs font-bold tracking-wide uppercase shadow-sm"
           :class="badgeClass[restaurant.badgeTone]"
         >
           {{ restaurant.badgeLabel }}
         </span>
         <span
-          class="font-label flex items-center gap-1.5 rounded border border-emerald-500/40 bg-emerald-950/80 px-2.5 py-1 text-[10px] font-semibold text-emerald-300 shadow-sm backdrop-blur-sm"
+          class="font-label flex items-center gap-1.5 rounded border border-emerald-500/40 bg-emerald-950/80 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 shadow-sm backdrop-blur-sm"
         >
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
           {{ restaurant.statusLabel }}
         </span>
       </div>
       <p
-        class="absolute top-3 right-3 rounded border border-white/20 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-sm"
+        class="absolute top-3 right-3 rounded border border-white/20 bg-black/60 px-2 py-0.5 font-mono text-xs font-bold text-white backdrop-blur-sm"
       >
         {{ restaurant.code }}
       </p>
       <div class="absolute right-4 bottom-3 left-4">
-        <p class="font-label text-[10px] font-bold tracking-widest text-amber-300 uppercase">
+        <p class="font-label text-xs font-bold tracking-widest text-amber-300 uppercase">
           {{ restaurant.cuisine }}
         </p>
         <h2 class="font-headline text-2xl leading-tight font-semibold tracking-tight text-white">
@@ -67,35 +67,35 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
           </svg>
           <span>{{ restaurant.address }}</span>
         </p>
-        <span class="font-mono text-[11px] text-gray-400">{{ restaurant.capacityLabel }}</span>
+        <span class="font-mono text-xs text-gray-400">{{ restaurant.capacityLabel }}</span>
       </div>
 
       <div class="grid grid-cols-3 gap-2.5">
         <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-[10px] font-bold text-gray-500 uppercase">Facturación hoy</span>
+          <span class="font-label text-xs font-bold text-gray-500 uppercase">Facturación hoy</span>
           <div class="my-1">
             <span class="font-headline block text-base font-bold text-gray-900">{{ restaurant.kpis.revenueLabel }}</span>
-            <span class="font-label inline-block rounded bg-emerald-50 px-1 text-[10px] font-bold text-emerald-700">
+            <span class="font-label inline-block rounded bg-success-container px-1 text-xs font-bold text-on-success-container">
               {{ restaurant.kpis.revenueHint }}
             </span>
           </div>
-          <span class="text-[10px] text-gray-500">{{ restaurant.kpis.marginLabel }}</span>
+          <span class="text-xs text-gray-500">{{ restaurant.kpis.marginLabel }}</span>
         </div>
         <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-[10px] font-bold text-gray-500 uppercase">Estado de stock</span>
+          <span class="font-label text-xs font-bold text-gray-500 uppercase">Estado de stock</span>
           <div class="my-1">
             <span class="font-headline block text-base font-bold text-gray-900">{{ restaurant.kpis.stockLabel }}</span>
-            <span class="block text-[10px] text-gray-500">{{ restaurant.kpis.stockHint }}</span>
+            <span class="block text-xs text-gray-500">{{ restaurant.kpis.stockHint }}</span>
           </div>
-          <span class="text-[10px] font-medium text-emerald-700">{{ restaurant.kpis.stockNote }}</span>
+          <span class="text-xs font-medium text-success">{{ restaurant.kpis.stockNote }}</span>
         </div>
         <div class="flex flex-col justify-between rounded border border-gray-200 bg-gray-50/60 p-2.5">
-          <span class="font-label text-[10px] font-bold text-gray-500 uppercase">Aforo</span>
+          <span class="font-label text-xs font-bold text-gray-500 uppercase">Aforo</span>
           <div class="my-1">
             <span class="font-headline block text-base font-bold text-gray-900">
               {{ restaurant.kpis.occupancyLabel }}
             </span>
-            <span class="block text-[10px] text-gray-500">{{ restaurant.kpis.occupancyHint }}</span>
+            <span class="block text-xs text-gray-500">{{ restaurant.kpis.occupancyHint }}</span>
           </div>
           <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
             <div class="h-full bg-primary" :style="{ width: `${restaurant.kpis.occupancyPercent}%` }" />

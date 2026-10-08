@@ -35,7 +35,7 @@ function label(value: number): string {
       <div class="h-2 w-full rounded-full bg-surface-container">
         <div class="h-full rounded-r-[4px] rounded-l-full bg-primary" :style="{ width: `${(item.value / max) * 100}%` }" />
       </div>
-      <p v-if="item.detail" class="truncate text-[11px] text-on-surface-variant">{{ item.detail }}</p>
+      <p v-if="item.detail" class="truncate text-xs text-on-surface-variant">{{ item.detail }}</p>
     </li>
   </ul>
 </template>

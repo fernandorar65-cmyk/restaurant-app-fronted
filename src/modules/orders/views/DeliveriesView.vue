@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
+import EmptyState from '@/components/base/EmptyState.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import { useNow } from '@/composables/useNow'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -13,7 +15,8 @@ import {
   updateOrderedProductStatus,
   updateOrderedProductsStatus,
 } from '@/modules/orders/api'
-import { DELIVERY_DELAY_MINUTES, statusSinceMap } from '@/modules/orders/rounds'
+import { delayLabel, delayLevel, delayRingClass, delayTextClass, DELIVERY_DELAY_MINUTES, statusSinceMap } from '@/modules/orders/rounds'
+import type { DelayLevel } from '@/modules/orders/rounds'
 import type { OrderedProduct } from '@/modules/orders/types'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useSessionStore } from '@/stores/session'
@@ -84,8 +87,8 @@ async function reload(): Promise<void> {
   }
 }
 
-function isDelayed(readyAt: string): boolean {
-  return minutesSince(readyAt, now.value) >= DELIVERY_DELAY_MINUTES
+function waitLevel(readyAt: string): DelayLevel {
+  return delayLevel(minutesSince(readyAt, now.value), DELIVERY_DELAY_MINUTES)
 }
 
 async function deliver(product: OrderedProduct): Promise<void> {
@@ -134,7 +137,7 @@ watch(
 
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 lg:px-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando entregas…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -148,28 +151,31 @@ watch(
         :restaurant="restaurant"
         section="Entregas"
         title="Listos para servir"
-        :description="`${readyCount} producto(s) esperan en el pase. Se marca en rojo lo que espera más de ${DELIVERY_DELAY_MINUTES} min.`"
+        :description="`${readyCount} producto(s) esperan en el pase. Ámbar a partir de ${DELIVERY_DELAY_MINUTES} min, rojo a partir de ${DELIVERY_DELAY_MINUTES * 2} min.`"
       />
 
       <p v-if="actionError" class="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
         {{ actionError }}
       </p>
 
-      <p v-if="tables.length === 0" class="rounded-2xl bg-surface-container-lowest p-8 text-center text-sm text-on-surface-variant shadow-sm">
-        No hay nada esperando en el pase.
-      </p>
+      <EmptyState
+        v-if="tables.length === 0"
+        icon="check"
+        title="Nada esperando en el pase"
+        message="Cuando cocina marque un producto como listo aparecerá aquí agrupado por mesa."
+      />
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <article
           v-for="table in tables"
           :key="table.attentionId"
-          class="space-y-3 rounded-2xl bg-surface-container-lowest p-4 shadow-sm ring-2"
-          :class="isDelayed(table.oldestReadyAt) ? 'ring-error' : 'ring-transparent'"
+          class="space-y-3 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-2"
+          :class="delayRingClass[waitLevel(table.oldestReadyAt)]"
         >
           <header class="flex items-center justify-between gap-2">
             <span class="font-headline text-2xl font-bold text-on-surface">Mesa {{ table.tableNumber }}</span>
-            <span class="font-label text-xs font-semibold" :class="isDelayed(table.oldestReadyAt) ? 'text-error' : 'text-on-surface-variant'">
-              Listo {{ formatElapsed(table.oldestReadyAt, now) }}
+            <span class="font-label text-sm font-semibold" :class="delayTextClass[waitLevel(table.oldestReadyAt)]">
+              <template v-if="delayLabel[waitLevel(table.oldestReadyAt)]">{{ delayLabel[waitLevel(table.oldestReadyAt)] }} · </template>Listo {{ formatElapsed(table.oldestReadyAt, now) }}
             </span>
           </header>
 
@@ -196,7 +202,7 @@ watch(
 
           <button
             type="button"
-            class="font-label w-full rounded-xl bg-emerald-700 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+            class="font-label min-h-12 w-full rounded-xl bg-success text-base font-semibold text-on-success hover:opacity-90 disabled:opacity-50"
             :disabled="busyKey === table.attentionId"
             @click="deliverTable(table)"
           >

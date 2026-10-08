@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import DinerNotice from '@/components/feedback/DinerNotice.vue'
 import type { DinerNoticeKind } from '@/components/feedback/DinerNotice.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -104,10 +105,55 @@ async function loadMenu(): Promise<void> {
   }
 }
 
+const tabsEl = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let isProgrammaticScroll = false
+
+function revealActiveTab(): void {
+  tabsEl.value
+    ?.querySelector<HTMLElement>(`[data-category="${activeCategoryId.value}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+}
+
 function scrollToCategory(categoryId: string): void {
   activeCategoryId.value = categoryId
+  isProgrammaticScroll = true
   document.getElementById(`category-${categoryId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  revealActiveTab()
+  window.setTimeout(() => {
+    isProgrammaticScroll = false
+  }, 700)
 }
+
+/** La pestaña activa sigue a la categoría que se está viendo al hacer scroll. */
+async function observeSections(): Promise<void> {
+  observer?.disconnect()
+  await nextTick()
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (isProgrammaticScroll) {
+        return
+      }
+
+      const visible = entries.filter((entry) => entry.isIntersecting)
+      const top = visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
+      const id = top?.target.id.replace('category-', '')
+
+      if (id && id !== activeCategoryId.value) {
+        activeCategoryId.value = id
+        revealActiveTab()
+      }
+    },
+    { rootMargin: '-140px 0px -55% 0px' },
+  )
+
+  document.querySelectorAll('section[id^="category-"]').forEach((section) => observer?.observe(section))
+}
+
+watch(productsByCategory, () => void observeSections())
+
+onUnmounted(() => observer?.disconnect())
 
 watch(() => diner.restaurantId, () => void loadMenu())
 
@@ -127,47 +173,50 @@ onMounted(() => {
       </RouterLink>
     </DinerNotice>
 
-    <p v-else-if="isLoading" class="text-sm text-on-surface-variant">Cargando menú…</p>
+    <SkeletonBlock v-else-if="isLoading" variant="list" :rows="5" />
 
     <DinerNotice v-else-if="notice" :kind="notice" @retry="loadMenu" />
 
     <template v-else>
       <div
-        class="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3"
-        :class="canOrder ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-container text-on-surface'"
+        v-if="!canOrder"
+        class="flex items-start gap-3 rounded-2xl bg-primary-fixed px-4 py-3 text-on-primary-fixed"
+        role="note"
       >
-        <div>
-          <p class="font-label text-[10px] font-bold tracking-widest uppercase opacity-80">{{ diner.restaurantName }}</p>
-          <p class="font-headline text-base font-semibold">
-            {{ canOrder ? `Mesa ${diner.tableNumber}` : 'Solo consulta' }}
-          </p>
-          <p v-if="!canOrder" class="text-xs text-on-surface-variant">Escanea el QR de tu mesa para hacer un pedido.</p>
-        </div>
-        <RouterLink
-          v-if="canOrder && diner.attentionId"
-          class="font-label rounded-xl bg-surface-container-lowest px-3 py-2 text-xs font-semibold text-on-surface shadow-sm"
-          :to="{ name: 'order-status', params: { attentionId: diner.attentionId } }"
-        >
-          Mi pedido
-        </RouterLink>
+        <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z"
+          />
+        </svg>
+        <p class="text-sm"><strong>Estás viendo la carta.</strong> Para pedir, escanea el código QR de tu mesa.</p>
       </div>
 
       <label class="block">
         <span class="sr-only">Buscar producto</span>
         <input
           v-model="searchQuery"
-          class="w-full rounded-xl bg-surface-container-lowest px-4 py-2.5 text-sm text-on-surface shadow-sm outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary"
-          placeholder="Buscar un producto..."
+          class="min-h-12 w-full rounded-2xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-outline-variant/40 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary"
+          placeholder="Buscar en la carta…"
           type="search"
         />
       </label>
 
-      <div class="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-background/95 px-4 py-2 backdrop-blur-sm">
+      <div
+        ref="tabsEl"
+        class="sticky top-14 z-20 -mx-4 flex gap-2 overflow-x-auto bg-background/95 px-4 py-2 backdrop-blur-sm [scrollbar-width:none]"
+        role="tablist"
+        aria-label="Categorías de la carta"
+      >
         <button
           v-for="category in categories"
           :key="category.id"
           type="button"
-          class="font-label shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors"
+          role="tab"
+          :data-category="category.id"
+          :aria-selected="activeCategoryId === category.id"
+          class="font-label min-h-10 shrink-0 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors"
           :class="
             activeCategoryId === category.id
               ? 'bg-primary text-on-primary'
@@ -183,11 +232,11 @@ onMounted(() => {
         v-for="group in productsByCategory"
         :id="`category-${group.category.id}`"
         :key="group.category.id"
-        class="space-y-3 scroll-mt-16"
+        class="scroll-mt-32 space-y-3"
       >
         <div>
-          <h2 class="font-headline text-lg font-semibold text-on-surface">{{ group.category.name }}</h2>
-          <p v-if="group.category.description" class="text-xs text-on-surface-variant">
+          <h2 class="font-headline text-xl font-semibold text-on-surface">{{ group.category.name }}</h2>
+          <p v-if="group.category.description" class="text-sm text-on-surface-variant">
             {{ group.category.description }}
           </p>
         </div>
@@ -223,11 +272,14 @@ onMounted(() => {
 
       <RouterLink
         v-if="canOrder && cart.itemCount > 0"
-        class="font-label fixed inset-x-4 bottom-4 z-20 mx-auto flex max-w-md items-center justify-between rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-on-primary shadow-lg"
+        class="font-label fixed inset-x-4 bottom-20 z-20 mx-auto flex min-h-14 max-w-md items-center justify-between rounded-2xl bg-primary px-5 text-base font-semibold text-on-primary shadow-lg transition-colors hover:bg-primary-container"
         :to="{ name: 'cart' }"
       >
-        <span>{{ cart.itemCount }} {{ cart.itemCount === 1 ? 'producto' : 'productos' }}</span>
-        <span>Ver carrito · {{ formatMoney(cart.subtotal, diner.currency) }}</span>
+        <span class="flex items-center gap-2">
+          <span class="flex h-7 min-w-7 items-center justify-center rounded-full bg-on-primary/20 px-2 text-sm">{{ cart.itemCount }}</span>
+          Ver carrito
+        </span>
+        <span>{{ formatMoney(cart.subtotal, diner.currency) }}</span>
       </RouterLink>
     </template>
   </div>

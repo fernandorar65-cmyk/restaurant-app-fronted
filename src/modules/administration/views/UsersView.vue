@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import AdminPageHeader from '@/components/base/AdminPageHeader.vue'
+import StatusBadge from '@/components/base/StatusBadge.vue'
+import type { StatusTone } from '@/components/base/StatusBadge.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import {
   fetchEmployees,
@@ -51,16 +54,16 @@ function sitesLabel(user: SystemUser): string {
     .join(', ')
 }
 
-function statusOf(user: SystemUser): { label: string; className: string } {
+function statusOf(user: SystemUser): { label: string; tone: StatusTone } {
   if (user.isBlocked) {
-    return { label: 'Bloqueado', className: 'bg-error-container text-on-error-container' }
+    return { label: 'Bloqueado', tone: 'danger' }
   }
 
   if (!user.isActive) {
-    return { label: 'Inactivo', className: 'bg-surface-container-high text-on-surface-variant' }
+    return { label: 'Inactivo', tone: 'muted' }
   }
 
-  return { label: 'Activo', className: 'bg-primary/10 text-primary' }
+  return { label: 'Activo', tone: 'success' }
 }
 
 function isSelf(user: SystemUser): boolean {
@@ -153,7 +156,7 @@ onMounted(() => {
       description="Cuentas de acceso del personal: rol, sedes a las que entra y empleado vinculado. Un usuario bloqueado no puede iniciar sesión."
     />
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando cuentas…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -167,37 +170,35 @@ onMounted(() => {
         {{ actionError }}
       </p>
 
-      <div class="overflow-x-auto rounded-2xl bg-surface-container-lowest shadow-sm">
-        <table class="w-full min-w-[760px] text-left text-sm">
+      <div class="md:overflow-x-auto md:rounded-2xl md:bg-surface-container-lowest md:shadow-sm">
+        <table class="responsive-table w-full md:min-w-[760px] text-left text-sm">
           <thead class="bg-surface-container-low text-on-surface-variant">
             <tr>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Cuenta</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Rol</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Sedes</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Empleado</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Estado</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Cuenta</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Rol</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Sedes</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Empleado</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Estado</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/40">
             <tr v-for="user in users" :key="user.id">
-              <td class="px-4 py-3">
+              <td class="cell-main px-4 py-3">
                 <p class="font-semibold text-on-surface">{{ user.name }} <span v-if="isSelf(user)" class="text-xs font-normal text-on-surface-variant">(tú)</span></p>
                 <p class="text-xs text-on-surface-variant">{{ user.email }}</p>
               </td>
-              <td class="px-4 py-3" :class="user.roleId ? 'text-on-surface' : 'text-error'">{{ roleName(user) }}</td>
-              <td class="px-4 py-3 text-xs text-on-surface-variant">{{ sitesLabel(user) }}</td>
-              <td class="px-4 py-3 text-xs text-on-surface-variant">{{ employeeName(user) }}</td>
-              <td class="px-4 py-3">
-                <span class="font-label rounded-md px-2 py-0.5 text-[10px] font-bold uppercase" :class="statusOf(user).className">
-                  {{ statusOf(user).label }}
-                </span>
+              <td class="px-4 py-3" :class="user.roleId ? 'text-on-surface' : 'text-error'" data-label="Rol">{{ roleName(user) }}</td>
+              <td class="px-4 py-3 text-xs text-on-surface-variant" data-label="Sedes">{{ sitesLabel(user) }}</td>
+              <td class="px-4 py-3 text-xs text-on-surface-variant" data-label="Empleado">{{ employeeName(user) }}</td>
+              <td class="px-4 py-3" data-label="Estado">
+                <StatusBadge :tone="statusOf(user).tone" :label="statusOf(user).label" />
               </td>
-              <td class="px-4 py-3">
+              <td class="cell-actions px-4 py-3">
                 <div class="flex justify-end gap-1.5">
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="editingUser = user"
                   >
                     Acceso
@@ -205,14 +206,14 @@ onMounted(() => {
                   <template v-if="!isSelf(user)">
                     <button
                       type="button"
-                      class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                      class="font-label rounded-lg bg-surface-container px-2.5 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
                       @click="toggleActive(user)"
                     >
                       {{ user.isActive ? 'Desactivar' : 'Activar' }}
                     </button>
                     <button
                       type="button"
-                      class="font-label rounded-lg px-2.5 py-1.5 text-[11px] font-semibold"
+                      class="font-label rounded-lg px-2.5 py-1.5 text-xs font-semibold"
                       :class="user.isBlocked ? 'bg-primary text-on-primary hover:bg-primary-container' : 'bg-error-container text-on-error-container hover:bg-error/20'"
                       @click="toggleBlocked(user)"
                     >

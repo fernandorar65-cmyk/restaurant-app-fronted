@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import AdminPageHeader from '@/components/base/AdminPageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { createRole, deleteRole, fetchRoles, fetchUsers, updateRole } from '@/modules/administration/api'
@@ -8,10 +9,13 @@ import RoleDialog from '@/modules/administration/components/RoleDialog.vue'
 import type { Role, RoleDraft, SystemUser } from '@/modules/administration/types'
 import { permissionLabel } from '@/modules/auth/permissions'
 import { HttpError } from '@/services/http'
+import { useConfirmStore } from '@/stores/confirm'
 import { useSessionStore } from '@/stores/session'
 import { useToastStore } from '@/stores/toast'
 
 usePageTitle('Roles y permisos')
+
+const confirm = useConfirmStore()
 
 /** Rol del dueño: no se edita ni se elimina para no dejar la organización sin administrador. */
 const OWNER_ROLE_ID = 'role-0'
@@ -77,7 +81,9 @@ async function removeRole(role: Role): Promise<void> {
     return
   }
 
-  if (!window.confirm(`¿Eliminar el rol "${role.name}"?`)) {
+  const accepted = await confirm.ask({ title: `¿Eliminar el rol "${role.name}"?`, confirmLabel: 'Eliminar rol', tone: 'danger' })
+
+  if (!accepted) {
     return
   }
 
@@ -104,7 +110,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingRole = null"
         >
           + Rol
@@ -112,7 +118,7 @@ onMounted(() => {
       </template>
     </AdminPageHeader>
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando roles…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -133,7 +139,7 @@ onMounted(() => {
               <h2 class="font-headline text-lg font-semibold text-on-surface">{{ role.name }}</h2>
               <p class="mt-0.5 text-xs text-on-surface-variant">{{ role.description }}</p>
             </div>
-            <span class="font-label shrink-0 rounded-full bg-surface-container px-2.5 py-1 text-[11px] font-bold text-primary">
+            <span class="font-label shrink-0 rounded-full bg-surface-container px-2.5 py-0.5 text-xs font-bold text-primary">
               {{ usersWithRole(role) }} {{ usersWithRole(role) === 1 ? 'usuario' : 'usuarios' }}
             </span>
           </div>
@@ -141,7 +147,7 @@ onMounted(() => {
             <span
               v-for="permission in role.permissions"
               :key="permission"
-              class="font-label rounded bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary"
+              class="font-label rounded bg-primary/10 min-h-9 px-2.5 py-1 text-sm font-semibold text-primary"
             >
               {{ permissionLabel[permission] }}
             </span>
@@ -150,20 +156,20 @@ onMounted(() => {
           <div v-if="role.id !== OWNER_ROLE_ID" class="mt-auto flex justify-end gap-2 border-t border-outline-variant/50 pt-3">
             <button
               type="button"
-              class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+              class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
               @click="editingRole = role"
             >
               Editar
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-error-container px-3 py-1.5 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+              class="font-label rounded-lg bg-error-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error-container hover:bg-error/20"
               @click="removeRole(role)"
             >
               Eliminar
             </button>
           </div>
-          <p v-else class="mt-auto text-[11px] text-on-surface-variant">Rol del sistema: no se puede editar ni eliminar.</p>
+          <p v-else class="mt-auto text-xs text-on-surface-variant">Rol del sistema: no se puede editar ni eliminar.</p>
         </article>
       </div>
     </template>

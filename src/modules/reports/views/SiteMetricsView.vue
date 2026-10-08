@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { useSiteContext } from '@/composables/useSiteContext'
@@ -68,7 +69,7 @@ const timeTiles = computed(() => [
 
 <template>
   <div class="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 lg:px-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Calculando métricas…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -90,7 +91,7 @@ const timeTiles = computed(() => [
               v-for="option in PERIODS"
               :key="option.id"
               type="button"
-              class="font-label rounded-lg px-3 py-1.5 text-xs font-semibold"
+              class="font-label rounded-lg min-h-9 px-3 py-1.5 text-sm font-semibold"
               :class="period === option.id ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant'"
               :aria-pressed="period === option.id"
               @click="period = option.id"
@@ -112,7 +113,7 @@ const timeTiles = computed(() => [
         <h2 class="font-headline text-lg font-semibold text-on-surface">Tiempos promedio</h2>
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <article v-for="tile in timeTiles" :key="tile.label" class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">{{ tile.label }}</span>
+            <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">{{ tile.label }}</span>
             <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ tile.value }}</p>
           </article>
         </div>
@@ -122,23 +123,23 @@ const timeTiles = computed(() => [
         <h2 class="font-headline text-lg font-semibold text-on-surface">Ventas y mesas</h2>
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Ventas cobradas</span>
+            <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Ventas cobradas</span>
             <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ formatMoney(metrics.sales, currency) }}</p>
             <p class="mt-1 text-xs text-on-surface-variant">{{ metrics.attentionsClosed }} cuentas cerradas</p>
           </article>
           <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Ticket promedio</span>
+            <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Ticket promedio</span>
             <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">
               {{ metrics.averageTicket === null ? '—' : formatMoney(metrics.averageTicket, currency) }}
             </p>
           </article>
           <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Duración de una atención</span>
+            <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Duración de una atención</span>
             <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ minutes(metrics.averageAttentionMinutes) }}</p>
             <p class="mt-1 text-xs text-on-surface-variant">{{ metrics.attentionsCancelled }} canceladas</p>
           </article>
           <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Rotación de mesas</span>
+            <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Rotación de mesas</span>
             <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">
               {{ metrics.tableTurnover === null ? '—' : metrics.tableTurnover }}
             </p>

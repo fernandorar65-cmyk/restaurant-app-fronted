@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import type { Permission } from '@/modules/auth/permissions'
 import { fetchEmployees, fetchInventoryItems, fetchRoles } from '@/modules/administration/api'
@@ -100,7 +101,7 @@ onMounted(() => {
 <template>
   <div class="mx-auto w-full max-w-6xl space-y-6 px-6 py-8 lg:px-12">
     <div>
-      <p class="font-label text-[11px] font-bold tracking-widest text-primary uppercase">
+      <p class="font-label text-xs font-bold tracking-widest text-primary uppercase">
         {{ organization?.name ?? 'Organización' }}
       </p>
       <h1 class="font-headline text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl">Administración</h1>
@@ -109,7 +110,7 @@ onMounted(() => {
       </p>
     </div>
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando panel…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -121,19 +122,19 @@ onMounted(() => {
     <template v-else>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Sedes</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Sedes</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface">{{ restaurants.length }}</p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Empleados</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Empleados</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface">{{ employees.length }}</p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Roles</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Roles</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface">{{ roles.length }}</p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Alertas de stock</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Alertas de stock</span>
           <p class="font-headline pt-1 text-3xl font-semibold" :class="inventoryAlerts > 0 ? 'text-error' : 'text-on-surface'">
             {{ inventoryAlerts }}
           </p>

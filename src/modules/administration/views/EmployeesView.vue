@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
+import { useConfirmStore } from '@/stores/confirm'
+import StatusBadge from '@/components/base/StatusBadge.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import AdminPageHeader from '@/components/base/AdminPageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { employeeAreaLabel, employeeStatusClass, employeeStatusLabel } from '@/modules/administration/admin-labels'
+import { employeeAreaLabel, employeeStatusLabel, employeeStatusTone } from '@/modules/administration/admin-labels'
 import {
   createEmployee,
   deleteEmployee,
@@ -21,6 +24,8 @@ import { HttpError } from '@/services/http'
 import { getInitials } from '@/utils/string'
 
 usePageTitle('Empleados')
+
+const confirm = useConfirmStore()
 
 const employees = ref<Employee[]>([])
 const roles = ref<Role[]>([])
@@ -104,7 +109,14 @@ async function saveEmployee(draft: EmployeeDraft): Promise<void> {
 }
 
 async function removeEmployee(employee: Employee): Promise<void> {
-  if (!window.confirm(`¿Dar de baja a ${employee.name}? Su cuenta de acceso (si tiene) queda sin empleado vinculado.`)) {
+  const accepted = await confirm.ask({
+    title: `¿Dar de baja a ${employee.name}?`,
+    message: 'Se elimina del directorio. Su cuenta de acceso, si tiene, queda sin empleado vinculado.',
+    confirmLabel: 'Dar de baja',
+    tone: 'danger',
+  })
+
+  if (!accepted) {
     return
   }
 
@@ -133,7 +145,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingEmployee = null"
         >
           + Empleado
@@ -145,7 +157,7 @@ onMounted(() => {
       {{ actionError }}
     </p>
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando empleados…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -158,14 +170,14 @@ onMounted(() => {
       <div class="flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-3 shadow-sm sm:flex-row sm:items-center">
         <input
           v-model="searchQuery"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary sm:max-w-sm"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent placeholder:text-on-surface-variant/60 focus:ring-primary sm:max-w-sm"
           placeholder="Buscar por nombre, correo o sede..."
           type="search"
         />
         <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por área">
           <button
             type="button"
-            class="font-label rounded-lg px-2.5 py-1.5 text-[11px] font-semibold uppercase"
+            class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
             :class="areaFilter === 'all' ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
             @click="areaFilter = 'all'"
           >
@@ -175,7 +187,7 @@ onMounted(() => {
             v-for="(label, key) in employeeAreaLabel"
             :key="key"
             type="button"
-            class="font-label rounded-lg px-2.5 py-1.5 text-[11px] font-semibold uppercase"
+            class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
             :class="areaFilter === key ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
             @click="areaFilter = key as EmployeeArea"
           >
@@ -184,23 +196,23 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-2xl bg-surface-container-lowest shadow-sm">
-        <table class="w-full min-w-[860px] text-left text-sm">
+      <div class="md:overflow-x-auto md:rounded-2xl md:bg-surface-container-lowest md:shadow-sm">
+        <table class="responsive-table w-full md:min-w-[860px] text-left text-sm">
           <thead class="bg-surface-container-low text-on-surface-variant">
             <tr>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Empleado</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Sede</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Puesto</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Área</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Estado</th>
-              <th class="font-label px-4 py-3 text-[11px] font-semibold tracking-wide uppercase">Cuenta</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Empleado</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Sede</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Puesto</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Área</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Estado</th>
+              <th class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase">Cuenta</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/40">
             <tr v-for="employee in filteredEmployees" :key="employee.id">
-              <td class="flex items-center gap-2.5 px-4 py-3">
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-on-primary">
+              <td class="cell-main flex items-center gap-2.5 px-4 py-3">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-on-primary">
                   {{ getInitials(employee.name) }}
                 </span>
                 <div class="min-w-0">
@@ -208,31 +220,29 @@ onMounted(() => {
                   <p class="truncate text-xs text-on-surface-variant">{{ employee.email }}<template v-if="employee.phone"> · {{ employee.phone }}</template></p>
                 </div>
               </td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ employee.restaurantName }}</td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ employee.roleName }}</td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ employeeAreaLabel[employee.area] }}</td>
-              <td class="px-4 py-3">
-                <span class="font-label rounded-md px-2 py-0.5 text-[10px] font-bold uppercase" :class="employeeStatusClass[employee.status]">
-                  {{ employeeStatusLabel[employee.status] }}
-                </span>
+              <td class="px-4 py-3 text-on-surface-variant" data-label="Sede">{{ employee.restaurantName }}</td>
+              <td class="px-4 py-3 text-on-surface-variant" data-label="Puesto">{{ employee.roleName }}</td>
+              <td class="px-4 py-3 text-on-surface-variant" data-label="Área">{{ employeeAreaLabel[employee.area] }}</td>
+              <td class="px-4 py-3" data-label="Estado">
+                <StatusBadge :tone="employeeStatusTone[employee.status]" :label="employeeStatusLabel[employee.status]" />
               </td>
-              <td class="px-4 py-3">
+              <td class="px-4 py-3" data-label="Cuenta">
                 <span :class="employee.userId ? 'text-on-surface' : 'text-on-surface-variant italic'">
                   {{ userEmailFor(employee) }}
                 </span>
               </td>
-              <td class="px-4 py-3 text-right">
+              <td class="cell-actions px-4 py-3 text-right">
                 <div class="flex justify-end gap-1.5">
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="editingEmployee = employee"
                   >
                     Editar
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-error-container px-3 py-1.5 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+                    class="font-label rounded-lg bg-error-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error-container hover:bg-error/20"
                     @click="removeEmployee(employee)"
                   >
                     Baja

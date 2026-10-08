@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
+import BaseButton from '@/components/base/BaseButton.vue'
 import DinerNotice from '@/components/feedback/DinerNotice.vue'
 import type { DinerNoticeKind } from '@/components/feedback/DinerNotice.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -17,7 +18,7 @@ const route = useRoute()
 const router = useRouter()
 const diner = useDinerStore()
 
-type Step = 'checking' | 'error' | 'confirm' | 'identity' | 'wrong-table'
+type Step = 'checking' | 'error' | 'confirm' | 'wrong-table'
 
 const step = ref<Step>('checking')
 const errorKind = ref<DinerNoticeKind>('invalid-qr')
@@ -97,10 +98,6 @@ async function validate(): Promise<void> {
   }
 }
 
-function confirmTable(): void {
-  step.value = 'identity'
-}
-
 async function continueAs(mode: 'guest' | 'account'): Promise<void> {
   diner.setAttention(openAttention.value?.id ?? null)
 
@@ -123,7 +120,10 @@ watch([tableNumber, queryRestaurantId, queryToken], () => void validate(), { imm
 
 <template>
   <div>
-    <p v-if="step === 'checking'" class="py-16 text-center text-sm text-on-surface-variant">Validando mesa…</p>
+    <div v-if="step === 'checking'" class="flex min-h-[50vh] flex-col items-center justify-center gap-3" role="status">
+      <span class="h-10 w-10 animate-spin rounded-full border-4 border-primary-fixed border-t-primary" aria-hidden="true" />
+      <p class="text-base text-on-surface-variant">Buscando tu mesa…</p>
+    </div>
 
     <DinerNotice v-else-if="step === 'error'" :kind="errorKind" @retry="validate" />
 
@@ -131,91 +131,47 @@ watch([tableNumber, queryRestaurantId, queryToken], () => void validate(), { imm
       v-else-if="step === 'wrong-table'"
       kind="no-table"
       title="Escanea el QR de tu mesa"
-      message="Si el código no corresponde a tu mesa, escanea el QR que está en tu mesa o pide ayuda a un mozo."
+      message="Cada mesa tiene su propio código. Escanea el que está en tu mesa o pide ayuda a un mozo."
     />
 
-    <div v-else-if="restaurant" class="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-5 px-4 text-center">
-      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary" aria-hidden="true">
-        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3.75 6A2.25 2.25 0 0 1 6 3.75h12A2.25 2.25 0 0 1 20.25 6v2.25H3.75V6ZM3.75 10.5h16.5V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-7.5Z"
-          />
-        </svg>
-      </span>
-
-      <template v-if="step === 'confirm'">
-        <div class="space-y-1">
-          <p class="font-label text-[11px] font-bold tracking-widest text-primary uppercase">{{ restaurant.name }}</p>
-          <h1 class="font-headline text-3xl font-semibold text-on-surface">Mesa {{ tableNumber }}</h1>
+    <div v-else-if="restaurant" class="mx-auto flex min-h-[65vh] max-w-md flex-col justify-center gap-6">
+      <div class="overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/30">
+        <img :src="restaurant.imageUrl" :alt="restaurant.name" class="h-36 w-full object-cover" />
+        <div class="space-y-1 p-5 text-center">
+          <p class="text-sm font-medium text-on-surface-variant">{{ restaurant.name }}</p>
+          <p class="font-headline text-5xl font-semibold text-on-surface">Mesa {{ tableNumber }}</p>
           <p class="text-sm text-on-surface-variant">{{ restaurant.address }}</p>
         </div>
-        <p class="text-base text-on-surface">¿Estás en esta mesa?</p>
-        <p v-if="openAttention" class="rounded-xl bg-primary-fixed px-4 py-2 text-xs text-on-primary-fixed">
-          Esta mesa ya tiene un pedido en curso. Lo que pidas se sumará a la misma cuenta.
-        </p>
-        <div class="grid w-full gap-2">
-          <button
-            type="button"
-            class="font-label rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
-            @click="confirmTable"
-          >
-            Sí, es mi mesa
-          </button>
-          <button
-            type="button"
-            class="font-label rounded-xl bg-surface-container py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
-            @click="rejectTable"
-          >
-            No es mi mesa
-          </button>
-        </div>
-      </template>
+      </div>
 
-      <template v-else-if="step === 'identity'">
-        <div class="space-y-1">
-          <h1 class="font-headline text-2xl font-semibold text-on-surface">¿Cómo quieres continuar?</h1>
-          <p class="text-sm text-on-surface-variant">No necesitas una cuenta para pedir.</p>
-        </div>
-        <div class="grid w-full gap-2">
-          <button
-            v-if="diner.customer"
-            type="button"
-            class="font-label rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
-            @click="continueAs('account')"
-          >
-            Continuar como {{ diner.customer.name }}
+      <div v-if="openAttention" class="flex items-start gap-3 rounded-2xl bg-primary-fixed px-4 py-3 text-on-primary-fixed" role="note">
+        <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+        </svg>
+        <p class="text-sm">Tu mesa ya tiene un pedido en curso: lo que pidas se suma a la misma cuenta.</p>
+      </div>
+
+      <div class="space-y-3">
+        <BaseButton variant="primary" size="lg" block @click="continueAs(diner.customer ? 'account' : 'guest')">
+          {{ diner.customer ? `Sí, es mi mesa · pedir como ${diner.customer.name}` : 'Sí, es mi mesa · ver la carta' }}
+        </BaseButton>
+        <BaseButton variant="secondary" size="lg" block @click="rejectTable">No es mi mesa</BaseButton>
+      </div>
+
+      <p class="text-center text-sm text-on-surface-variant">
+        <template v-if="diner.customer">
+          ¿No eres {{ diner.customer.name }}?
+          <button type="button" class="min-h-11 font-semibold text-primary underline-offset-2 hover:underline" @click="diner.setCustomer(null)">
+            Pedir como invitado
           </button>
-          <button
-            v-if="diner.customer"
-            type="button"
-            class="font-label rounded-xl bg-surface-container py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
-            @click="diner.setCustomer(null)"
-          >
-            No soy {{ diner.customer.name }}
+        </template>
+        <template v-else>
+          No necesitas cuenta para pedir.
+          <button type="button" class="min-h-11 font-semibold text-primary underline-offset-2 hover:underline" @click="continueAs('account')">
+            Iniciar sesión (opcional)
           </button>
-          <button
-            v-else
-            type="button"
-            class="font-label rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
-            @click="continueAs('guest')"
-          >
-            Continuar como invitado
-          </button>
-          <button
-            v-if="!diner.customer"
-            type="button"
-            class="font-label rounded-xl bg-surface-container py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
-            @click="continueAs('account')"
-          >
-            Iniciar sesión o crear cuenta
-          </button>
-        </div>
-        <RouterLink class="text-xs text-on-surface-variant underline-offset-2 hover:underline" :to="{ name: 'home' }">
-          Volver al inicio
-        </RouterLink>
-      </template>
+        </template>
+      </p>
     </div>
   </div>
 </template>

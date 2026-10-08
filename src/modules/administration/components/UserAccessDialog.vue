@@ -57,7 +57,7 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,28rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 28rem"
     aria-labelledby="user-access-title"
     @close="emit('close')"
   >
@@ -68,19 +68,19 @@ onMounted(async () => {
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Rol</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Rol</span>
         <select
           v-model="roleId"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
         >
           <option :value="null">Sin rol (no puede entrar a ninguna sección)</option>
           <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
         </select>
-        <span v-if="selectedRole" class="block text-[11px] text-on-surface-variant">{{ selectedRole.description }}</span>
+        <span v-if="selectedRole" class="block text-xs text-on-surface-variant">{{ selectedRole.description }}</span>
       </label>
 
       <fieldset class="space-y-2">
-        <legend class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Sedes</legend>
+        <legend class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Sedes</legend>
         <label class="flex items-center gap-2 text-sm">
           <input v-model="allSites" type="checkbox" class="h-4 w-4 accent-primary" />
           Todas las sedes de la organización
@@ -99,10 +99,10 @@ onMounted(async () => {
       </fieldset>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Empleado vinculado</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Empleado vinculado</span>
         <select
           v-model="employeeId"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
         >
           <option :value="null">Sin empleado</option>
           <option v-for="employee in employees" :key="employee.id" :value="employee.id">
@@ -116,12 +116,12 @@ onMounted(async () => {
       <div class="flex justify-end gap-2">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
-        <button type="submit" class="font-label rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container">
+        <button type="submit" class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container">
           Guardar
         </button>
       </div>

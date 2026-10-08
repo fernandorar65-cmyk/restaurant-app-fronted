@@ -62,7 +62,7 @@ onMounted(async () => {
 <template>
   <dialog
     ref="dialogEl"
-    class="m-auto w-[min(100%-1.5rem,28rem)] overflow-hidden rounded-2xl bg-surface-container-lowest p-0 text-on-surface shadow-[0_24px_64px_rgba(27,28,29,0.18)] backdrop:bg-on-surface/45"
+    class="app-dialog overflow-hidden bg-surface-container-lowest p-0 text-on-surface" style="--dialog-width: 28rem"
     aria-labelledby="inventory-dialog-title"
     @close="emit('close')"
   >
@@ -72,10 +72,10 @@ onMounted(async () => {
       </h2>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Nombre</span>
         <input
           v-model="name"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           required
           type="text"
         />
@@ -83,19 +83,19 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Sede</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Sede</span>
           <select
             v-model="restaurantId"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           >
             <option v-for="site in restaurants" :key="site.id" :value="site.id">{{ site.name }}</option>
           </select>
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Unidad</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Unidad</span>
           <input
             v-model="unit"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             list="inventory-units"
             type="text"
           />
@@ -107,20 +107,20 @@ onMounted(async () => {
 
       <div class="grid grid-cols-2 gap-3">
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Cantidad actual</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Cantidad actual</span>
           <input
             v-model.number="stock"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             min="0"
             step="any"
             type="number"
           />
         </label>
         <label class="block space-y-1.5">
-          <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Cantidad mínima</span>
+          <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Cantidad mínima</span>
           <input
             v-model.number="minStock"
-            class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+            class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
             min="0"
             step="any"
             type="number"
@@ -129,10 +129,10 @@ onMounted(async () => {
       </div>
 
       <label class="block space-y-1.5">
-        <span class="font-label text-[11px] font-semibold tracking-wide text-on-surface-variant uppercase">Proveedor (referencia)</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Proveedor (referencia)</span>
         <input
           v-model="supplier"
-          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           type="text"
         />
       </label>
@@ -147,12 +147,12 @@ onMounted(async () => {
       <div class="flex justify-end gap-2">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
-        <button type="submit" class="font-label rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-primary-container">
+        <button type="submit" class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container">
           Guardar
         </button>
       </div>

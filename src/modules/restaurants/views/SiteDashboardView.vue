@@ -1,36 +1,40 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
+import KpiTile from '@/components/base/KpiTile.vue'
+import SitePageHeader from '@/components/base/SitePageHeader.vue'
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
+import { employeeAreaLabel, employeeStatusLabel, employeeStatusTone } from '@/modules/administration/admin-labels'
+import { fetchEmployees } from '@/modules/administration/api'
+import type { Employee, EmployeeArea } from '@/modules/administration/types'
 import { fetchAttentionsWithProductsBySite, isAttentionActive } from '@/modules/orders/api'
 import StaffOrderDialog from '@/modules/orders/components/StaffOrderDialog.vue'
-import {
-  isBillableProduct,
-  orderedProductBadgeClass,
-  orderedProductStatusLabel,
-} from '@/modules/orders/order-status-labels'
+import { isBillableProduct, orderedProductStatusLabel, orderedProductStatusTone } from '@/modules/orders/order-status-labels'
 import type { AttentionWithProducts } from '@/modules/orders/types'
 import { fetchRestaurantById, fetchSiteOperation, updateSiteOperationTables } from '@/modules/restaurants/api'
 import SiteFloorTable from '@/modules/restaurants/components/SiteFloorTable.vue'
-import SiteStaffCard from '@/modules/restaurants/components/SiteStaffCard.vue'
 import SiteTableCard from '@/modules/restaurants/components/SiteTableCard.vue'
 import TableFormDialog from '@/modules/restaurants/components/TableFormDialog.vue'
-import { floorStatusLabel, staffAreaLabel, tableStatusLabel } from '@/modules/restaurants/site-labels'
+import { floorStatusLabel, tableStatusLabel } from '@/modules/restaurants/site-labels'
 import type {
   LiveTable,
   RestaurantSite,
   SiteOperation,
-  StaffArea,
   TableFloorStatus,
 } from '@/modules/restaurants/types'
 import { HttpError } from '@/services/http'
+import { useConfirmStore } from '@/stores/confirm'
 import { useSessionStore } from '@/stores/session'
 import { useSiteActivityStore } from '@/stores/site-activity'
 import { formatMoney } from '@/utils/money'
 import { formatTime } from '@/utils/time'
 
 usePageTitle('Sala y mesas')
+
+const confirm = useConfirmStore()
 
 const route = useRoute()
 const session = useSessionStore()
@@ -41,7 +45,8 @@ const operation = ref<SiteOperation | null>(null)
 const loadError = ref<string | null>(null)
 const isLoading = ref(true)
 const floorFilter = ref<'all' | TableFloorStatus>('all')
-const staffFilter = ref<'all' | StaffArea>('all')
+const staffFilter = ref<'all' | EmployeeArea>('all')
+const employees = ref<Employee[]>([])
 const selectedTableNumber = ref<string | null>(null)
 /** undefined = diálogo cerrado · null = nueva mesa · LiveTable = editar. */
 const editingTable = ref<LiveTable | null | undefined>(undefined)
@@ -104,17 +109,12 @@ const tableStats = computed(() => {
   }
 })
 
-const staffStats = computed(() => {
-  const staff = operation.value?.staff ?? []
-  const onShift = staff.filter((member) => member.status === 'on-shift')
-
-  return {
-    total: staff.length,
-    onShift: onShift.length,
-    break: staff.filter((member) => member.status === 'break').length,
-    absent: staff.filter((member) => member.status === 'absent').length,
-  }
-})
+/** Empleados reales de la sede (módulo de administración). */
+const staffStats = computed(() => ({
+  total: employees.value.length,
+  active: employees.value.filter((employee) => employee.status === 'active').length,
+  onLeave: employees.value.filter((employee) => employee.status === 'on-leave').length,
+}))
 
 const serviceStats = computed(() => {
   const active = attentions.value.filter(isAttentionActive)
@@ -138,15 +138,11 @@ const visibleTables = computed(() => {
   return tables.filter((table) => table.floorStatus === floorFilter.value)
 })
 
-const visibleStaff = computed(() => {
-  const staff = operation.value?.staff ?? []
-
-  if (staffFilter.value === 'all') {
-    return staff
-  }
-
-  return staff.filter((member) => member.area === staffFilter.value)
-})
+const visibleStaff = computed(() =>
+  staffFilter.value === 'all'
+    ? employees.value
+    : employees.value.filter((employee) => employee.area === staffFilter.value),
+)
 
 const selectedTable = computed(() => {
   return liveTables.value.find((table) => table.number === selectedTableNumber.value) ?? null
@@ -186,15 +182,23 @@ const floorFilters: Array<{ id: 'all' | TableFloorStatus; label: string }> = [
   { id: 'cleaning', label: floorStatusLabel.cleaning },
 ]
 
-const staffFilters: Array<{ id: 'all' | StaffArea; label: string }> = [
-  { id: 'all', label: 'Todo el equipo' },
-  { id: 'floor', label: staffAreaLabel.floor },
-  { id: 'kitchen', label: staffAreaLabel.kitchen },
-  { id: 'support', label: staffAreaLabel.support },
+const staffFilters: Array<{ id: 'all' | EmployeeArea; label: string }> = [
+  { id: 'all', label: 'Todos' },
+  { id: 'floor', label: employeeAreaLabel.floor },
+  { id: 'kitchen', label: employeeAreaLabel.kitchen },
+  { id: 'management', label: employeeAreaLabel.management },
 ]
 
-function selectTable(number: string): void {
+const tableDetailEl = ref<HTMLElement | null>(null)
+
+async function selectTable(number: string): Promise<void> {
   selectedTableNumber.value = number
+
+  // En pantallas chicas el detalle queda debajo del plano: se lleva a la vista.
+  if (window.matchMedia('(max-width: 1023px)').matches) {
+    await nextTick()
+    tableDetailEl.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 function tableUrl(table: LiveTable): string {
@@ -337,7 +341,14 @@ async function removeSelectedTable(): Promise<void> {
     return
   }
 
-  if (!window.confirm(`¿Eliminar la mesa ${table.number}?`)) {
+  const accepted = await confirm.ask({
+    title: `¿Eliminar la mesa ${table.number}?`,
+    message: 'Su código QR dejará de funcionar. Si es algo temporal, ponla en mantenimiento.',
+    confirmLabel: 'Eliminar mesa',
+    tone: 'danger',
+  })
+
+  if (!accepted) {
     return
   }
 
@@ -372,11 +383,13 @@ async function loadSite(): Promise<void> {
   session.setRestaurant(id)
 
   try {
-    const [site, siteOperation, siteAttentions] = await Promise.all([
+    const [site, siteOperation, siteAttentions, allEmployees] = await Promise.all([
       fetchRestaurantById(id),
       fetchSiteOperation(id),
       fetchAttentionsWithProductsBySite(id),
+      fetchEmployees(),
     ])
+    employees.value = allEmployees.filter((employee) => employee.restaurantId === id)
     restaurant.value = site
     operation.value = siteOperation
     attentions.value = siteAttentions
@@ -423,8 +436,8 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-7xl space-y-8 px-6 py-8 lg:px-12">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando sede…</p>
+  <div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 lg:px-8">
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -434,100 +447,48 @@ watch(
     </p>
 
     <template v-else-if="restaurant && operation">
-      <div class="flex flex-col gap-5">
-        <nav class="font-label flex flex-wrap items-center gap-2 text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase" aria-label="Migas">
-          <RouterLink class="transition-colors hover:text-primary" :to="{ name: 'dashboard' }">Sedes</RouterLink>
-          <span class="text-outline-variant">/</span>
-          <span class="font-bold text-primary">{{ restaurant.name }} ({{ restaurant.city }})</span>
-          <span class="text-outline-variant">/</span>
-          <span class="text-tertiary">Sala y equipo</span>
-        </nav>
+      <SitePageHeader
+        :restaurant="restaurant"
+        section="Sala y mesas"
+        title="Sala y mesas"
+        description="Plano, estado de las mesas, códigos QR y atenciones abiertas. La ocupación se calcula con los pedidos reales."
+      >
+        <template #actions>
+          <RouterLink
+            v-if="session.can('orders.manage')"
+            class="font-label inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+            :to="{ name: 'site-orders', params: { restaurantId: restaurant.id } }"
+          >
+            Ver pedidos entrantes
+          </RouterLink>
+        </template>
+      </SitePageHeader>
 
-        <div class="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
-          <div class="max-w-3xl space-y-2">
-            <p class="font-label inline-flex items-center gap-2 rounded-full bg-surface-container px-2.5 py-1 text-[10px] font-bold tracking-widest text-tertiary uppercase">
-              {{ restaurant.badgeLabel }} · {{ restaurant.code }}
-            </p>
-            <h1 class="font-headline text-3xl leading-[1.15] font-normal tracking-tight text-on-surface sm:text-4xl">
-              Sala y mesas
-            </h1>
-            <p class="text-sm leading-relaxed text-on-surface-variant sm:text-base">
-              Mesas, QR y atenciones abiertas de {{ restaurant.name }}. La ocupación se calcula con los pedidos reales.
-            </p>
+      <div class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <KpiTile
+          label="Mesas ocupadas"
+          :value="`${tableStats.tablesOccupied} / ${tableStats.tablesTotal}`"
+          :hint="`${tableStats.tablesAvailable} libres${tableStats.tablesBlocked > 0 ? ` · ${tableStats.tablesBlocked} fuera de servicio` : ''}`"
+        />
+        <KpiTile label="Cubiertos" :value="`${tableStats.seatPercent}%`" :hint="`${tableStats.seatsOccupied} de ${tableStats.seatsTotal} sillas`">
+          <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-container-high" aria-hidden="true">
+            <div class="h-full rounded-r-[4px] rounded-l-full bg-primary" :style="{ width: `${tableStats.seatPercent}%` }" />
           </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <RouterLink
-              v-if="session.can('orders.manage')"
-              class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
-              :to="{ name: 'site-orders', params: { restaurantId: restaurant.id } }"
-            >
-              Ver pedidos
-            </RouterLink>
-            <div class="flex items-center gap-3 rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
-            </span>
-            <div class="flex flex-col">
-              <span class="font-label text-[10px] font-semibold tracking-widest text-on-surface-variant uppercase">Turno activo</span>
-              <span class="font-label text-xs font-bold text-on-surface">{{ operation.shiftLabel }}</span>
-            </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Mesas</span>
-          <p class="font-headline pt-1 text-3xl font-semibold tracking-tight text-on-surface">
-            {{ tableStats.tablesOccupied }}
-            <span class="text-xl font-normal text-on-surface-variant">/ {{ tableStats.tablesTotal }}</span>
-          </p>
-          <p class="mt-2 text-xs text-on-surface-variant">
-            {{ tableStats.tablesAvailable }} libres · {{ tableStats.tablesReserved }} reservadas
-            <template v-if="tableStats.tablesBlocked > 0"> · {{ tableStats.tablesBlocked }} fuera de servicio</template>
-          </p>
-        </article>
-        <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Sillas</span>
-          <p class="font-headline pt-1 text-3xl font-semibold tracking-tight text-on-surface">
-            {{ tableStats.seatsOccupied }}
-            <span class="text-xl font-normal text-on-surface-variant">/ {{ tableStats.seatsTotal }}</span>
-          </p>
-          <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
-            <div class="h-full rounded-full bg-primary" :style="{ width: `${tableStats.seatPercent}%` }" />
-          </div>
-          <p class="mt-2 text-xs text-on-surface-variant">{{ tableStats.seatPercent }}% de cubiertos ocupados</p>
-        </article>
-        <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Personal</span>
-          <p class="font-headline pt-1 text-3xl font-semibold tracking-tight text-on-surface">
-            {{ staffStats.onShift }}
-            <span class="text-xl font-normal text-on-surface-variant">/ {{ staffStats.total }}</span>
-          </p>
-          <p class="mt-2 text-xs text-on-surface-variant">
-            {{ staffStats.break }} en descanso · {{ staffStats.absent }} ausentes
-          </p>
-        </article>
-        <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Atenciones abiertas</span>
-          <p class="font-headline pt-1 text-3xl font-semibold tracking-tight text-on-surface">
-            {{ serviceStats.open }}
-          </p>
-          <p class="mt-2 text-xs text-on-surface-variant">
-            {{ serviceStats.inKitchen }} en cocina · {{ serviceStats.accountRequested }} piden cuenta ·
-            {{ formatMoney(serviceStats.openTotal, currency) }} abierto
-          </p>
-        </article>
+        </KpiTile>
+        <KpiTile
+          label="Atenciones abiertas"
+          :value="serviceStats.open"
+          :hint="`${serviceStats.inKitchen} en cocina · ${serviceStats.accountRequested} piden cuenta`"
+        />
+        <KpiTile label="Por cobrar" :value="formatMoney(serviceStats.openTotal, currency)" hint="Total de las atenciones abiertas" />
       </div>
 
       <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <section class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-8">
           <div class="flex flex-col justify-between gap-4 pb-5 sm:flex-row sm:items-center">
             <div>
-              <h2 class="font-headline text-xl font-normal text-on-surface">Plano de sala</h2>
-              <p class="mt-1 text-xs text-on-surface-variant">Cada punto es una silla. El color de la mesa indica el estado.</p>
+              <h2 class="font-headline text-xl font-semibold text-on-surface">Plano de sala</h2>
+              <p class="mt-1 text-sm text-on-surface-variant">Cada punto es una silla. Toca una mesa para ver su atención y su QR.</p>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
               <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar mesas">
@@ -535,7 +496,7 @@ watch(
                   v-for="filter in floorFilters"
                   :key="filter.id"
                   type="button"
-                  class="font-label rounded-lg px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase"
+                  class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
                   :class="
                     floorFilter === filter.id
                       ? 'bg-primary-container text-on-primary-container'
@@ -548,14 +509,14 @@ watch(
               </div>
               <button
                 type="button"
-                class="font-label rounded-lg bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                 @click="printAllQrs"
               >
                 Imprimir QR
               </button>
               <button
                 type="button"
-                class="font-label rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-on-primary hover:bg-primary-container"
+                class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
                 @click="editingTable = null"
               >
                 + Mesa
@@ -574,12 +535,12 @@ watch(
           </div>
           <p v-if="visibleTables.length === 0" class="pt-4 text-sm text-on-surface-variant">No hay mesas en este estado.</p>
 
-          <div v-if="selectedTable" class="mt-6 border-t border-outline-variant/50 pt-5">
+          <div v-if="selectedTable" ref="tableDetailEl" class="mt-6 scroll-mt-20 border-t border-outline-variant/50 pt-5">
             <div class="mb-3 flex items-center justify-between gap-3">
-              <h3 class="font-label flex items-center gap-2 text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">
+              <h3 class="font-label flex items-center gap-2 text-xs font-semibold tracking-widest text-on-surface-variant uppercase">
                 Mesa seleccionada · {{ selectedTable.code }}
                 <span
-                  class="rounded px-1.5 py-0.5 text-[10px] normal-case tracking-normal"
+                  class="rounded px-1.5 py-0.5 text-xs normal-case tracking-normal"
                   :class="selectedTable.status === 'active' ? 'bg-primary/10 text-primary' : 'bg-error-container text-on-error-container'"
                 >
                   {{ tableStatusLabel[selectedTable.status] }}
@@ -588,14 +549,14 @@ watch(
               <div class="flex gap-1.5">
                 <button
                   type="button"
-                  class="font-label rounded-lg bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                  class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                   @click="editingTable = selectedTable"
                 >
                   Editar
                 </button>
                 <button
                   type="button"
-                  class="font-label rounded-lg bg-error-container px-2.5 py-1 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+                  class="font-label rounded-lg bg-error-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error-container hover:bg-error/20"
                   @click="removeSelectedTable"
                 >
                   Eliminar
@@ -606,18 +567,18 @@ watch(
 
             <div class="mt-4 space-y-3 rounded-xl bg-surface p-4">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <p class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Atención activa</p>
+                <p class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Atención activa</p>
                 <div v-if="session.can('orders.manage') && selectedTable.status === 'active'" class="flex gap-1.5">
                   <RouterLink
                     v-if="selectedAttention"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     :to="{ name: 'site-order-detail', params: { restaurantId: restaurant.id, attentionId: selectedAttention.id } }"
                   >
                     Ver detalle
                   </RouterLink>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-on-primary hover:bg-primary-container"
+                    class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
                     @click="staffOrderTable = selectedTable.number"
                   >
                     + Pedido manual
@@ -636,9 +597,7 @@ watch(
                     class="flex items-center justify-between gap-2 text-xs"
                   >
                     <span class="text-on-surface">{{ product.quantity }}× {{ product.name }}</span>
-                    <span class="font-label rounded px-1.5 py-0.5 text-[10px] font-bold uppercase" :class="orderedProductBadgeClass[product.status]">
-                      {{ orderedProductStatusLabel[product.status] }}
-                    </span>
+                    <StatusBadge :tone="orderedProductStatusTone[product.status]" :label="orderedProductStatusLabel[product.status]" />
                   </li>
                 </ul>
               </template>
@@ -654,11 +613,11 @@ watch(
               />
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
-                  <p class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">
+                  <p class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">
                     Enlace de la mesa (QR de acceso al menú)
                   </p>
                   <span
-                    class="font-label rounded px-1.5 py-0.5 text-[10px] font-bold uppercase"
+                    class="font-label rounded px-1.5 py-0.5 text-xs font-bold uppercase"
                     :class="selectedTable.qrActive ? 'bg-primary/10 text-primary' : 'bg-error-container text-on-error-container'"
                   >
                     {{ selectedTable.qrActive ? 'QR activo' : 'QR desactivado' }}
@@ -668,28 +627,28 @@ watch(
                 <div class="mt-2 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="copyTableLink"
                   >
                     Copiar enlace
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="toggleTableQr"
                   >
                     {{ selectedTable.qrActive ? 'Desactivar QR' : 'Activar QR' }}
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="regenerateTableQr"
                   >
                     Regenerar QR
                   </button>
                   <a
                     v-if="selectedTableUrl && selectedTable.qrActive"
-                    class="font-label rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     :href="selectedTableUrl"
                     rel="noopener"
                     target="_blank"
@@ -704,50 +663,42 @@ watch(
         </section>
 
         <section class="space-y-4 rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-4">
-          <div>
-            <div class="flex items-center justify-between gap-3">
-              <h2 class="font-headline text-lg font-normal text-on-surface">Personal del turno</h2>
-              <span class="font-label rounded-full bg-surface-container px-2.5 py-1 text-[11px] font-bold text-primary">
-                {{ staffStats.onShift }} en sala/cocina
-              </span>
-            </div>
-            <p class="mt-1 text-xs text-on-surface-variant">{{ operation.brigade.headChef }} dirige el servicio.</p>
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-headline text-xl font-semibold text-on-surface">Equipo de la sede</h2>
+            <span class="text-sm text-on-surface-variant">{{ staffStats.active }} activos · {{ staffStats.onLeave }} de licencia</span>
           </div>
-          <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar personal">
+          <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar equipo por área">
             <button
               v-for="filter in staffFilters"
               :key="filter.id"
               type="button"
-              class="font-label rounded-lg px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase"
-              :class="
-                staffFilter === filter.id
-                  ? 'bg-primary-container text-on-primary-container'
-                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-              "
+              class="font-label min-h-9 rounded-full px-3 text-sm font-semibold"
+              :class="staffFilter === filter.id ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'"
+              :aria-pressed="staffFilter === filter.id"
               @click="staffFilter = filter.id"
             >
               {{ filter.label }}
             </button>
           </div>
-          <div class="space-y-2">
-            <SiteStaffCard v-for="member in visibleStaff" :key="member.id" :member="member" />
-          </div>
-          <p v-if="visibleStaff.length === 0" class="text-sm text-on-surface-variant">No hay personal en esta área.</p>
+          <ul class="divide-y divide-outline-variant/40">
+            <li v-for="employee in visibleStaff" :key="employee.id" class="flex items-center justify-between gap-3 py-2.5">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-on-surface">{{ employee.name }}</p>
+                <p class="truncate text-sm text-on-surface-variant">{{ employee.roleName }} · {{ employeeAreaLabel[employee.area] }}</p>
+              </div>
+              <StatusBadge :tone="employeeStatusTone[employee.status]" :label="employeeStatusLabel[employee.status]" />
+            </li>
+          </ul>
+          <p v-if="visibleStaff.length === 0" class="text-sm text-on-surface-variant">No hay empleados en esta área.</p>
+          <RouterLink
+            v-if="session.can('staff.manage')"
+            class="font-label inline-flex text-sm font-semibold text-primary underline-offset-2 hover:underline"
+            :to="{ name: 'admin-employees' }"
+          >
+            Gestionar empleados →
+          </RouterLink>
         </section>
       </div>
-
-      <section class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6">
-        <h2 class="font-headline text-lg font-normal text-on-surface">Avisos de sala</h2>
-        <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <article v-for="alert in operation.alerts" :key="alert.title" class="space-y-2 rounded-xl bg-surface-container-low p-4">
-            <div class="flex items-center justify-between gap-2">
-              <span class="font-label text-xs font-bold text-on-surface">{{ alert.title }}</span>
-              <span class="font-label text-[10px] font-bold tracking-widest text-tertiary uppercase">{{ alert.status }}</span>
-            </div>
-            <p class="text-xs leading-relaxed text-on-surface-variant">{{ alert.description }}</p>
-          </article>
-        </div>
-      </section>
 
       <TableFormDialog
         v-if="editingTable !== undefined"

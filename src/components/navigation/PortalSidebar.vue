@@ -22,6 +22,7 @@ const activity = useSiteActivityStore()
 const siteName = ref<string | null>(null)
 
 interface NavItem {
+  group: 'service' | 'site' | 'reports'
   routeName: string
   activeNames: string[]
   label: string
@@ -52,8 +53,9 @@ const ICONS = {
 } as const
 
 const SITE_ITEMS: NavItem[] = [
-  { routeName: 'site-dashboard', activeNames: ['site-dashboard'], label: 'Sala y mesas', permission: 'sites.manage', icon: ICONS.sala },
+  { group: 'site', routeName: 'site-dashboard', activeNames: ['site-dashboard'], label: 'Sala y mesas', permission: 'sites.manage', icon: ICONS.sala },
   {
+    group: 'service',
     routeName: 'site-orders',
     activeNames: ['site-orders', 'site-order-detail'],
     label: 'Pedidos entrantes',
@@ -61,8 +63,9 @@ const SITE_ITEMS: NavItem[] = [
     icon: ICONS.pedidos,
     badge: 'incoming',
   },
-  { routeName: 'site-kitchen', activeNames: ['site-kitchen'], label: 'Cocina', permission: 'kitchen.manage', icon: ICONS.cocina, badge: 'kitchen' },
+  { group: 'service', routeName: 'site-kitchen', activeNames: ['site-kitchen'], label: 'Cocina', permission: 'kitchen.manage', icon: ICONS.cocina, badge: 'kitchen' },
   {
+    group: 'service',
     routeName: 'site-deliveries',
     activeNames: ['site-deliveries'],
     label: 'Entregas',
@@ -71,6 +74,7 @@ const SITE_ITEMS: NavItem[] = [
     badge: 'ready',
   },
   {
+    group: 'service',
     routeName: 'site-accounts',
     activeNames: ['site-accounts', 'site-account-detail'],
     label: 'Cuentas',
@@ -78,9 +82,9 @@ const SITE_ITEMS: NavItem[] = [
     icon: ICONS.cuentas,
     badge: 'accountRequested',
   },
-  { routeName: 'site-menu', activeNames: ['site-menu'], label: 'Menú', permission: 'menu.manage', icon: ICONS.menu },
-  { routeName: 'site-metrics', activeNames: ['site-metrics'], label: 'Métricas', permission: 'reports.view', icon: ICONS.metricas },
-  { routeName: 'site-closing', activeNames: ['site-closing'], label: 'Cierre del día', permission: 'reports.view', icon: ICONS.cierre },
+  { group: 'site', routeName: 'site-menu', activeNames: ['site-menu'], label: 'Menú', permission: 'menu.manage', icon: ICONS.menu },
+  { group: 'reports', routeName: 'site-metrics', activeNames: ['site-metrics'], label: 'Métricas', permission: 'reports.view', icon: ICONS.metricas },
+  { group: 'reports', routeName: 'site-closing', activeNames: ['site-closing'], label: 'Cierre del día', permission: 'reports.view', icon: ICONS.cierre },
 ]
 
 const restaurantId = computed(() => {
@@ -94,12 +98,25 @@ const restaurantId = computed(() => {
 })
 
 const visibleSiteItems = computed(() => SITE_ITEMS.filter((item) => session.can(item.permission)))
+
+const GROUP_LABEL: Record<NavItem['group'], string> = {
+  service: 'Servicio en curso',
+  site: 'Sede',
+  reports: 'Reportes',
+}
+
+/** Agrupado por momento de uso: lo del servicio arriba, la configuración y los reportes después. */
+const siteGroups = computed(() =>
+  (['service', 'site', 'reports'] as const)
+    .map((group) => ({ group, label: GROUP_LABEL[group], items: visibleSiteItems.value.filter((item) => item.group === group) }))
+    .filter((entry) => entry.items.length > 0),
+)
 const isSedes = computed(() => route.name === 'dashboard')
 const isAdmin = computed(() => typeof route.name === 'string' && route.name.startsWith('admin-'))
 const showSedes = computed(() => session.hasSiteAccess && (session.user?.restaurantIds.length ?? 0) !== 1)
 
 const itemClass =
-  'font-label flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors'
+  'font-label flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-colors'
 const idleClass = 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
 const activeClass = 'bg-primary-container text-on-primary-container'
 
@@ -144,9 +161,9 @@ onMounted(() => {
       :class="open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
       aria-label="Navegación del portal"
     >
-      <nav class="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-5">
+      <nav class="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-5">
         <div v-if="showSedes" class="space-y-1">
-          <p class="font-label px-3 pb-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+          <p class="font-label px-3 pb-1 text-xs font-bold tracking-widest text-on-surface-variant uppercase">
             Cadena
           </p>
           <RouterLink :class="[itemClass, isSedes ? activeClass : idleClass]" :to="{ name: 'dashboard' }">
@@ -157,31 +174,36 @@ onMounted(() => {
           </RouterLink>
         </div>
 
-        <div v-if="restaurantId && visibleSiteItems.length > 0" class="space-y-1">
-          <p class="font-label px-3 pb-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-            {{ siteName ?? 'Sede' }}
-          </p>
-          <RouterLink
-            v-for="item in visibleSiteItems"
-            :key="item.routeName"
-            :class="[itemClass, isActive(item) ? activeClass : idleClass]"
-            :to="{ name: item.routeName, params: { restaurantId } }"
-          >
-            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
-            </svg>
-            <span class="flex-1">{{ item.label }}</span>
-            <span
-              v-if="item.badge && activity.counts[item.badge] > 0"
-              class="rounded-full bg-error px-1.5 py-0.5 text-[10px] leading-none font-bold text-on-error"
+        <template v-if="restaurantId && visibleSiteItems.length > 0">
+          <p class="truncate px-3 text-sm font-semibold text-on-surface">{{ siteName ?? 'Sede' }}</p>
+          <div v-for="section in siteGroups" :key="section.group" class="space-y-1">
+            <p class="font-label px-3 pb-1 text-xs font-bold tracking-widest text-on-surface-variant uppercase">
+              {{ section.label }}
+            </p>
+            <RouterLink
+              v-for="item in section.items"
+              :key="item.routeName"
+              :class="[itemClass, isActive(item) ? activeClass : idleClass]"
+              :to="{ name: item.routeName, params: { restaurantId } }"
+              :aria-current="isActive(item) ? 'page' : undefined"
             >
-              {{ activity.counts[item.badge] }}
-            </span>
-          </RouterLink>
-        </div>
+              <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
+              </svg>
+              <span class="flex-1">{{ item.label }}</span>
+              <span
+                v-if="item.badge && activity.counts[item.badge] > 0"
+                class="min-w-6 rounded-full bg-error px-1.5 py-0.5 text-center text-xs leading-none font-bold text-on-error"
+                :aria-label="`${activity.counts[item.badge]} pendientes`"
+              >
+                {{ activity.counts[item.badge] }}
+              </span>
+            </RouterLink>
+          </div>
+        </template>
 
         <div v-if="session.hasAdminAccess" class="mt-auto space-y-1">
-          <p class="font-label px-3 pb-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+          <p class="font-label px-3 pb-1 text-xs font-bold tracking-widest text-on-surface-variant uppercase">
             Organización
           </p>
           <RouterLink :class="[itemClass, isAdmin ? activeClass : idleClass]" :to="{ name: 'admin-home' }">
@@ -192,7 +214,7 @@ onMounted(() => {
           </RouterLink>
         </div>
 
-        <p v-if="session.user?.roleName" class="px-3 text-[11px] text-on-surface-variant" :class="session.hasAdminAccess ? '' : 'mt-auto'">
+        <p v-if="session.user?.roleName" class="px-3 text-xs text-on-surface-variant" :class="session.hasAdminAccess ? '' : 'mt-auto'">
           {{ session.user.name }} · {{ session.user.roleName }}
         </p>
       </nav>

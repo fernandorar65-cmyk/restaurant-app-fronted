@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AUTH_LOGO_URL, AUTH_SHOWCASE_IMAGE_URL } from '@/modules/auth/brand'
+import { AUTH_SHOWCASE_IMAGE_URL } from '@/modules/auth/brand'
 </script>
 
 <template>
@@ -16,22 +16,26 @@ import { AUTH_LOGO_URL, AUTH_SHOWCASE_IMAGE_URL } from '@/modules/auth/brand'
 
     <header class="relative z-10 flex items-center justify-between">
       <div class="flex items-center gap-3.5">
-        <div
-          class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white/90 p-1 shadow-lg shadow-black/20"
-        >
-          <img alt="" class="h-full w-full object-contain" :src="AUTH_LOGO_URL" />
+        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-on-primary shadow-lg shadow-black/20" aria-hidden="true">
+          <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
+          </svg>
         </div>
         <div>
           <p class="font-headline block text-xl leading-tight font-bold tracking-wider text-white">
             Restaurant<span class="font-light text-tertiary-fixed">—CMR</span>
           </p>
-          <p class="font-label block text-[10px] font-semibold tracking-[0.22em] text-primary-fixed-dim uppercase">
+          <p class="font-label block text-xs font-semibold tracking-[0.22em] text-primary-fixed-dim uppercase">
             Hospitality intelligence
           </p>
         </div>
       </div>
       <p
-        class="font-label flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs tracking-wide text-white/90 backdrop-blur-md"
+        class="font-label flex items-center gap-2 rounded-full bg-white/10 px-2.5 py-0.5 text-xs tracking-wide text-white/90 backdrop-blur-md"
       >
         <span class="h-2 w-2 rounded-full bg-emerald-400" />
         Red central
@@ -54,17 +58,17 @@ import { AUTH_LOGO_URL, AUTH_SHOWCASE_IMAGE_URL } from '@/modules/auth/brand'
       </p>
       <div class="grid grid-cols-3 gap-4">
         <article class="rounded-xl bg-slate-900/60 p-4 backdrop-blur-xl">
-          <p class="font-label mb-2 text-[10px] tracking-wider text-slate-400 uppercase">Operación</p>
+          <p class="font-label mb-2 text-xs tracking-wider text-slate-400 uppercase">Operación</p>
           <p class="font-headline text-2xl font-semibold tracking-tight text-white">Tiempo real</p>
           <p class="font-label mt-0.5 text-xs text-slate-300">Pedidos y cocina</p>
         </article>
         <article class="rounded-xl bg-slate-900/60 p-4 backdrop-blur-xl">
-          <p class="font-label mb-2 text-[10px] tracking-wider text-slate-400 uppercase">Control</p>
+          <p class="font-label mb-2 text-xs tracking-wider text-slate-400 uppercase">Control</p>
           <p class="font-headline text-2xl font-semibold tracking-tight text-white">Trazable</p>
           <p class="font-label mt-0.5 text-xs text-slate-300">Mesas, menú y pagos</p>
         </article>
         <article class="rounded-xl bg-slate-900/60 p-4 backdrop-blur-xl">
-          <p class="font-label mb-2 text-[10px] tracking-wider text-slate-400 uppercase">Red</p>
+          <p class="font-label mb-2 text-xs tracking-wider text-slate-400 uppercase">Red</p>
           <p class="font-headline text-2xl font-semibold tracking-tight text-white">Multi-sede</p>
           <p class="font-label mt-0.5 text-xs text-slate-300">Organizaciones y locales</p>
         </article>

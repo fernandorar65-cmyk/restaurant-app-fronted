@@ -38,7 +38,57 @@
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
+
+  /* Estados (siempre acompañados de ícono y texto, nunca solo color). */
+  --color-success: #1b6b3a;
+  --color-on-success: #ffffff;
+  --color-success-container: #d4f2dc;
+  --color-on-success-container: #0b3d1d;
+  --color-warning: #8a5300;
+  --color-on-warning: #ffffff;
+  --color-warning-container: #ffe3b8;
+  --color-on-warning-container: #4f2f00;
 }
+
+/*
+ * Tema oscuro de alto contraste para pantallas de cocina/sala.
+ * Se activa con la clase .theme-dark en un contenedor: redefine los mismos tokens.
+ */
+.theme-dark {
+  --color-background: #111316;
+  --color-surface: #16181c;
+  --color-surface-bright: #2a2d33;
+  --color-surface-container-lowest: #1d2025;
+  --color-surface-container-low: #22252b;
+  --color-surface-container: #2a2d33;
+  --color-surface-container-high: #33373e;
+  --color-surface-container-highest: #3d414a;
+  --color-on-surface: #f1f1f4;
+  --color-on-surface-variant: #c4c7d2;
+  --color-outline-variant: #454955;
+  --color-primary: #a9c4ff;
+  --color-primary-container: #2f5fbf;
+  --color-on-primary: #00255c;
+  --color-primary-fixed: #23396a;
+  --color-on-primary-fixed: #dbe5ff;
+  --color-tertiary-fixed: #5a4b00;
+  --color-on-tertiary-container: #fbe68a;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #5c1110;
+  --color-on-error-container: #ffdad6;
+  --color-success: #8ee0a8;
+  --color-on-success: #00391a;
+  --color-success-container: #134d29;
+  --color-on-success-container: #c9f5d6;
+  --color-warning: #ffc66d;
+  --color-on-warning: #3a2400;
+  --color-warning-container: #5a3a00;
+  --color-on-warning-container: #ffe3b8;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+}
+
 
 html,
 body,
@@ -52,4 +102,152 @@ body {
 
 ::selection {
   @apply bg-primary-fixed text-on-primary-fixed;
+}
+
+/* Áreas táctiles: nunca por debajo de 44px en controles de pantallas táctiles. */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Esqueleto de carga. */
+.skeleton {
+  @apply rounded-xl bg-surface-container;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+/*
+ * Tablas que en pantallas chicas se convierten en tarjetas apiladas.
+ * Cada <td> lleva data-label con el nombre de su columna.
+ */
+@media (max-width: 767px) {
+  .responsive-table thead {
+    @apply sr-only;
+  }
+
+  .responsive-table,
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .responsive-table tbody {
+    @apply space-y-3 bg-transparent;
+  }
+
+  .responsive-table tr {
+    @apply rounded-2xl bg-surface-container-lowest p-4 shadow-sm;
+  }
+
+  .responsive-table td {
+    @apply flex items-start justify-between gap-4 px-0 py-1.5 text-right;
+  }
+
+  .responsive-table td[data-label]::before {
+    content: attr(data-label);
+    @apply shrink-0 text-left text-xs font-semibold text-on-surface-variant;
+  }
+
+  .responsive-table td.cell-main {
+    @apply block pb-2 text-left;
+  }
+
+  .responsive-table td.cell-actions {
+    @apply justify-end pt-3;
+  }
+}
+
+/*
+ * Diálogos: en móvil, hoja que sube desde abajo a todo el ancho; en escritorio,
+ * modal centrado (ancho en --dialog-width) o panel lateral (.app-dialog--side).
+ */
+.app-dialog {
+  margin: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 94dvh;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 0;
+  box-shadow: 0 -12px 48px rgb(27 28 29 / 0.2);
+}
+
+.app-dialog::backdrop {
+  background: rgb(27 28 29 / 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.app-dialog[open] {
+  animation: dialog-sheet-in 0.22s ease-out;
+}
+
+@media (min-width: 640px) {
+  .app-dialog {
+    margin: auto;
+    width: min(100% - 1.5rem, var(--dialog-width, 32rem));
+    max-height: min(90dvh, 880px);
+    border-radius: 1.5rem;
+    box-shadow: 0 24px 64px rgb(27 28 29 / 0.2);
+  }
+
+  .app-dialog[open] {
+    animation: dialog-pop-in 0.18s ease-out;
+  }
+
+  .app-dialog--side {
+    margin: 0 0 0 auto;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 1.5rem 0 0 1.5rem;
+  }
+
+  .app-dialog--side[open] {
+    animation: dialog-side-in 0.22s ease-out;
+  }
+
+  .app-dialog--side > * {
+    height: 100%;
+    max-height: 100dvh !important;
+  }
+}
+
+@keyframes dialog-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-pop-in {
+  from {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-side-in {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-dialog[open] {
+    animation: none;
+  }
 }

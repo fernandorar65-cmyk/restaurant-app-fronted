@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import EmptyState from '@/components/base/EmptyState.vue'
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import { useNow } from '@/composables/useNow'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -16,7 +18,8 @@ import {
 import AttentionCard from '@/modules/orders/components/AttentionCard.vue'
 import AttentionDialog from '@/modules/orders/components/AttentionDialog.vue'
 import StaffOrderDialog from '@/modules/orders/components/StaffOrderDialog.vue'
-import { groupByRound, INCOMING_DELAY_MINUTES } from '@/modules/orders/rounds'
+import { delayLabel, delayLevel, delayRingClass, delayTextClass, groupByRound, INCOMING_DELAY_MINUTES } from '@/modules/orders/rounds'
+import type { DelayLevel } from '@/modules/orders/rounds'
 import type { AttentionWithProducts, OrderedProduct } from '@/modules/orders/types'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useSessionStore } from '@/stores/session'
@@ -100,8 +103,8 @@ const selectedAttention = computed(() => {
   return typeof id === 'string' ? (attentions.value.find((attention) => attention.id === id) ?? null) : null
 })
 
-function isDelayed(round: IncomingRound): boolean {
-  return minutesSince(round.requestedAt, now.value) >= INCOMING_DELAY_MINUTES
+function roundDelay(round: IncomingRound): DelayLevel {
+  return delayLevel(minutesSince(round.requestedAt, now.value), INCOMING_DELAY_MINUTES)
 }
 
 function reportFailures(failed: Array<{ message: string }>): void {
@@ -179,7 +182,12 @@ async function closeAttention(): Promise<void> {
   }
 }
 
-function openStaffOrder(tableNumber: string | null): void {
+async function openStaffOrder(tableNumber: string | null): Promise<void> {
+  // Nunca dos diálogos apilados: si el detalle de la atención está abierto, se cierra antes.
+  if (selectedAttention.value) {
+    await closeAttention()
+  }
+
   staffOrderTable.value = tableNumber
 }
 
@@ -197,7 +205,7 @@ watch(
 
 <template>
   <div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 lg:px-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando pedidos…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -216,7 +224,7 @@ watch(
         <template #actions>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
             @click="openStaffOrder(null)"
           >
             + Pedido manual
@@ -237,15 +245,18 @@ watch(
             </span>
           </h2>
 
-          <p v-if="incomingRounds.length === 0" class="rounded-2xl bg-surface-container-lowest p-6 text-center text-sm text-on-surface-variant shadow-sm">
-            No hay pedidos esperando confirmación.
-          </p>
+          <EmptyState
+            v-if="incomingRounds.length === 0"
+            icon="check"
+            title="Todo confirmado"
+            message="Cuando una mesa envíe un pedido aparecerá aquí, con aviso sonoro."
+          />
 
           <article
             v-for="round in incomingRounds"
             :key="round.key"
-            class="space-y-3 rounded-2xl bg-surface-container-lowest p-4 shadow-sm ring-1"
-            :class="isDelayed(round) ? 'ring-error/60' : 'ring-transparent'"
+            class="space-y-3 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-2"
+            :class="delayRingClass[roundDelay(round)]"
           >
             <header class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex flex-wrap items-center gap-2">
@@ -256,15 +267,15 @@ watch(
                 >
                   Mesa {{ round.attention.tableNumber }}
                 </button>
-                <span class="font-label rounded bg-surface-container px-1.5 py-0.5 text-[10px] font-semibold text-on-surface-variant">
+                <span class="font-label rounded bg-surface-container px-1.5 py-0.5 text-xs font-semibold text-on-surface-variant">
                   Ronda {{ round.roundNumber }}
                 </span>
-                <span class="font-label rounded px-1.5 py-0.5 text-[10px] font-semibold" :class="round.createdBy ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-secondary-container text-on-secondary-container'">
+                <span class="font-label rounded px-1.5 py-0.5 text-xs font-semibold" :class="round.createdBy ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-secondary-container text-on-secondary-container'">
                   {{ round.createdBy ? `Cargado por ${round.createdBy}` : 'QR' }}
                 </span>
               </div>
-              <span class="font-label text-[11px] font-semibold" :class="isDelayed(round) ? 'text-error' : 'text-on-surface-variant'">
-                {{ isDelayed(round) ? 'Demorado · ' : '' }}{{ formatElapsed(round.requestedAt, now) }}
+              <span class="font-label text-sm font-semibold" :class="delayTextClass[roundDelay(round)]">
+                <template v-if="delayLabel[roundDelay(round)]">{{ delayLabel[roundDelay(round)] }} · </template>{{ formatElapsed(round.requestedAt, now) }}
               </span>
             </header>
 
@@ -281,18 +292,18 @@ watch(
                 <div v-if="rejectingId === product.id" class="space-y-2 rounded-lg bg-error-container/40 p-2.5">
                   <input
                     v-model="rejectionReason"
-                    class="w-full rounded-lg bg-surface-container-lowest px-3 py-1.5 text-xs text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+                    class="w-full rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
                     placeholder="Motivo del rechazo (ej: agotado)"
                     type="text"
                     @keydown.enter.prevent="confirmReject(product)"
                   />
                   <div class="flex justify-end gap-2">
-                    <button type="button" class="font-label text-[11px] font-semibold text-on-surface-variant" @click="rejectingId = null">
+                    <button type="button" class="font-label text-xs font-semibold text-on-surface-variant" @click="rejectingId = null">
                       Volver
                     </button>
                     <button
                       type="button"
-                      class="font-label rounded-lg bg-error px-2.5 py-1 text-[11px] font-semibold text-on-error disabled:opacity-50"
+                      class="font-label rounded-lg bg-error min-h-9 px-3 py-1.5 text-sm font-semibold text-on-error disabled:opacity-50"
                       :disabled="!rejectionReason.trim() || busyKey === product.id"
                       @click="confirmReject(product)"
                     >
@@ -303,14 +314,14 @@ watch(
                 <div v-else class="flex justify-end gap-2">
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-error-container px-2.5 py-1 text-[11px] font-semibold text-on-error-container hover:bg-error/20"
+                    class="font-label min-h-11 rounded-xl bg-error-container px-4 text-sm font-semibold text-on-error-container hover:opacity-85"
                     @click="startReject(product)"
                   >
                     Rechazar
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high disabled:opacity-50"
+                    class="font-label min-h-11 rounded-xl bg-surface-container px-4 text-sm font-semibold text-on-surface hover:bg-surface-container-high disabled:opacity-50"
                     :disabled="busyKey === product.id"
                     @click="confirmProduct(product)"
                   >
@@ -322,7 +333,7 @@ watch(
 
             <button
               type="button"
-              class="font-label w-full rounded-xl bg-primary py-2.5 text-xs font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+              class="font-label min-h-12 w-full rounded-xl bg-primary text-base font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
               :disabled="busyKey === round.key"
               @click="confirmRound(round)"
             >
@@ -336,7 +347,7 @@ watch(
             <h2 class="font-headline text-lg font-semibold text-on-surface">Atenciones</h2>
             <button
               type="button"
-              class="font-label rounded-full px-3 py-1.5 text-[11px] font-semibold"
+              class="font-label rounded-full min-h-9 px-3 py-1.5 text-sm font-semibold"
               :class="showClosed ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
               @click="showClosed = !showClosed"
             >

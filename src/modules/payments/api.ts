@@ -1,3 +1,4 @@
+import type { StatusTone } from '@/components/base/StatusBadge.vue'
 import { fetchAttentionById, fetchOrderedProductsByAttention, isAttentionActive, BusinessRuleError } from '@/modules/orders/api'
 import { computeAccount } from '@/modules/payments/account'
 import type {
@@ -222,8 +223,17 @@ export const paymentStatusLabel: Record<PaymentStatus, string> = {
 export const paymentStatusBadgeClass: Record<PaymentStatus, string> = {
   pending: 'bg-secondary-container text-on-secondary-container',
   processing: 'bg-primary-fixed text-on-primary-fixed',
-  paid: 'bg-emerald-100 text-emerald-800',
+  paid: 'bg-success-container text-on-success-container',
   failed: 'bg-error-container text-on-error-container',
   cancelled: 'bg-surface-container-high text-on-surface-variant',
   refunded: 'bg-tertiary-fixed text-on-tertiary-container',
+}
+
+export const paymentStatusTone: Record<PaymentStatus, StatusTone> = {
+  pending: 'warning',
+  processing: 'info',
+  paid: 'success',
+  failed: 'danger',
+  cancelled: 'muted',
+  refunded: 'neutral',
 }

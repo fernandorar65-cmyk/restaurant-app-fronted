@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { useSiteContext } from '@/composables/useSiteContext'
@@ -14,12 +15,15 @@ import type { DailyClosingRecord } from '@/modules/reports/api'
 import RankedBars from '@/modules/reports/components/RankedBars.vue'
 import { computeDailyClosing } from '@/modules/reports/metrics'
 import type { RestaurantSite } from '@/modules/restaurants/types'
+import { useConfirmStore } from '@/stores/confirm'
 import { useSessionStore } from '@/stores/session'
 import { useToastStore } from '@/stores/toast'
 import { formatMoney } from '@/utils/money'
 import { formatDateTime, formatTime, localDateKey } from '@/utils/time'
 
 usePageTitle('Cierre del día')
+
+const confirm = useConfirmStore()
 
 const session = useSessionStore()
 const toast = useToastStore()
@@ -66,7 +70,14 @@ async function registerClosing(): Promise<void> {
     return
   }
 
-  if (summary.value.open > 0 && !window.confirm(`Quedan ${summary.value.open} atenciones abiertas. ¿Registrar el cierre igualmente?`)) {
+  if (
+    summary.value.open > 0 &&
+    !(await confirm.ask({
+      title: `Quedan ${summary.value.open} mesas con la cuenta abierta`,
+      message: 'Lo ideal es cobrarlas antes de cerrar el día. ¿Quieres registrar el cierre igualmente?',
+      confirmLabel: 'Registrar igualmente',
+    }))
+  ) {
     return
   }
 
@@ -87,7 +98,7 @@ async function registerClosing(): Promise<void> {
 
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 lg:px-8">
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando caja…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -119,7 +130,7 @@ async function registerClosing(): Promise<void> {
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
+            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
             :disabled="isSaving"
             @click="registerClosing"
           >
@@ -142,7 +153,7 @@ async function registerClosing(): Promise<void> {
           <RouterLink
             v-for="attention in summary.openAttentions"
             :key="attention.id"
-            class="font-label rounded-lg bg-surface-container-lowest px-2.5 py-1 text-xs font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             :to="{ name: 'site-account-detail', params: { restaurantId: restaurant.id, attentionId: attention.id } }"
           >
             Mesa {{ attention.tableNumber }} · {{ formatTime(attention.openedAt, restaurant.timezone) }}
@@ -152,21 +163,21 @@ async function registerClosing(): Promise<void> {
 
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Cobrado</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Cobrado</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ money(summary.totalPaid) }}</p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Cerradas</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Cerradas</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ summary.closed }}</p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Abiertas</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Abiertas</span>
           <p class="font-headline pt-1 text-3xl font-semibold tabular-nums" :class="summary.open > 0 ? 'text-error' : 'text-on-surface'">
             {{ summary.open }}
           </p>
         </article>
         <article class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">Canceladas</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Canceladas</span>
           <p class="font-headline pt-1 text-3xl font-semibold text-on-surface tabular-nums">{{ summary.cancelled }}</p>
           <p v-if="summary.pendingPayments > 0" class="mt-1 text-xs text-error">{{ summary.pendingPayments }} pagos sin confirmar</p>
         </article>

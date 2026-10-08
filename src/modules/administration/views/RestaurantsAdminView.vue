@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
 import AdminPageHeader from '@/components/base/AdminPageHeader.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { createRestaurant, fetchRestaurants, updateRestaurant, type NewRestaurantDraft } from '@/modules/restaurants/api'
@@ -17,7 +18,7 @@ const STATUS_LABELS: Record<RestaurantOperationalStatus, string> = {
 }
 
 const STATUS_CLASS: Record<RestaurantOperationalStatus, string> = {
-  active: 'bg-emerald-100 text-emerald-800',
+  active: 'bg-success-container text-on-success-container',
   inactive: 'bg-surface-container-high text-on-surface-variant',
   suspended: 'bg-error-container text-on-error-container',
 }
@@ -88,7 +89,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingRestaurant = null"
         >
           + Sede
@@ -100,7 +101,7 @@ onMounted(() => {
       {{ actionError }}
     </p>
 
-    <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando sedes…</p>
+    <SkeletonBlock v-if="isLoading" variant="page" />
     <p
       v-else-if="loadError"
       class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
@@ -113,13 +114,13 @@ onMounted(() => {
       <article v-for="restaurant in restaurants" :key="restaurant.id" class="space-y-3 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
         <div class="flex items-start justify-between gap-2">
           <div>
-            <p class="font-label text-[10px] font-semibold tracking-wide text-tertiary uppercase">{{ restaurant.code }}</p>
+            <p class="font-label text-xs font-semibold tracking-wide text-tertiary uppercase">{{ restaurant.code }}</p>
             <h2 class="font-headline text-lg font-semibold text-on-surface">{{ restaurant.name }}</h2>
             <p class="text-xs text-on-surface-variant">{{ restaurant.city }} · {{ restaurant.categoryLabel }}</p>
           </div>
           <button
             type="button"
-            class="font-label shrink-0 rounded-lg bg-surface-container px-3 py-1.5 text-[11px] font-semibold text-on-surface hover:bg-surface-container-high"
+            class="font-label shrink-0 rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
             @click="editingRestaurant = restaurant"
           >
             Editar
@@ -129,10 +130,10 @@ onMounted(() => {
         <p class="text-xs text-on-surface-variant">{{ restaurant.cuisine }}</p>
         <p class="text-xs text-on-surface-variant">Moneda {{ restaurant.currency }} · {{ restaurant.timezone }}</p>
         <div class="flex flex-wrap items-center gap-1.5">
-          <span class="font-label rounded-full px-2.5 py-1 text-[10px] font-bold uppercase" :class="STATUS_CLASS[restaurant.status]">
+          <span class="font-label rounded-full px-2.5 py-0.5 text-xs font-bold uppercase" :class="STATUS_CLASS[restaurant.status]">
             {{ STATUS_LABELS[restaurant.status] }}
           </span>
-          <span class="font-label inline-flex rounded-full bg-surface-container px-2.5 py-1 text-[10px] font-semibold text-primary">
+          <span class="font-label inline-flex rounded-full bg-surface-container px-2.5 py-0.5 text-xs font-semibold text-primary">
             {{ restaurant.statusLabel }}
           </span>
         </div>

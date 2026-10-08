@@ -2,9 +2,10 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { errorMessage, fetchAllOrderedProducts, fetchAttentionsByCustomer } from '@/modules/orders/api'
-import { attentionStatusBadgeClass, attentionStatusLabel, isBillableProduct } from '@/modules/orders/order-status-labels'
+import { attentionStatusLabel, attentionStatusTone, isBillableProduct } from '@/modules/orders/order-status-labels'
 import type { Attention } from '@/modules/orders/types'
 import { fetchRestaurants } from '@/modules/restaurants/api'
 import type { RestaurantSite } from '@/modules/restaurants/types'
@@ -69,7 +70,7 @@ onMounted(() => {
     <div v-if="!diner.customer" class="space-y-3 rounded-2xl bg-surface-container-lowest p-6 text-center shadow-sm">
       <p class="text-sm text-on-surface-variant">Ingresa con tu cuenta para ver el historial de tus visitas.</p>
       <RouterLink
-        class="font-label inline-flex rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-on-primary"
+        class="font-label inline-flex rounded-xl bg-primary min-h-11 px-4 text-sm inline-flex items-center justify-center font-semibold text-on-primary"
         :to="{ name: 'diner-auth', query: { redirect: '/mis-visitas' } }"
       >
         Ingresar
@@ -96,9 +97,7 @@ onMounted(() => {
           </div>
           <div class="flex shrink-0 flex-col items-end gap-1">
             <span class="text-sm font-semibold text-on-surface">{{ formatMoney(visit.total, visit.restaurant?.currency) }}</span>
-            <span class="font-label rounded px-1.5 py-0.5 text-[10px] font-bold uppercase" :class="attentionStatusBadgeClass[visit.attention.status]">
-              {{ attentionStatusLabel[visit.attention.status] }}
-            </span>
+            <StatusBadge :tone="attentionStatusTone[visit.attention.status]" :label="attentionStatusLabel[visit.attention.status]" />
           </div>
         </RouterLink>
       </li>

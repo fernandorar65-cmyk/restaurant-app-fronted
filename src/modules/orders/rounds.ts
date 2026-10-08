@@ -60,3 +60,32 @@ export const KITCHEN_DELAY_MINUTES = 15
 
 /** Minutos esperando en el pase a partir de los cuales una entrega se marca como demorada. */
 export const DELIVERY_DELAY_MINUTES = 5
+
+export type DelayLevel = 'ok' | 'warning' | 'critical'
+
+/** Normal por debajo del umbral, aviso al superarlo y crítico al doble: así el rojo sigue significando algo. */
+export function delayLevel(minutes: number, threshold: number): DelayLevel {
+  if (minutes >= threshold * 2) {
+    return 'critical'
+  }
+
+  return minutes >= threshold ? 'warning' : 'ok'
+}
+
+export const delayRingClass: Record<DelayLevel, string> = {
+  ok: 'ring-transparent',
+  warning: 'ring-warning',
+  critical: 'ring-error',
+}
+
+export const delayTextClass: Record<DelayLevel, string> = {
+  ok: 'text-on-surface-variant',
+  warning: 'text-warning',
+  critical: 'text-error',
+}
+
+export const delayLabel: Record<DelayLevel, string> = {
+  ok: '',
+  warning: 'Demorado',
+  critical: 'Muy demorado',
+}

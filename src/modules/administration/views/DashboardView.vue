@@ -95,7 +95,7 @@ onMounted(() => {
         <div>
           <div class="mb-1 flex items-center gap-2">
             <span class="inline-block h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-            <span class="font-label text-[11px] font-bold tracking-widest text-primary uppercase">
+            <span class="font-label text-xs font-bold tracking-widest text-primary uppercase">
               Panel de selección
             </span>
           </div>
@@ -125,7 +125,7 @@ onMounted(() => {
               </svg>
             </div>
             <div class="flex flex-col">
-              <span class="font-label text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+              <span class="font-label text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Organización
               </span>
               <span class="text-xs font-semibold text-gray-900">{{ organization.name }}</span>
@@ -136,30 +136,30 @@ onMounted(() => {
 
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div class="flex flex-col justify-between rounded border border-gray-200/80 bg-gray-50/40 p-4">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Sedes</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-gray-500 uppercase">Sedes</span>
           <span class="font-headline text-2xl font-bold text-gray-900">{{ restaurants.length }}</span>
-          <span class="mt-1 text-[11px] text-gray-500">Locales en el directorio</span>
+          <span class="mt-1 text-xs text-gray-500">Locales en el directorio</span>
         </div>
         <div class="flex flex-col justify-between rounded border border-gray-200/80 bg-gray-50/40 p-4">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Alta cocina</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-gray-500 uppercase">Alta cocina</span>
           <span class="font-headline text-2xl font-bold text-gray-900">
             {{ restaurants.filter((site) => site.category === 'fine-dining').length }}
           </span>
-          <span class="mt-1 text-[11px] text-gray-500">Sedes de esta categoría</span>
+          <span class="mt-1 text-xs text-gray-500">Sedes de esta categoría</span>
         </div>
         <div class="flex flex-col justify-between rounded border border-gray-200/80 bg-gray-50/40 p-4">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Cava y bistró</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-gray-500 uppercase">Cava y bistró</span>
           <span class="font-headline text-2xl font-bold text-gray-900">
             {{ restaurants.filter((site) => site.category === 'bistro').length }}
           </span>
-          <span class="mt-1 text-[11px] text-gray-500">Sedes de esta categoría</span>
+          <span class="mt-1 text-xs text-gray-500">Sedes de esta categoría</span>
         </div>
         <div class="flex flex-col justify-between rounded border border-gray-200/80 bg-gray-50/40 p-4">
-          <span class="font-label text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Laboratorio</span>
+          <span class="font-label text-xs font-semibold tracking-wider text-gray-500 uppercase">Laboratorio</span>
           <span class="font-headline text-2xl font-bold text-gray-900">
             {{ restaurants.filter((site) => site.category === 'lab').length }}
           </span>
-          <span class="mt-1 text-[11px] text-gray-500">Sedes de I+D</span>
+          <span class="mt-1 text-xs text-gray-500">Sedes de I+D</span>
         </div>
       </div>
     </section>

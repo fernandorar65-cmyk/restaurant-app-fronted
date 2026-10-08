@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <div class="space-y-4">
     <nav
-      class="font-label flex flex-wrap items-center gap-2 text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase"
+      class="font-label flex flex-wrap items-center gap-2 text-xs font-semibold tracking-widest text-on-surface-variant uppercase"
       aria-label="Migas"
     >
       <RouterLink class="transition-colors hover:text-primary" :to="{ name: 'admin-home' }">Administración</RouterLink>
@@ -20,8 +20,8 @@ defineProps<{
     </nav>
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
       <div>
-        <h1 class="font-headline text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl">{{ title }}</h1>
-        <p v-if="description" class="mt-1 text-sm text-on-surface-variant">{{ description }}</p>
+        <h1 class="font-headline text-3xl font-semibold tracking-tight text-on-surface">{{ title }}</h1>
+        <p v-if="description" class="mt-1 max-w-3xl text-base text-on-surface-variant">{{ description }}</p>
       </div>
       <div v-if="$slots.actions" class="flex flex-wrap gap-2">
         <slot name="actions" />

@@ -14,6 +14,7 @@ const router = useRouter()
 const route = useRoute()
 const currentSiteName = ref<string | null>(null)
 const homeRoute = computed(() => landingRouteFor(session.user))
+const canSwitchSite = computed(() => session.hasSiteAccess && (session.user?.restaurantIds.length ?? 0) !== 1)
 
 const emit = defineEmits<{
   openMenu: []
@@ -56,7 +57,7 @@ onMounted(() => {
       <div class="flex items-center gap-3 sm:gap-5">
         <button
           type="button"
-          class="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface lg:hidden"
+          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface lg:hidden"
           aria-label="Abrir menú"
           @click="emit('openMenu')"
         >
@@ -81,21 +82,22 @@ onMounted(() => {
             <span class="font-headline text-[17px] leading-none font-semibold tracking-tight text-on-surface">
               Restaurant-CMR
             </span>
-            <span class="font-label mt-0.5 text-[10px] font-medium tracking-wider text-secondary uppercase">
-              Haute Cuisine Suite
-            </span>
+            <span class="mt-0.5 hidden text-xs text-on-surface-variant sm:block">Portal del restaurante</span>
           </span>
         </RouterLink>
 
         <template v-if="currentSiteName">
-          <div class="hidden h-6 w-px bg-surface-container-highest sm:block" />
-          <RouterLink
-            :to="homeRoute"
-            class="hidden items-center gap-2 rounded-lg bg-surface-container-low px-3 py-1.5 transition-colors hover:bg-surface-container sm:flex"
+          <div class="hidden h-6 w-px bg-surface-container-highest md:block" />
+          <component
+            :is="canSwitchSite ? RouterLink : 'span'"
+            :to="canSwitchSite ? { name: 'dashboard' } : undefined"
+            class="hidden min-h-10 items-center gap-2 rounded-xl bg-surface-container-low px-3 md:flex"
+            :class="canSwitchSite ? 'transition-colors hover:bg-surface-container' : ''"
           >
-            <span class="text-xs leading-none font-semibold text-on-surface">{{ currentSiteName }}</span>
-            <span class="text-[10px] text-on-surface-variant">Cambiar sede</span>
-          </RouterLink>
+            <span class="h-2 w-2 rounded-full bg-success" aria-hidden="true" />
+            <span class="text-sm font-semibold text-on-surface">{{ currentSiteName }}</span>
+            <span v-if="canSwitchSite" class="text-sm text-on-surface-variant">· Cambiar</span>
+          </component>
         </template>
       </div>
 
@@ -106,12 +108,12 @@ onMounted(() => {
           </div>
           <div class="flex flex-col text-left">
             <span class="text-xs leading-tight font-semibold text-on-surface">{{ session.user.name }}</span>
-            <span class="font-label text-[10px] leading-tight text-on-surface-variant">{{ session.user.roleName ?? session.user.email }}</span>
+            <span class="font-label text-xs leading-tight text-on-surface-variant">{{ session.user.roleName ?? session.user.email }}</span>
           </div>
         </div>
         <button
           type="button"
-          class="rounded p-1.5 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
+          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
           title="Cerrar sesión"
           @click="logout"
         >

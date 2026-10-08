@@ -30,7 +30,7 @@ const tagClass: Record<LiveTable['tagTone'], string> = {
               Mesa {{ table.number }} · {{ table.occupiedSeats }}/{{ table.seats }} sillas
             </h3>
             <span
-              class="font-label rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase"
+              class="font-label rounded-md px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
               :class="tagClass[table.tagTone]"
             >
               {{ table.tagLabel }}
@@ -42,7 +42,7 @@ const tagClass: Record<LiveTable['tagTone'], string> = {
         </div>
       </div>
       <span
-        class="font-label inline-flex items-center gap-1.5 self-end rounded-lg bg-surface-container-lowest px-2.5 py-1 text-xs font-semibold text-on-surface shadow-xs sm:self-center"
+        class="font-label inline-flex items-center gap-1.5 self-end rounded-lg bg-surface-container-lowest px-2.5 py-0.5 text-xs font-semibold text-on-surface shadow-xs sm:self-center"
       >
         <span v-if="highlight" class="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
         {{ table.statusLabel }}
@@ -50,7 +50,7 @@ const tagClass: Record<LiveTable['tagTone'], string> = {
     </div>
     <div class="mt-4 flex flex-col justify-between gap-2 pt-3.5 text-xs sm:flex-row sm:items-center">
       <p class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-        <span class="font-label text-[11px] font-semibold tracking-wider text-tertiary uppercase">{{ table.courseLabel }}</span>
+        <span class="font-label text-xs font-semibold tracking-wider text-tertiary uppercase">{{ table.courseLabel }}</span>
         <span class="hidden text-on-surface-variant sm:inline">|</span>
         <span class="font-medium text-on-surface">{{ table.dish }}</span>
       </p>

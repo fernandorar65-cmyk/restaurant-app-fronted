@@ -17,7 +17,7 @@ const statusClass: Record<SiteStaffMember['status'], string> = {
 <template>
   <article class="flex items-center gap-3 rounded-xl bg-surface-container-low px-3 py-2.5">
     <span
-      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-on-primary"
+      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-on-primary"
       aria-hidden="true"
     >
       {{ getInitials(member.name) }}
@@ -29,7 +29,7 @@ const statusClass: Record<SiteStaffMember['status'], string> = {
       </p>
     </div>
     <span
-      class="font-label shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase"
+      class="font-label shrink-0 rounded-md px-2 py-0.5 text-xs font-bold tracking-wide uppercase"
       :class="statusClass[member.status]"
     >
       {{ staffStatusLabel[member.status] }}
