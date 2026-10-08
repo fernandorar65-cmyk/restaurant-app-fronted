@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 
 import { landingRouteFor } from '@/app/router/landing'
+import StaffAccountMenu from '@/components/navigation/StaffAccountMenu.vue'
 import ThemeMenu from '@/components/navigation/ThemeMenu.vue'
 import { fetchRestaurantById } from '@/modules/restaurants/api'
 import { useSessionStore } from '@/stores/session'
-import { useSiteActivityStore } from '@/stores/site-activity'
-import { getInitials } from '@/utils/string'
 
 const session = useSessionStore()
-const activity = useSiteActivityStore()
-const router = useRouter()
 const route = useRoute()
 const currentSiteName = ref<string | null>(null)
 const homeRoute = computed(() => landingRouteFor(session.user))
@@ -32,12 +29,6 @@ async function loadCurrentSite(): Promise<void> {
 
   const site = await fetchRestaurantById(id)
   currentSiteName.value = site?.name ?? null
-}
-
-async function logout(): Promise<void> {
-  activity.watchSite(null)
-  session.clearAuth()
-  await router.push({ name: 'login' })
 }
 
 watch(
@@ -104,30 +95,7 @@ onMounted(() => {
 
       <div class="flex items-center gap-3">
         <ThemeMenu />
-        <div v-if="session.user" class="hidden items-center gap-2.5 border-l border-outline-variant pl-2 sm:flex">
-          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-on-primary">
-            {{ getInitials(session.user.name) }}
-          </div>
-          <div class="flex flex-col text-left">
-            <span class="text-xs leading-tight font-semibold text-on-surface">{{ session.user.name }}</span>
-            <span class="font-label text-xs leading-tight text-on-surface-variant">{{ session.user.roleName ?? session.user.email }}</span>
-          </div>
-        </div>
-        <button
-          type="button"
-          class="touch-target flex items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
-          title="Cerrar sesión"
-          @click="logout"
-        >
-          <span class="sr-only">Cerrar sesión</span>
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-            />
-          </svg>
-        </button>
+        <StaffAccountMenu />
       </div>
     </div>
   </header>

@@ -63,8 +63,8 @@ const items = computed<NavItem[]>(() => {
   list.push({
     key: 'profile',
     label: diner.customer ? 'Perfil' : 'Ingresar',
-    to: { name: 'diner-auth' },
-    activeNames: ['diner-auth', 'diner-visits'],
+    to: diner.customer ? { name: 'diner-profile' } : { name: 'diner-auth' },
+    activeNames: ['diner-auth', 'diner-visits', 'diner-profile'],
     icon: 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z',
   })
 

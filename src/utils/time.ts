@@ -26,6 +26,11 @@ export function formatDateTime(isoDate: string, timeZone?: string): string {
 }
 
 /** Fecha local (YYYY-MM-DD) de un instante en la zona horaria de la sede. */
+/** "2026-09-20T18:30:00Z" → "septiembre de 2026". Para fechas de alta ("miembro desde"). */
+export function formatMonthYear(isoDate: string): string {
+  return new Intl.DateTimeFormat('es', { month: 'long', year: 'numeric' }).format(new Date(isoDate))
+}
+
 export function localDateKey(isoDate: string, timeZone?: string): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(
     new Date(isoDate),

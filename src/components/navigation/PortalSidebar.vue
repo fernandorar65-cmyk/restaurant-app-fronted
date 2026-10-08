@@ -214,9 +214,15 @@ onMounted(() => {
           </RouterLink>
         </div>
 
-        <p v-if="session.user?.roleName" class="px-3 text-xs text-on-surface-variant" :class="session.hasAdminAccess ? '' : 'mt-auto'">
-          {{ session.user.name }} · {{ session.user.roleName }}
-        </p>
+        <RouterLink
+          v-if="session.user"
+          :to="{ name: 'staff-profile' }"
+          class="rounded-xl px-3 py-2 text-xs text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+          :class="session.hasAdminAccess ? '' : 'mt-auto'"
+        >
+          <span class="block font-semibold text-on-surface">Mi perfil</span>
+          {{ session.user.name }}<template v-if="session.user.roleName"> · {{ session.user.roleName }}</template>
+        </RouterLink>
       </nav>
     </aside>
   </div>

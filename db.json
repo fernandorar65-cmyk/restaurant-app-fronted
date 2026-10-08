@@ -5,6 +5,9 @@
       "name": "Admin Demo",
       "email": "admin@restaurant.com",
       "password": "admin1234",
+      "phone": "+34 600 000 001",
+      "jobTitle": "Administración general",
+      "createdAt": "2025-01-10T09:00:00.000Z",
       "isActive": true,
       "isBlocked": false,
       "roleId": "role-0",
@@ -16,6 +19,9 @@
       "name": "Laia Ferrer",
       "email": "laia.ferrer@restaurantcmr.com",
       "password": "laia1234",
+      "phone": "+34 611 220 033",
+      "jobTitle": "Gerente de sede",
+      "createdAt": "2025-02-01T09:00:00.000Z",
       "isActive": true,
       "isBlocked": false,
       "roleId": "role-1",
@@ -29,6 +35,9 @@
       "name": "Marc Vallet",
       "email": "cocina@restaurant.com",
       "password": "demo1234",
+      "phone": "+34 611 220 011",
+      "jobTitle": "Jefe de cocina",
+      "createdAt": "2025-02-01T09:00:00.000Z",
       "isActive": true,
       "isBlocked": false,
       "roleId": "role-2",
@@ -42,6 +51,9 @@
       "name": "Nuria García",
       "email": "mozo@restaurant.com",
       "password": "demo1234",
+      "phone": null,
+      "jobTitle": "Camarero",
+      "createdAt": "2025-03-15T09:00:00.000Z",
       "isActive": true,
       "isBlocked": false,
       "roleId": "role-4",
@@ -55,11 +67,30 @@
       "name": "Caja Sede 1",
       "email": "caja@restaurant.com",
       "password": "demo1234",
+      "phone": null,
+      "jobTitle": "Cajero",
+      "createdAt": "2025-03-15T09:00:00.000Z",
       "isActive": true,
       "isBlocked": false,
       "roleId": "role-6",
       "restaurantIds": [
         "1"
+      ],
+      "employeeId": null
+    },
+    {
+      "id": "6",
+      "name": "Rafael Montoya",
+      "email": "dueno@rentasol.com",
+      "password": "dueno1234",
+      "phone": "+34 622 418 905",
+      "jobTitle": "Fundador y propietario",
+      "createdAt": "2026-10-08T12:00:00.000Z",
+      "isActive": true,
+      "isBlocked": false,
+      "roleId": "role-0",
+      "restaurantIds": [
+        "3"
       ],
       "employeeId": null
     }
@@ -3828,7 +3859,29 @@
       "id": "cus-1",
       "name": "Comensal Demo",
       "email": "cliente@demo.com",
-      "password": "cliente1234"
+      "password": "cliente1234",
+      "phone": null,
+      "birthday": null,
+      "dietaryPreferences": [],
+      "allergens": [],
+      "marketingOptIn": false,
+      "createdAt": "2026-01-15T12:00:00.000Z"
+    },
+    {
+      "id": "cus-2",
+      "name": "Lucía Paredes",
+      "email": "cliente@rentasol.com",
+      "password": "cliente1234",
+      "phone": "+51 987 654 321",
+      "birthday": "1994-05-12",
+      "dietaryPreferences": [
+        "Vegetariano"
+      ],
+      "allergens": [
+        "Frutos secos"
+      ],
+      "marketingOptIn": true,
+      "createdAt": "2026-09-20T18:30:00.000Z"
     }
   ],
   "dailyClosures": [],

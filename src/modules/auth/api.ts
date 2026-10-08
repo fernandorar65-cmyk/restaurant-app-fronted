@@ -7,7 +7,10 @@ import type {
   JsonUser,
   LoginPayload,
   RegisterPayload,
+  StaffProfile,
+  StaffProfileDraft,
 } from '@/modules/auth/types'
+import { fetchRestaurants } from '@/modules/restaurants/api'
 
 function isJsonUser(value: unknown): value is JsonUser {
   if (typeof value !== 'object' || value === null) {
@@ -169,4 +172,91 @@ export async function register(payload: RegisterPayload): Promise<AuthSession> {
   }
 
   return toSession(created)
+}
+
+async function fetchJsonUser(id: string): Promise<JsonUser> {
+  const payload = await http<unknown>(`/users/${id}`)
+
+  if (!isJsonUser(payload)) {
+    throw new HttpError('No encontramos tu usuario', 404)
+  }
+
+  return payload
+}
+
+async function fetchEmployeeSummary(employeeId: string | null | undefined): Promise<StaffProfile['employee']> {
+  if (!employeeId) {
+    return null
+  }
+
+  try {
+    const value = await http<unknown>(`/employees/${employeeId}`)
+
+    if (typeof value !== 'object' || value === null) {
+      return null
+    }
+
+    const record = value as Record<string, unknown>
+    return {
+      area: typeof record.area === 'string' ? record.area : '',
+      status: typeof record.status === 'string' ? record.status : '',
+      hiredAt: typeof record.hiredAt === 'string' ? record.hiredAt : null,
+      restaurantName: typeof record.restaurantName === 'string' ? record.restaurantName : null,
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Contrato pensado para el backend: GET /users/me/profile */
+export async function fetchStaffProfile(userId: string): Promise<StaffProfile> {
+  const user = await fetchJsonUser(userId)
+  const [authUser, restaurants, employee] = await Promise.all([
+    toAuthUser(user),
+    fetchRestaurants(),
+    fetchEmployeeSummary(user.employeeId),
+  ])
+  const allRestaurants = authUser.restaurantIds.length === 0
+
+  return {
+    id: authUser.id,
+    name: user.name,
+    email: user.email,
+    phone: typeof user.phone === 'string' && user.phone ? user.phone : null,
+    jobTitle: typeof user.jobTitle === 'string' && user.jobTitle ? user.jobTitle : null,
+    createdAt: typeof user.createdAt === 'string' ? user.createdAt : null,
+    roleName: authUser.roleName,
+    permissions: authUser.permissions,
+    allRestaurants,
+    restaurants: restaurants
+      .filter((site) => allRestaurants || authUser.restaurantIds.includes(site.id))
+      .map((site) => ({ id: site.id, name: site.name, city: site.city, imageUrl: site.imageUrl })),
+    employee,
+  }
+}
+
+/** Contrato pensado para el backend: PATCH /users/me/profile */
+export async function updateStaffProfile(userId: string, draft: StaffProfileDraft): Promise<void> {
+  await http<unknown>(`/users/${userId}`, {
+    method: 'PATCH',
+    body: {
+      name: draft.name.trim(),
+      phone: draft.phone?.trim() || null,
+      jobTitle: draft.jobTitle?.trim() || null,
+    },
+  })
+}
+
+/**
+ * Contrato pensado para el backend: POST /users/me/password. Con json-server la
+ * contraseña actual se compara en el cliente; el backend real lo hará del lado servidor.
+ */
+export async function changeStaffPassword(userId: string, currentPassword: string, nextPassword: string): Promise<void> {
+  const user = await fetchJsonUser(userId)
+
+  if (user.password !== currentPassword) {
+    throw new HttpError('La contraseña actual no es correcta', 401)
+  }
+
+  await http<unknown>(`/users/${userId}`, { method: 'PATCH', body: { password: nextPassword } })
 }

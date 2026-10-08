@@ -70,6 +70,11 @@ export const router = createRouter({
           component: () => import('@/modules/diners/views/DinerAuthView.vue'),
         },
         {
+          path: 'perfil',
+          name: 'diner-profile',
+          component: () => import('@/modules/diners/views/DinerProfileView.vue'),
+        },
+        {
           path: 'mis-visitas',
           name: 'diner-visits',
           component: () => import('@/modules/diners/views/DinerVisitsView.vue'),
@@ -178,6 +183,19 @@ export const router = createRouter({
           name: 'site-closing',
           component: () => import('@/modules/reports/views/DailyClosingView.vue'),
           meta: { permission: 'reports.view' },
+        },
+      ],
+    },
+    {
+      // Perfil del dueño / personal: cualquier usuario con sesión, sin permiso específico.
+      path: '/cuenta',
+      component: PortalLayout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'staff-profile',
+          component: () => import('@/modules/auth/views/StaffProfileView.vue'),
         },
       ],
     },
