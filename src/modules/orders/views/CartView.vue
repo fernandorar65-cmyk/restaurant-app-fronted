@@ -130,14 +130,14 @@ async function goToStatus(): Promise<void> {
         estén confirmados y listos.
       </p>
       <BaseButton variant="primary" size="lg" block @click="goToStatus">Ver cómo va mi pedido</BaseButton>
-      <BaseButton variant="secondary" size="lg" block :to="{ name: 'menu' }">Seguir viendo la carta</BaseButton>
+      <BaseButton variant="secondary" size="lg" block :to="diner.menuRoute">Seguir viendo la carta</BaseButton>
     </div>
 
     <DinerNotice v-else-if="!diner.isReadyToOrder" kind="no-table">
       <RouterLink
         v-if="diner.restaurantId"
         class="font-label rounded-xl bg-surface-container min-h-12 px-5 text-base inline-flex items-center justify-center font-semibold text-on-surface hover:bg-surface-container-high"
-        :to="{ name: 'menu' }"
+        :to="diner.menuRoute"
       >
         Ver la carta
       </RouterLink>
@@ -150,7 +150,7 @@ async function goToStatus(): Promise<void> {
       </div>
 
       <EmptyState v-if="cart.items.length === 0" icon="inbox" title="Tu carrito está vacío" message="Elige productos de la carta para armar tu pedido.">
-        <BaseButton variant="primary" :to="{ name: 'menu' }">Ver la carta</BaseButton>
+        <BaseButton variant="primary" :to="diner.menuRoute">Ver la carta</BaseButton>
       </EmptyState>
 
       <template v-else>
@@ -209,7 +209,7 @@ async function goToStatus(): Promise<void> {
           </li>
         </ul>
 
-        <BaseButton variant="secondary" block :to="{ name: 'menu' }">+ Agregar más productos</BaseButton>
+        <BaseButton variant="secondary" block :to="diner.menuRoute">+ Agregar más productos</BaseButton>
 
         <div class="sticky bottom-20 z-10 space-y-3 rounded-2xl bg-surface-container-lowest p-4 shadow-[0_-4px_24px_rgba(27,28,29,0.08)] ring-1 ring-outline-variant/30">
           <div class="flex items-center justify-between">

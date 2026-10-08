@@ -53,7 +53,6 @@ const emit = defineEmits<{
           @increase="emit('increase')"
           @decrease="emit('decrease')"
         />
-        <span v-else class="text-sm text-on-surface-variant">Escanea el QR de tu mesa para pedir</span>
       </span>
     </template>
   </BaseDialog>

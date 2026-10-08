@@ -2,6 +2,25 @@ export function isNonEmptyString(value: string | null | undefined): value is str
   return typeof value === 'string' && value.trim().length > 0
 }
 
+/** Minúsculas y sin tildes: "Jamón Ibérico" → "jamon iberico". Para comparar búsquedas. */
+export function normalizeSearch(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+/** "L'Étoile Atelier" → "l-etoile-atelier", para usar en URLs. */
+export function slugify(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 export function getInitials(name: string): string {
   const parts = name
     .trim()

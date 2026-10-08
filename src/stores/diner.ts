@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
 
 const DINER_KEY = 'restaurant-cmr:diner'
 const RECENT_KEY = 'restaurant-cmr:recent-restaurants'
@@ -22,6 +23,7 @@ export type DinerEntry = 'qr' | 'manual'
 
 interface StoredDiner {
   restaurantId: string | null
+  restaurantSlug: string | null
   restaurantName: string | null
   currency: string
   tableNumber: string | null
@@ -34,6 +36,7 @@ interface StoredDiner {
 
 const EMPTY: StoredDiner = {
   restaurantId: null,
+  restaurantSlug: null,
   restaurantName: null,
   currency: 'EUR',
   tableNumber: null,
@@ -88,6 +91,7 @@ export const useDinerStore = defineStore('diner', () => {
   const stored = readStoredDiner()
 
   const restaurantId = ref<string | null>(stored.restaurantId)
+  const restaurantSlug = ref<string | null>(stored.restaurantSlug)
   const restaurantName = ref<string | null>(stored.restaurantName)
   const currency = ref(stored.currency)
   const tableNumber = ref<string | null>(stored.tableNumber)
@@ -101,6 +105,11 @@ export const useDinerStore = defineStore('diner', () => {
   const hasTable = computed(() => tableNumber.value !== null)
   const isReadyToOrder = computed(() => hasRestaurant.value && hasTable.value && confirmed.value)
 
+  /** Carta de la sede actual; sin sede (o sin slug guardado), el inicio para elegir una. */
+  const menuRoute = computed<RouteLocationRaw>(() =>
+    restaurantSlug.value ? { name: 'menu', params: { restaurantSlug: restaurantSlug.value } } : { name: 'home' },
+  )
+
   /** La sede pasa al inicio de los recientes, sin duplicados. */
   function rememberRestaurant(id: string): void {
     recentRestaurants.value = [
@@ -112,6 +121,7 @@ export const useDinerStore = defineStore('diner', () => {
   /** Fija sede y mesa. Si cambia la mesa o la sede, se olvida la atención anterior. */
   function setTable(next: {
     restaurantId: string
+    restaurantSlug: string
     restaurantName: string
     currency: string
     tableNumber: string
@@ -120,6 +130,7 @@ export const useDinerStore = defineStore('diner', () => {
     const changed = restaurantId.value !== next.restaurantId || tableNumber.value !== next.tableNumber
 
     restaurantId.value = next.restaurantId
+    restaurantSlug.value = next.restaurantSlug
     restaurantName.value = next.restaurantName
     currency.value = next.currency
     tableNumber.value = next.tableNumber
@@ -133,8 +144,9 @@ export const useDinerStore = defineStore('diner', () => {
   }
 
   /** Consultar la carta de una sede sin mesa (no permite pedir). */
-  function browse(next: { restaurantId: string; restaurantName: string; currency: string }): void {
+  function browse(next: { restaurantId: string; restaurantSlug: string; restaurantName: string; currency: string }): void {
     restaurantId.value = next.restaurantId
+    restaurantSlug.value = next.restaurantSlug
     restaurantName.value = next.restaurantName
     currency.value = next.currency
     tableNumber.value = null
@@ -158,6 +170,7 @@ export const useDinerStore = defineStore('diner', () => {
 
   function leaveTable(): void {
     restaurantId.value = null
+    restaurantSlug.value = null
     restaurantName.value = null
     tableNumber.value = null
     entry.value = null
@@ -166,10 +179,11 @@ export const useDinerStore = defineStore('diner', () => {
   }
 
   watch(
-    [restaurantId, restaurantName, currency, tableNumber, entry, confirmed, attentionId, customer],
+    [restaurantId, restaurantSlug, restaurantName, currency, tableNumber, entry, confirmed, attentionId, customer],
     () => {
       const snapshot: StoredDiner = {
         restaurantId: restaurantId.value,
+        restaurantSlug: restaurantSlug.value,
         restaurantName: restaurantName.value,
         currency: currency.value,
         tableNumber: tableNumber.value,
@@ -198,6 +212,7 @@ export const useDinerStore = defineStore('diner', () => {
 
   return {
     restaurantId,
+    restaurantSlug,
     restaurantName,
     currency,
     tableNumber,
@@ -209,6 +224,7 @@ export const useDinerStore = defineStore('diner', () => {
     hasRestaurant,
     hasTable,
     isReadyToOrder,
+    menuRoute,
     setTable,
     browse,
     confirmTable,

@@ -78,6 +78,7 @@ async function validate(): Promise<void> {
 
     diner.setTable({
       restaurantId: site.id,
+      restaurantSlug: site.slug,
       restaurantName: site.name,
       currency: site.currency,
       tableNumber: table,
@@ -88,7 +89,7 @@ async function validate(): Promise<void> {
 
     if (alreadyConfirmed) {
       diner.setAttention(openAttention.value?.id ?? diner.attentionId)
-      await router.replace({ name: 'menu' })
+      await router.replace(diner.menuRoute)
       return
     }
 
@@ -102,12 +103,12 @@ async function continueAs(mode: 'guest' | 'account'): Promise<void> {
   diner.setAttention(openAttention.value?.id ?? null)
 
   if (mode === 'account' && !diner.customer) {
-    await router.push({ name: 'diner-auth', query: { redirect: '/menu' } })
+    await router.push({ name: 'diner-auth', query: { redirect: router.resolve(diner.menuRoute).fullPath } })
     return
   }
 
   diner.confirmTable()
-  await router.replace({ name: 'menu' })
+  await router.replace(diner.menuRoute)
 }
 
 function rejectTable(): void {

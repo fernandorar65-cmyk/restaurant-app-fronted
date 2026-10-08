@@ -6,6 +6,7 @@ import PortalLayout from '@/layouts/PortalLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import CustomerLayout from '@/layouts/CustomerLayout.vue'
 import { ADMIN_PERMISSIONS, SITE_PERMISSIONS } from '@/modules/auth/permissions'
+import { useDinerStore } from '@/stores/diner'
 import { useSessionStore } from '@/stores/session'
 
 export const router = createRouter({
@@ -30,9 +31,14 @@ export const router = createRouter({
           component: () => import('@/modules/restaurants/views/TableEntryView.vue'),
         },
         {
-          path: 'menu',
+          path: ':restaurantSlug/menu',
           name: 'menu',
           component: () => import('@/modules/menus/views/MenuView.vue'),
+        },
+        {
+          // Ruta antigua: lleva a la carta de la sede actual del comensal.
+          path: 'menu',
+          redirect: () => useDinerStore().menuRoute,
         },
         {
           path: 'cart',

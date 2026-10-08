@@ -25,6 +25,8 @@ export interface RestaurantKpis {
 export interface RestaurantSite {
   id: string
   code: string
+  /** Identificador legible para la URL pública de la sede (/l-etoile-atelier/menu). */
+  slug: string
   name: string
   city: string
   address: string

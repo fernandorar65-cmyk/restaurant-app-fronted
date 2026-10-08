@@ -5,6 +5,7 @@ export type DinerNoticeKind =
   | 'invalid-qr'
   | 'table-maintenance'
   | 'table-inactive'
+  | 'restaurant-not-found'
   | 'restaurant-closed'
   | 'empty-menu'
   | 'attention-closed'
@@ -37,6 +38,11 @@ const DEFAULTS: Record<DinerNoticeKind, { title: string; message: string; tone: 
     title: 'Mesa no habilitada',
     message: 'Esta mesa no está habilitada para pedir. Pide ayuda a un mozo.',
     tone: 'error',
+  },
+  'restaurant-not-found': {
+    title: 'No encontramos esta sede',
+    message: 'La dirección no corresponde a ninguna sede. Revisa el enlace o elige una sede desde el inicio.',
+    tone: 'neutral',
   },
   'restaurant-closed': {
     title: 'Sede no disponible',

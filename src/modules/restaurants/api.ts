@@ -1,4 +1,5 @@
 import { http, HttpError } from '@/services/http'
+import { slugify } from '@/utils/string'
 import type {
   LiveTable,
   Organization,
@@ -82,6 +83,7 @@ function toRestaurantSite(value: RestaurantSite): RestaurantSite {
   return {
     ...value,
     id: String(value.id),
+    slug: typeof value.slug === 'string' && value.slug ? value.slug : slugify(value.name),
     currency: typeof value.currency === 'string' && value.currency ? value.currency : 'EUR',
     timezone: typeof value.timezone === 'string' && value.timezone ? value.timezone : 'Europe/Madrid',
     lat: typeof value.lat === 'number' ? value.lat : undefined,
@@ -112,6 +114,12 @@ export async function fetchRestaurants(): Promise<RestaurantSite[]> {
   }
 
   return payload.filter(isRestaurantSite).map(toRestaurantSite)
+}
+
+/** Sede por su slug de URL. json-server no filtra por campos calculados, así que se busca en la lista. */
+export async function fetchRestaurantBySlug(slug: string): Promise<RestaurantSite | null> {
+  const restaurants = await fetchRestaurants()
+  return restaurants.find((site) => site.slug === slug) ?? null
 }
 
 export async function fetchRestaurantById(id: string): Promise<RestaurantSite | null> {
@@ -151,6 +159,7 @@ export async function createRestaurant(draft: NewRestaurantDraft): Promise<Resta
     method: 'POST',
     body: {
       ...draft,
+      slug: slugify(draft.name),
       badgeLabel: draft.categoryLabel,
       badgeTone: 'blue',
       capacityLabel: 'Cubiertos: —',

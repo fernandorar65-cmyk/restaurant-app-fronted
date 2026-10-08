@@ -25,7 +25,7 @@ const redirectTarget = computed(() => {
 })
 
 async function goBack(): Promise<void> {
-  await router.push(redirectTarget.value ?? (diner.isReadyToOrder ? { name: 'menu' } : { name: 'diner-visits' }))
+  await router.push(redirectTarget.value ?? (diner.isReadyToOrder ? diner.menuRoute : { name: 'diner-visits' }))
 }
 
 async function submit(): Promise<void> {

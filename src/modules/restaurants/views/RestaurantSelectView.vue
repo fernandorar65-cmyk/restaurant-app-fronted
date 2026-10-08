@@ -172,10 +172,15 @@ async function selectFromMap(id: string): Promise<void> {
 
 async function browseMenu(restaurant: RestaurantSite): Promise<void> {
   if (!(diner.isReadyToOrder && diner.restaurantId === restaurant.id)) {
-    diner.browse({ restaurantId: restaurant.id, restaurantName: restaurant.name, currency: restaurant.currency })
+    diner.browse({
+      restaurantId: restaurant.id,
+      restaurantSlug: restaurant.slug,
+      restaurantName: restaurant.name,
+      currency: restaurant.currency,
+    })
   }
 
-  await router.push({ name: 'menu' })
+  await router.push({ name: 'menu', params: { restaurantSlug: restaurant.slug } })
 }
 
 onMounted(async () => {
@@ -199,14 +204,14 @@ onMounted(async () => {
     <header class="space-y-1">
       <h1 class="font-headline text-3xl font-semibold tracking-tight text-on-surface">¿Dónde comemos hoy?</h1>
       <p class="text-sm text-on-surface-variant">
-        Encuentra una sede cerca y mira su carta. Para pedir, escanea el QR de tu mesa.
+        Encuentra una sede cerca y mira su carta.
       </p>
     </header>
 
     <RouterLink
       v-if="diner.isReadyToOrder"
       class="flex min-h-20 items-center justify-between gap-3 rounded-3xl bg-primary px-5 py-4 text-on-primary shadow-md hover:bg-primary-container"
-      :to="diner.attentionId ? { name: 'order-status', params: { attentionId: diner.attentionId } } : { name: 'menu' }"
+      :to="diner.attentionId ? { name: 'order-status', params: { attentionId: diner.attentionId } } : diner.menuRoute"
     >
       <span>
         <span class="font-label block text-xs font-bold tracking-widest uppercase opacity-80">Continuar en tu mesa</span>

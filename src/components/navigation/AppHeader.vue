@@ -32,7 +32,7 @@ async function logout(): Promise<void> {
 
       <nav class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" aria-label="Principal">
         <template v-if="variant === 'customer'">
-          <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'menu' }">Carta</RouterLink>
+          <RouterLink class="text-stone-600 hover:text-stone-900" :to="{ name: 'home' }">Carta</RouterLink>
           <RouterLink v-if="diner.isReadyToOrder" class="text-stone-600 hover:text-stone-900" :to="{ name: 'cart' }">
             Carrito<span v-if="cart.itemCount > 0" class="ml-1 rounded-full bg-primary px-1.5 text-xs font-bold text-on-primary">{{ cart.itemCount }}</span>
           </RouterLink>

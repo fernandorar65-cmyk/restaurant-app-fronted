@@ -345,7 +345,7 @@ watch(
       </p>
 
       <div v-if="isActive" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <BaseButton v-if="isMyTable" variant="secondary" size="lg" :to="{ name: 'menu' }">Pedir algo más</BaseButton>
+        <BaseButton v-if="isMyTable" variant="secondary" size="lg" :to="diner.menuRoute">Pedir algo más</BaseButton>
         <BaseButton
           v-if="attention.status === 'open'"
           variant="primary"

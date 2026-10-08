@@ -1,4 +1,5 @@
 import { http } from '@/services/http'
+import { normalizeSearch } from '@/utils/string'
 import type { Menu, MenuCategory, MenuCategoryDraft, MenuProduct, MenuProductDraft, MenuStatus } from '@/modules/menus/types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -270,6 +271,48 @@ export async function deleteMenuCategory(id: string): Promise<void> {
   await http<unknown>(`/menuCategories/${id}`, { method: 'DELETE' })
 }
 
+/**
+ * Texto de búsqueda sin tildes que se guarda junto al producto. json-server solo
+ * compara en minúsculas; con este campo "jamon" encuentra "Jamón". En el backend
+ * real esto lo resolverá la base de datos (p. ej. unaccent + ILIKE en Postgres).
+ */
+function productSearchText(draft: Pick<MenuProductDraft, 'name' | 'description' | 'tags'>): string {
+  return normalizeSearch([draft.name, draft.description, ...draft.tags].join(' '))
+}
+
+/**
+ * Sugerencias para el buscador predictivo de la carta del comensal.
+ * Contrato pensado para el backend: GET /restaurants/:id/menu/suggestions?q=…&limit=…
+ */
+export async function searchMenuSuggestions(restaurantId: string, query: string, limit = 6): Promise<MenuProduct[]> {
+  const term = normalizeSearch(query)
+
+  if (!term) {
+    return []
+  }
+
+  const where = {
+    restaurantId: { eq: restaurantId },
+    isActive: { eq: true },
+    searchText: { contains: term },
+  }
+  const payload = await http<unknown>(`/menuProducts?_where=${encodeURIComponent(JSON.stringify(where))}`)
+
+  if (!Array.isArray(payload)) {
+    return []
+  }
+
+  const products = payload.filter(isMenuProduct).map(toMenuProduct)
+
+  /* Primero los que empiezan por el término, luego los que lo contienen en el nombre, luego el resto. */
+  const rank = (product: MenuProduct): number => {
+    const name = normalizeSearch(product.name)
+    return name.startsWith(term) ? 0 : name.includes(term) ? 1 : 2
+  }
+
+  return products.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'es')).slice(0, limit)
+}
+
 export async function createMenuProduct(
   restaurantId: string,
   draft: MenuProductDraft,
@@ -281,6 +324,7 @@ export async function createMenuProduct(
       restaurantId,
       position,
       ...draft,
+      searchText: productSearchText(draft),
       imageUrl: draft.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=640&h=480&fit=crop&auto=format&q=70',
     },
   })
@@ -292,7 +336,10 @@ export async function createMenuProduct(
   return toMenuProduct(payload)
 }
 
-export async function patchMenuProduct(id: string, changes: Partial<MenuProductDraft & { position: number }>): Promise<MenuProduct> {
+export async function patchMenuProduct(
+  id: string,
+  changes: Partial<MenuProductDraft & { position: number; searchText: string }>,
+): Promise<MenuProduct> {
   const payload = await http<unknown>(`/menuProducts/${id}`, {
     method: 'PATCH',
     body: changes,
@@ -306,7 +353,7 @@ export async function patchMenuProduct(id: string, changes: Partial<MenuProductD
 }
 
 export async function updateMenuProduct(id: string, draft: MenuProductDraft): Promise<MenuProduct> {
-  return patchMenuProduct(id, draft)
+  return patchMenuProduct(id, { ...draft, searchText: productSearchText(draft) })
 }
 
 /**
