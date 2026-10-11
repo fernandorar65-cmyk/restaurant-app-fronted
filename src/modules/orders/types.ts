@@ -15,7 +15,6 @@ export interface Attention {
 
 export type OrderedProductStatus =
   | 'sent'
-  | 'confirmed'
   | 'preparing'
   | 'ready'
   | 'delivered'

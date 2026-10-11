@@ -52,7 +52,6 @@ export function errorMessage(error: unknown, fallback: string): string {
 const ATTENTION_STATUSES: readonly AttentionStatus[] = ['open', 'account-requested', 'closed', 'cancelled']
 const PRODUCT_STATUSES: readonly OrderedProductStatus[] = [
   'sent',
-  'confirmed',
   'preparing',
   'ready',
   'delivered',
@@ -488,7 +487,7 @@ async function fetchProductsByBatch(batchId: string): Promise<OrderedProduct[]> 
 /**
  * Envía una ronda de productos a una atención activa. El precio y el nombre se
  * toman de la carta vigente (no del cliente). Los pedidos del comensal entran
- * como `sent`; los que carga el personal, como `confirmed`. Es idempotente por `batchId`:
+ * como `sent`; los que carga el personal entran directo como `preparing`. Es idempotente por `batchId`:
  * si un reintento llega con el mismo batchId, solo se crean los que faltan.
  */
 export async function addOrderedProducts(
@@ -507,7 +506,8 @@ export async function addOrderedProducts(
   const created: OrderedProduct[] = [...alreadySent]
   const requestedAt = alreadySent[0]?.requestedAt ?? new Date().toISOString()
   // Lo que carga el personal ya está validado con el comensal: entra confirmado y va directo a cocina.
-  const initialStatus: OrderedProductStatus = options.createdBy ? 'confirmed' : 'sent'
+  // Un pedido cargado por el personal ya está confirmado: entra directo a cocina.
+  const initialStatus: OrderedProductStatus = options.createdBy ? 'preparing' : 'sent'
 
   for (const item of items) {
     if (alreadySent.some((product) => product.productId === item.productId)) {

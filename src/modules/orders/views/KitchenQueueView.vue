@@ -29,10 +29,8 @@ usePageTitle('Cocina')
 interface KitchenItem {
   product: OrderedProduct
   tableNumber: string
-  /** Desde cuándo está en el estado actual (confirmado o en preparación). */
+  /** Desde cuándo está en cocina (pasó a "en preparación"): mide la demora. */
   since: string
-  /** Desde cuándo se confirmó: mide la demora total en cocina. */
-  confirmedAt: string
 }
 
 const session = useSessionStore()
@@ -69,8 +67,6 @@ function toggleDark(): void {
 const { restaurant, restaurantId, isLoading, loadError } = useSiteContext(loadQueue)
 
 const staffName = computed(() => session.user?.name ?? 'Cocina')
-const toPrepare = computed(() => items.value.filter((item) => item.product.status === 'confirmed'))
-const inProgress = computed(() => items.value.filter((item) => item.product.status === 'preparing'))
 const criticalCount = computed(() => items.value.filter((item) => itemDelay(item) === 'critical').length)
 
 async function loadQueue(site?: RestaurantSite): Promise<void> {
@@ -82,27 +78,19 @@ async function loadQueue(site?: RestaurantSite): Promise<void> {
 
   const [attentions, history] = await Promise.all([fetchAttentionsWithProductsBySite(id), fetchAllStatusHistory()])
   const since = statusSinceMap(history)
-  const confirmedAt = new Map<string, string>()
-
-  for (const entry of history) {
-    if (entry.entityType === 'orderedProduct' && entry.toStatus === 'confirmed') {
-      confirmedAt.set(entry.entityId, entry.changedAt)
-    }
-  }
 
   items.value = attentions
     .filter(isAttentionActive)
     .flatMap((attention) =>
       attention.products
-        .filter((product) => product.status === 'confirmed' || product.status === 'preparing')
+        .filter((product) => product.status === 'preparing')
         .map((product) => ({
           product,
           tableNumber: attention.tableNumber,
           since: since.get(product.id) ?? product.requestedAt,
-          confirmedAt: confirmedAt.get(product.id) ?? product.requestedAt,
         })),
     )
-    .sort((a, b) => (a.confirmedAt < b.confirmedAt ? -1 : 1))
+    .sort((a, b) => (a.since < b.since ? -1 : 1))
 }
 
 async function reload(): Promise<void> {
@@ -114,11 +102,12 @@ async function reload(): Promise<void> {
 }
 
 function itemDelay(item: KitchenItem): DelayLevel {
-  return delayLevel(minutesSince(item.confirmedAt, now.value), KITCHEN_DELAY_MINUTES)
+  return delayLevel(minutesSince(item.since, now.value), KITCHEN_DELAY_MINUTES)
 }
 
 async function advance(item: KitchenItem): Promise<void> {
-  const toStatus = item.product.status === 'confirmed' ? 'preparing' : 'ready'
+  // Lo que llega a cocina ya está en preparación: el único paso aquí es marcarlo listo.
+  const toStatus = 'ready'
   busyId.value = item.product.id
   actionError.value = null
 
@@ -215,28 +204,17 @@ watch(
           {{ actionError }}
         </p>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <section
-            v-for="column in [
-              { id: 'todo', title: 'Por preparar', list: toPrepare, action: 'Iniciar preparación', tone: 'bg-surface-container text-on-surface' },
-              { id: 'doing', title: 'En preparación', list: inProgress, action: 'Marcar listo', tone: 'bg-primary-fixed text-on-primary-fixed' },
-            ]"
-            :key="column.id"
-            class="space-y-3"
-          >
-            <h2 class="font-headline flex items-center gap-2 text-2xl font-semibold text-on-surface">
-              {{ column.title }}
-              <span class="rounded-full px-3 py-0.5 text-base font-bold" :class="column.tone">{{ column.list.length }}</span>
-            </h2>
+        <section class="space-y-3">
+          <h2 class="font-headline flex items-center gap-2 text-2xl font-semibold text-on-surface">
+            En preparación
+            <span class="rounded-full bg-primary-fixed px-3 py-0.5 text-base font-bold text-on-primary-fixed">{{ items.length }}</span>
+          </h2>
 
-            <EmptyState
-              v-if="column.list.length === 0"
-              icon="fire"
-              :title="column.id === 'todo' ? 'Nada por empezar' : 'Nada en el fuego'"
-            />
+          <EmptyState v-if="items.length === 0" icon="fire" title="Nada en el fuego" message="Cuando la sala confirme un pedido aparecerá aquí." />
 
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             <article
-              v-for="item in column.list"
+              v-for="item in items"
               :key="item.product.id"
               class="space-y-3 rounded-3xl bg-surface-container-lowest p-5 shadow-sm ring-2"
               :class="delayRingClass[itemDelay(item)]"
@@ -244,7 +222,7 @@ watch(
               <div class="flex items-center justify-between gap-3">
                 <span class="font-headline text-3xl font-bold text-on-surface">Mesa {{ item.tableNumber }}</span>
                 <span class="font-label text-base font-semibold" :class="delayTextClass[itemDelay(item)]">
-                  <template v-if="delayLabel[itemDelay(item)]">{{ delayLabel[itemDelay(item)] }} · </template>{{ formatElapsed(item.confirmedAt, now) }}
+                  <template v-if="delayLabel[itemDelay(item)]">{{ delayLabel[itemDelay(item)] }} · </template>{{ formatElapsed(item.since, now) }}
                 </span>
               </div>
               <p class="text-2xl leading-snug font-semibold text-on-surface">
@@ -253,21 +231,17 @@ watch(
               <p v-if="item.product.notes" class="rounded-xl bg-warning-container px-4 py-3 text-lg font-semibold text-on-warning-container">
                 ⚠ {{ item.product.notes }}
               </p>
-              <p v-if="item.product.status === 'preparing'" class="text-sm text-on-surface-variant">
-                En preparación {{ formatElapsed(item.since, now) }}
-              </p>
               <button
                 type="button"
-                class="font-label min-h-14 w-full rounded-2xl text-lg font-semibold transition-opacity disabled:opacity-50"
-                :class="item.product.status === 'confirmed' ? 'bg-on-surface text-surface hover:opacity-90' : 'bg-success text-on-success hover:opacity-90'"
+                class="font-label min-h-14 w-full rounded-2xl bg-success text-lg font-semibold text-on-success transition-opacity hover:opacity-90 disabled:opacity-50"
                 :disabled="busyId === item.product.id"
                 @click="advance(item)"
               >
-                {{ column.action }}
+                Marcar listo
               </button>
             </article>
-          </section>
-        </div>
+          </div>
+        </section>
       </template>
     </div>
   </div>

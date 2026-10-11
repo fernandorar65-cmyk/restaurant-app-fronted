@@ -17,10 +17,14 @@ import {
 } from '@/modules/orders/api'
 import AttentionCard from '@/modules/orders/components/AttentionCard.vue'
 import AttentionDialog from '@/modules/orders/components/AttentionDialog.vue'
+import OrderTicketDialog from '@/modules/orders/components/OrderTicketDialog.vue'
+import OrdersBoard from '@/modules/orders/components/OrdersBoard.vue'
+import type { BoardCard } from '@/modules/orders/components/OrdersBoard.vue'
 import StaffOrderDialog from '@/modules/orders/components/StaffOrderDialog.vue'
 import { delayLabel, delayLevel, delayRingClass, delayTextClass, groupByRound, INCOMING_DELAY_MINUTES } from '@/modules/orders/rounds'
 import type { DelayLevel } from '@/modules/orders/rounds'
-import type { AttentionWithProducts, OrderedProduct } from '@/modules/orders/types'
+import { nextOrderedProductStatus, orderedProductStatusLabel } from '@/modules/orders/order-status-labels'
+import type { AttentionWithProducts, OrderedProduct, OrderedProductStatus } from '@/modules/orders/types'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useSessionStore } from '@/stores/session'
 import { useSiteActivityStore } from '@/stores/site-activity'
@@ -28,7 +32,7 @@ import { useToastStore } from '@/stores/toast'
 import { formatMoney } from '@/utils/money'
 import { formatElapsed, minutesSince } from '@/utils/time'
 
-usePageTitle('Pedidos entrantes')
+usePageTitle('Gestión de pedidos')
 
 const route = useRoute()
 const router = useRouter()
@@ -48,6 +52,58 @@ const staffOrderTable = ref<string | null | undefined>(undefined)
 const { restaurant, restaurantId, currency, isLoading, loadError } = useSiteContext(loadAttentions)
 
 const staffName = computed(() => session.user?.name ?? 'Personal')
+
+/** Tablero por estados (por defecto) o lista de rondas por confirmar + atenciones. Queda en la URL. */
+const viewMode = computed<'board' | 'list'>({
+  get: () => (route.query.vista === 'lista' ? 'list' : 'board'),
+  set: (value) => {
+    void router.replace({ query: { ...route.query, vista: value === 'list' ? 'lista' : undefined } })
+  },
+})
+
+/** Comanda abierta en el detalle (al tocar una tarjeta del tablero). */
+const selectedTicket = ref<BoardCard | null>(null)
+
+async function advanceSelectedTicket(): Promise<void> {
+  const ticket = selectedTicket.value
+  const to = ticket ? nextOrderedProductStatus(ticket.status) : null
+
+  if (ticket && to) {
+    await advanceCard({ key: ticket.key, tableNumber: ticket.attention.tableNumber, products: ticket.products, to })
+    selectedTicket.value = null
+  }
+}
+
+async function openTicketAttention(): Promise<void> {
+  const ticket = selectedTicket.value
+  selectedTicket.value = null
+
+  if (ticket) {
+    await openAttention(ticket.attention)
+  }
+}
+
+/** Mover una comanda del tablero al siguiente estado. */
+async function advanceCard(payload: { key: string; tableNumber: string; products: OrderedProduct[]; to: OrderedProductStatus }): Promise<void> {
+  busyKey.value = payload.key
+  actionError.value = null
+
+  try {
+    const result = await updateOrderedProductsStatus(payload.products, payload.to, staffName.value)
+    reportFailures(result.failed)
+
+    if (result.updated.length > 0) {
+      toast.show(`Mesa ${payload.tableNumber} · ${orderedProductStatusLabel[payload.to]}`, {
+        message: `${result.updated.length} producto(s) movidos.`,
+        tone: 'success',
+      })
+    }
+  } finally {
+    busyKey.value = null
+    await reload()
+    void activity.refresh()
+  }
+}
 
 async function loadAttentions(site?: RestaurantSite): Promise<void> {
   const id = site?.id ?? restaurantId.value
@@ -118,7 +174,7 @@ async function confirmRound(round: IncomingRound): Promise<void> {
   actionError.value = null
 
   try {
-    const result = await updateOrderedProductsStatus(round.products, 'confirmed', staffName.value)
+    const result = await updateOrderedProductsStatus(round.products, 'preparing', staffName.value)
     reportFailures(result.failed)
 
     if (result.updated.length > 0) {
@@ -137,7 +193,7 @@ async function confirmProduct(product: OrderedProduct): Promise<void> {
   actionError.value = null
 
   try {
-    await updateOrderedProductStatus(product, 'confirmed', staffName.value)
+    await updateOrderedProductStatus(product, 'preparing', staffName.value)
   } catch (error) {
     actionError.value = errorMessage(error, 'No se pudo confirmar el producto.')
   } finally {
@@ -192,7 +248,7 @@ async function openStaffOrder(tableNumber: string | null): Promise<void> {
 }
 
 async function handleStaffOrderCreated(): Promise<void> {
-  toast.show('Pedido registrado', { message: 'Los productos entraron confirmados y ya están en cocina.', tone: 'success' })
+  toast.show('Pedido registrado', { message: 'Los productos entraron directo a cocina.', tone: 'success' })
   await reload()
   void activity.refresh()
 }
@@ -217,11 +273,28 @@ watch(
     <template v-else-if="restaurant">
       <SitePageHeader
         :restaurant="restaurant"
-        section="Pedidos entrantes"
-        title="Pedidos entrantes"
-        description="Revisa cada ronda que llega desde las mesas: confirma lo que pasa a cocina o recházalo indicando el motivo."
+        section="Gestión de pedidos"
+        title="Gestión de pedidos"
+        description="Sigue cada comanda desde que llega hasta que se entrega. En el tablero, arrastra una tarjeta a la columna siguiente para avanzarla."
       >
         <template #actions>
+          <div class="grid grid-cols-2 gap-1 rounded-xl bg-surface-container p-1" role="radiogroup" aria-label="Vista">
+            <button
+              v-for="option in [
+                { value: 'board', label: 'Tablero' },
+                { value: 'list', label: 'Lista' },
+              ] as const"
+              :key="option.value"
+              type="button"
+              role="radio"
+              :aria-checked="viewMode === option.value"
+              class="font-label min-h-9 rounded-lg px-4 text-sm font-semibold transition-colors"
+              :class="viewMode === option.value ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
+              @click="viewMode = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
           <button
             type="button"
             class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
@@ -236,7 +309,29 @@ watch(
         {{ actionError }}
       </p>
 
-      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <OrdersBoard
+        v-if="viewMode === 'board'"
+        :attentions="attentions"
+        :now="now"
+        :busy-key="busyKey"
+        @advance="advanceCard"
+        @select="selectedTicket = $event"
+      />
+
+      <OrderTicketDialog
+        v-if="selectedTicket"
+        :key="selectedTicket.key"
+        :ticket="selectedTicket"
+        :currency="currency"
+        :timezone="restaurant.timezone"
+        :now="now"
+        :busy="busyKey === selectedTicket.key"
+        @close="selectedTicket = null"
+        @advance="advanceSelectedTicket"
+        @open-attention="openTicketAttention"
+      />
+
+      <div v-else class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <section class="space-y-3 lg:col-span-7">
           <h2 class="font-headline flex items-center gap-2 text-lg font-semibold text-on-surface">
             Por confirmar

@@ -42,8 +42,6 @@ const ICONS = {
     'M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18A2.25 2.25 0 0 0 20.25 16.5V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z',
   cocina:
     'M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z',
-  entregas:
-    'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12',
   menu: 'M12 6.75a5.25 5.25 0 0 1 6.775-5.025.5.5 0 0 1 .225.865l-2.625 2.625a1.5 1.5 0 0 0 2.121 2.121l2.625-2.625a.5.5 0 0 1 .865.225A5.25 5.25 0 0 1 15.312 12L21 17.688a2.25 2.25 0 0 1-3.182 3.183L12 15.062l-5.687 5.687a2.25 2.25 0 0 1-3.182-3.182l6.747-6.748A5.226 5.226 0 0 1 9 6.75Z',
   cuentas:
     'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3M3.75 4.5h16.5A1.5 1.5 0 0 1 21.75 6v12a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5V6a1.5 1.5 0 0 1 1.5-1.5Z',
@@ -61,21 +59,12 @@ const SITE_ITEMS: NavItem[] = [
     group: 'service',
     routeName: 'site-orders',
     activeNames: ['site-orders', 'site-order-detail'],
-    label: 'Pedidos entrantes',
+    label: 'Gestión de pedidos',
     permission: 'orders.manage',
     icon: ICONS.pedidos,
     badge: 'incoming',
   },
   { group: 'service', routeName: 'site-kitchen', activeNames: ['site-kitchen'], label: 'Cocina', permission: 'kitchen.manage', icon: ICONS.cocina, badge: 'kitchen' },
-  {
-    group: 'service',
-    routeName: 'site-deliveries',
-    activeNames: ['site-deliveries'],
-    label: 'Entregas',
-    permission: 'delivery.manage',
-    icon: ICONS.entregas,
-    badge: 'ready',
-  },
   {
     group: 'service',
     routeName: 'site-accounts',
@@ -154,8 +143,9 @@ onMounted(() => {
       @click="emit('close')"
     />
 
+    <!-- En escritorio queda fija a la altura de la pantalla: las opciones de abajo siempre visibles. -->
     <aside
-      class="fixed top-16 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-transform duration-200 lg:static lg:top-auto lg:z-0 lg:h-auto lg:min-h-full lg:translate-x-0 lg:shadow-none"
+      class="fixed top-16 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-transform duration-200 lg:sticky lg:top-0 lg:z-0 lg:h-dvh lg:translate-x-0 lg:shadow-none"
       :class="open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
       aria-label="Navegación del portal"
     >

@@ -10,7 +10,6 @@ const SITE_LANDING: Array<{ permission: Permission; routeName: string }> = [
   { permission: 'sites.manage', routeName: 'site-dashboard' },
   { permission: 'kitchen.manage', routeName: 'site-kitchen' },
   { permission: 'orders.manage', routeName: 'site-orders' },
-  { permission: 'delivery.manage', routeName: 'site-deliveries' },
   { permission: 'payments.manage', routeName: 'site-accounts' },
   { permission: 'menu.manage', routeName: 'site-menu' },
   { permission: 'reports.view', routeName: 'site-metrics' },

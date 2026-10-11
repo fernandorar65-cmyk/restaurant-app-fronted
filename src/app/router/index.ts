@@ -218,10 +218,9 @@ export const router = createRouter({
           meta: { permission: 'kitchen.manage' },
         },
         {
+          // La sección Entregas se eliminó: la URL antigua lleva a Gestión de pedidos.
           path: 'sede/:siteSlug/entregas',
-          name: 'site-deliveries',
-          component: () => import('@/modules/orders/views/DeliveriesView.vue'),
-          meta: { permission: 'delivery.manage' },
+          redirect: (to) => ({ name: 'site-orders', params: { siteSlug: to.params.siteSlug } }),
         },
         {
           path: 'sede/:siteSlug/menu',

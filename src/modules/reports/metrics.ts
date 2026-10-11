@@ -101,7 +101,8 @@ export function computeSiteMetrics(input: {
   for (const product of products) {
     const byStatus = times.get(product.id)
     const sent = byStatus?.get('sent') ?? product.requestedAt
-    const confirmed = byStatus?.get('confirmed')
+    // Confirmar un pedido lo pasa directo a cocina: el momento de "en preparación" es la confirmación.
+    const confirmed = byStatus?.get('preparing')
     const ready = byStatus?.get('ready')
     const delivered = byStatus?.get('delivered')
 

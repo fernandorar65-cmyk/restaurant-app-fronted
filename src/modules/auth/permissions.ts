@@ -5,7 +5,6 @@ export type Permission =
   | 'sites.manage'
   | 'orders.manage'
   | 'kitchen.manage'
-  | 'delivery.manage'
   | 'menu.manage'
   | 'payments.manage'
   | 'inventory.manage'
@@ -18,7 +17,6 @@ export const PERMISSIONS: readonly Permission[] = [
   'sites.manage',
   'orders.manage',
   'kitchen.manage',
-  'delivery.manage',
   'menu.manage',
   'payments.manage',
   'inventory.manage',
@@ -30,9 +28,8 @@ export const permissionLabel: Record<Permission, string> = {
   'users.manage': 'Usuarios y roles',
   'staff.manage': 'Empleados',
   'sites.manage': 'Sala, mesas y QR',
-  'orders.manage': 'Pedidos entrantes y pedido manual',
+  'orders.manage': 'Gestión de pedidos y pedido manual',
   'kitchen.manage': 'Cola de cocina',
-  'delivery.manage': 'Entregas en mesa',
   'menu.manage': 'Menú y productos',
   'payments.manage': 'Cuentas y cobros',
   'inventory.manage': 'Inventario',
@@ -55,7 +52,6 @@ export const SITE_PERMISSIONS: readonly Permission[] = [
   'sites.manage',
   'orders.manage',
   'kitchen.manage',
-  'delivery.manage',
   'menu.manage',
   'payments.manage',
   'reports.view',

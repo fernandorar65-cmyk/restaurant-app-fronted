@@ -123,7 +123,7 @@ const serviceStats = computed(() => {
   return {
     open: active.length,
     accountRequested: active.filter((attention) => attention.status === 'account-requested').length,
-    inKitchen: products.filter((product) => product.status === 'confirmed' || product.status === 'preparing').length,
+    inKitchen: products.filter((product) => product.status === 'preparing').length,
     openTotal: products.filter((product) => isBillableProduct(product.status)).reduce((sum, p) => sum + p.subtotal, 0),
   }
 })
@@ -459,7 +459,7 @@ watch(
             class="font-label inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container"
             :to="{ name: 'site-orders', params: { siteSlug: restaurant.slug } }"
           >
-            Ver pedidos entrantes
+            Ir a gestión de pedidos
           </RouterLink>
         </template>
       </SitePageHeader>

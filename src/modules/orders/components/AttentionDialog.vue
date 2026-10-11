@@ -21,6 +21,7 @@ import {
   nextOrderedProductStatus,
   orderedProductStatusLabel,
   orderedProductStatusTone,
+  orderedProductStepPermission,
 } from '@/modules/orders/order-status-labels'
 import { groupByRound, historyStatusLabel } from '@/modules/orders/rounds'
 import type { AttentionWithProducts, OrderedProduct, OrderedProductStatus, StatusHistoryEntry } from '@/modules/orders/types'
@@ -42,12 +43,7 @@ const emit = defineEmits<{
 }>()
 
 /** Qué permiso hace falta para avanzar un producto desde cada estado. */
-const STEP_PERMISSION: Partial<Record<OrderedProductStatus, Permission>> = {
-  sent: 'orders.manage',
-  confirmed: 'kitchen.manage',
-  preparing: 'kitchen.manage',
-  ready: 'delivery.manage',
-}
+const STEP_PERMISSION = orderedProductStepPermission
 
 const session = useSessionStore()
 const toast = useToastStore()

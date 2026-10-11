@@ -72,7 +72,6 @@ const summary = computed(() => {
   const count = (status: OrderedProductStatus) => active.filter((product) => product.status === status).length
   const ready = count('ready')
   const preparing = count('preparing')
-  const confirmed = count('confirmed')
   const sent = count('sent')
 
   if (ready > 0) {
@@ -81,10 +80,6 @@ const summary = computed(() => {
 
   if (preparing > 0) {
     return { tone: 'progress', title: 'Tu pedido se está preparando', text: `La cocina está con ${preparing} producto(s).` }
-  }
-
-  if (confirmed > 0) {
-    return { tone: 'progress', title: 'Pedido confirmado', text: 'Pasa a cocina en unos instantes.' }
   }
 
   if (sent > 0) {
@@ -126,8 +121,8 @@ function notifyChanges(next: OrderedProduct[]): void {
           tone: 'error',
           vibrate: true,
         })
-      } else if (product.status === 'confirmed' && before === 'sent') {
-        toast.show(`${product.name}: confirmado`, { tone: 'info' })
+      } else if (product.status === 'preparing' && before === 'sent') {
+        toast.show(`${product.name}: confirmado, ya está en cocina`, { tone: 'info' })
       }
     }
   }

@@ -1,4 +1,5 @@
 import type { StatusTone } from '@/components/base/StatusBadge.vue'
+import type { Permission } from '@/modules/auth/permissions'
 import type { AttentionStatus, OrderedProductStatus } from '@/modules/orders/types'
 
 export const attentionStatusLabel: Record<AttentionStatus, string> = {
@@ -17,7 +18,6 @@ export const attentionStatusBadgeClass: Record<AttentionStatus, string> = {
 
 export const orderedProductStatusLabel: Record<OrderedProductStatus, string> = {
   sent: 'Enviado',
-  confirmed: 'Confirmado',
   preparing: 'En preparación',
   ready: 'Listo',
   delivered: 'Entregado',
@@ -26,8 +26,7 @@ export const orderedProductStatusLabel: Record<OrderedProductStatus, string> = {
 }
 
 export const orderedProductStatusHint: Record<OrderedProductStatus, string> = {
-  sent: 'La cocina todavía no confirmó este producto.',
-  confirmed: 'Confirmado, pendiente de empezar a preparar.',
+  sent: 'El restaurante todavía no confirmó este producto.',
   preparing: 'Se está preparando en cocina.',
   ready: 'Listo para servir en mesa.',
   delivered: 'Ya está en la mesa.',
@@ -37,7 +36,6 @@ export const orderedProductStatusHint: Record<OrderedProductStatus, string> = {
 
 export const orderedProductStatusSteps: OrderedProductStatus[] = [
   'sent',
-  'confirmed',
   'preparing',
   'ready',
   'delivered',
@@ -45,7 +43,6 @@ export const orderedProductStatusSteps: OrderedProductStatus[] = [
 
 export const orderedProductBadgeClass: Record<OrderedProductStatus, string> = {
   sent: 'bg-secondary-container text-on-secondary-container',
-  confirmed: 'bg-primary-fixed text-on-primary-fixed',
   preparing: 'bg-primary text-on-primary',
   ready: 'bg-tertiary-fixed text-on-tertiary-container',
   delivered: 'bg-success-container text-on-success-container',
@@ -54,15 +51,14 @@ export const orderedProductBadgeClass: Record<OrderedProductStatus, string> = {
 }
 
 const NEXT_PRODUCT_STATUS: Partial<Record<OrderedProductStatus, OrderedProductStatus>> = {
-  sent: 'confirmed',
-  confirmed: 'preparing',
+  // Confirmar un pedido lo manda directo a cocina (ya no existe el paso "confirmado").
+  sent: 'preparing',
   preparing: 'ready',
   ready: 'delivered',
 }
 
 const NEXT_PRODUCT_ACTION_LABEL: Partial<Record<OrderedProductStatus, string>> = {
   sent: 'Confirmar',
-  confirmed: 'Iniciar preparación',
   preparing: 'Marcar listo',
   ready: 'Marcar entregado',
 }
@@ -77,13 +73,20 @@ export function nextOrderedProductActionLabel(status: OrderedProductStatus): str
 
 /** Transiciones válidas de un producto solicitado. */
 const ALLOWED_TRANSITIONS: Record<OrderedProductStatus, readonly OrderedProductStatus[]> = {
-  sent: ['confirmed', 'rejected', 'cancelled'],
-  confirmed: ['preparing', 'rejected', 'cancelled'],
+  sent: ['preparing', 'rejected', 'cancelled'],
   preparing: ['ready', 'cancelled'],
   ready: ['delivered', 'cancelled'],
   delivered: [],
   rejected: [],
   cancelled: [],
+}
+
+/** Permiso necesario para avanzar un producto desde cada estado (detalle del pedido y tablero). */
+export const orderedProductStepPermission: Partial<Record<OrderedProductStatus, Permission>> = {
+  sent: 'orders.manage',
+  preparing: 'kitchen.manage',
+  // Servir un plato listo lo hace quien gestiona pedidos (mozos, jefe de sala).
+  ready: 'orders.manage',
 }
 
 export function canTransitionOrderedProduct(from: OrderedProductStatus, to: OrderedProductStatus): boolean {
@@ -100,7 +103,7 @@ export function canCancelOrderedProduct(status: OrderedProductStatus): boolean {
 
 /** Producto en curso: todavía no se entregó ni se descartó. */
 export function isPendingProduct(status: OrderedProductStatus): boolean {
-  return status === 'sent' || status === 'confirmed' || status === 'preparing' || status === 'ready'
+  return status === 'sent' || status === 'preparing' || status === 'ready'
 }
 
 export function isBillableProduct(status: OrderedProductStatus): boolean {
@@ -117,7 +120,6 @@ export const attentionStatusTone: Record<AttentionStatus, StatusTone> = {
 
 export const orderedProductStatusTone: Record<OrderedProductStatus, StatusTone> = {
   sent: 'neutral',
-  confirmed: 'info',
   preparing: 'progress',
   ready: 'success',
   delivered: 'muted',
