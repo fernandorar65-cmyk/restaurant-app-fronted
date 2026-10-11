@@ -80,9 +80,10 @@ export const router = createRouter({
           redirect: (to) => ({ name: 'order-account', params: to.params }),
         },
         {
-          path: 'ingresar',
-          name: 'diner-auth',
-          component: () => import('@/modules/diners/views/DinerAuthView.vue'),
+          // Elegir tipo de cuenta antes de iniciar sesión o registrarse (?modo=registro).
+          path: 'acceso',
+          name: 'access',
+          component: () => import('@/modules/auth/views/AccessView.vue'),
         },
         {
           path: 'perfil',
@@ -99,11 +100,31 @@ export const router = createRouter({
     // ── PERSONAL DEL RESTAURANTE ──────────────────────────────────────
     // Requiere login. Cada ruta pide un permiso; el rol del usuario decide
     // qué ve (cocina, mozo, caja, gerente, propietario…).
+    // ── ACCESO ────────────────────────────────────────────────────────
+    // La ruta depende del tipo de cuenta elegido; ambos usan el mismo diseño.
     {
-      path: '/auth',
+      path: '/customer/auth',
+      component: AuthLayout,
+      children: [
+        { path: '', redirect: { name: 'diner-auth' } },
+        {
+          path: 'login',
+          name: 'diner-auth',
+          component: () => import('@/modules/diners/views/DinerAuthView.vue'),
+        },
+        {
+          path: 'register',
+          name: 'diner-register',
+          component: () => import('@/modules/diners/views/DinerAuthView.vue'),
+        },
+      ],
+    },
+    {
+      path: '/restaurant-owner/auth',
       component: AuthLayout,
       meta: { guestOnly: true },
       children: [
+        { path: '', redirect: { name: 'login' } },
         {
           path: 'login',
           name: 'login',
@@ -116,6 +137,17 @@ export const router = createRouter({
         },
       ],
     },
+    // Rutas antiguas: redirigen a las nuevas conservando ?redirect y demás parámetros.
+    {
+      path: '/ingresar',
+      redirect: (to) => {
+        const { modo, ...query } = to.query
+        return { name: modo === 'registro' ? 'diner-register' : 'diner-auth', query }
+      },
+    },
+    { path: '/auth', redirect: { name: 'login' } },
+    { path: '/auth/login', redirect: (to) => ({ name: 'login', query: to.query }) },
+    { path: '/auth/register', redirect: (to) => ({ name: 'register', query: to.query }) },
     {
       path: '/dashboard',
       component: PortalLayout,
@@ -262,6 +294,12 @@ export const router = createRouter({
           meta: { permission: 'org.manage' },
         },
       ],
+    },
+    {
+      // Landing comercial para dueños de restaurante. Pública y sin layout propio.
+      path: '/para-restaurantes',
+      name: 'restaurant-landing',
+      component: () => import('@/modules/landing/views/RestaurantLandingView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',

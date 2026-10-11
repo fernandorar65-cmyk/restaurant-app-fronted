@@ -1,23 +1,40 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, reactive, ref, watch, watchEffect } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/composables/usePageTitle'
+import AuthMinimalLayout from '@/modules/auth/components/AuthMinimalLayout.vue'
+import AuthTextField from '@/modules/auth/components/AuthTextField.vue'
 import { validateEmail, validateName, validatePassword } from '@/modules/auth/validation'
 import { loginCustomer, registerCustomer } from '@/modules/diners/api'
 import { errorMessage } from '@/modules/orders/api'
 import { useDinerStore } from '@/stores/diner'
 
-usePageTitle('Mi cuenta')
-
 const route = useRoute()
 const router = useRouter()
 const diner = useDinerStore()
 
-const mode = ref<'login' | 'register'>('login')
+/** La ruta decide el modo: /customer/auth/login o /customer/auth/register. */
+const mode = computed<'login' | 'register'>(() => (route.name === 'diner-register' ? 'register' : 'login'))
+
+watchEffect(() => usePageTitle(mode.value === 'register' ? 'Crear cuenta' : 'Ingresar'))
+
 const form = reactive({ name: '', email: '', password: '' })
+const fieldErrors = reactive({
+  name: undefined as string | undefined,
+  email: undefined as string | undefined,
+  password: undefined as string | undefined,
+})
 const formError = ref<string | null>(null)
 const isSubmitting = ref(false)
+
+/* Al cambiar de pestaña se limpian los errores del otro formulario. */
+watch(mode, () => {
+  formError.value = null
+  fieldErrors.name = undefined
+  fieldErrors.email = undefined
+  fieldErrors.password = undefined
+})
 
 const redirectTarget = computed(() => {
   const value = route.query.redirect
@@ -29,13 +46,12 @@ async function goBack(): Promise<void> {
 }
 
 async function submit(): Promise<void> {
-  formError.value =
-    (mode.value === 'register' ? validateName(form.name) : undefined) ??
-    validateEmail(form.email) ??
-    validatePassword(form.password) ??
-    null
+  formError.value = null
+  fieldErrors.name = mode.value === 'register' ? validateName(form.name) : undefined
+  fieldErrors.email = validateEmail(form.email)
+  fieldErrors.password = validatePassword(form.password)
 
-  if (formError.value) {
+  if (fieldErrors.name || fieldErrors.email || fieldErrors.password) {
     return
   }
 
@@ -60,105 +76,101 @@ async function submit(): Promise<void> {
   }
 }
 
+async function continueAsGuest(): Promise<void> {
+  diner.confirmTable()
+  await goBack()
+}
+
 function logout(): void {
   diner.setCustomer(null)
 }
 </script>
 
 <template>
-  <div class="mx-auto max-w-sm space-y-6 py-4">
-    <template v-if="diner.customer">
-      <div class="space-y-1 text-center">
-        <h1 class="font-headline text-2xl font-semibold text-on-surface">Hola, {{ diner.customer.name }}</h1>
-        <p class="text-sm text-on-surface-variant">{{ diner.customer.email }}</p>
-      </div>
-      <div class="grid gap-2">
-        <RouterLink
-          class="font-label rounded-xl bg-primary py-3 text-center text-sm font-semibold text-on-primary hover:bg-primary-container"
-          :to="{ name: 'diner-visits' }"
-        >
-          Ver mis visitas
-        </RouterLink>
-        <button
-          type="button"
-          class="font-label rounded-xl bg-surface-container min-h-12 text-base flex items-center justify-center font-semibold text-on-surface hover:bg-surface-container-high"
-          @click="logout"
-        >
-          Cerrar sesión
-        </button>
-      </div>
-    </template>
+  <!-- Ya tiene sesión de cliente -->
+  <AuthMinimalLayout
+    v-if="diner.customer"
+    audience="customer"
+    :mode="mode"
+    :title="`Hola, ${diner.customer.name}`"
+    :subtitle="diner.customer.email"
+    hide-switches
+  >
+    <div class="grid gap-2">
+      <RouterLink
+        class="font-label flex min-h-12 items-center justify-center rounded-xl bg-primary text-base font-semibold text-on-primary hover:bg-primary-container"
+        :to="{ name: 'diner-profile' }"
+      >
+        Ir a mi perfil
+      </RouterLink>
+      <button
+        type="button"
+        class="font-label flex min-h-12 items-center justify-center rounded-xl text-base font-semibold text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
+        @click="logout"
+      >
+        Cerrar sesión
+      </button>
+    </div>
+  </AuthMinimalLayout>
 
-    <template v-else>
-      <div class="space-y-1 text-center">
-        <h1 class="font-headline text-2xl font-semibold text-on-surface">
-          {{ mode === 'login' ? 'Ingresa a tu cuenta' : 'Crea tu cuenta' }}
-        </h1>
-        <p class="text-sm text-on-surface-variant">
-          Es opcional: con una cuenta guardas el historial de tus visitas. También puedes pedir como invitado.
-        </p>
-      </div>
+  <AuthMinimalLayout
+    v-else
+    audience="customer"
+    :mode="mode"
+    :title="mode === 'login' ? 'Ingresa a tu cuenta' : 'Crea tu cuenta'"
+    subtitle="Guarda tus visitas, preferencias y pedidos. También puedes pedir como invitado."
+  >
+    <form class="space-y-4" novalidate @submit.prevent="submit">
+      <p v-if="formError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">{{ formError }}</p>
 
-      <div class="flex gap-1 rounded-xl bg-surface-container p-1" role="tablist">
-        <button
-          v-for="option in ([['login', 'Ingresar'], ['register', 'Crear cuenta']] as const)"
-          :key="option[0]"
-          type="button"
-          class="font-label min-h-11 flex-1 rounded-lg text-sm font-semibold"
-          :class="mode === option[0] ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant'"
-          @click="mode = option[0]"
-        >
-          {{ option[1] }}
-        </button>
-      </div>
+      <AuthTextField
+        v-if="mode === 'register'"
+        id="customer-name"
+        v-model="form.name"
+        label="Nombre"
+        autocomplete="name"
+        placeholder="Tu nombre"
+        :error="fieldErrors.name"
+      />
+      <AuthTextField
+        id="customer-email"
+        v-model="form.email"
+        label="Correo electrónico"
+        type="email"
+        autocomplete="email"
+        placeholder="tu@correo.com"
+        :error="fieldErrors.email"
+      />
+      <AuthTextField
+        id="customer-password"
+        v-model="form.password"
+        label="Contraseña"
+        type="password"
+        :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+        :placeholder="mode === 'login' ? 'Tu contraseña' : 'Mínimo 8 caracteres'"
+        :error="fieldErrors.password"
+      />
 
-      <form class="space-y-3" novalidate @submit.prevent="submit">
-        <input
-          v-if="mode === 'register'"
-          v-model="form.name"
-          autocomplete="name"
-          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
-          placeholder="Tu nombre"
-          type="text"
-        />
-        <input
-          v-model="form.email"
-          autocomplete="email"
-          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
-          placeholder="Correo"
-          type="email"
-        />
-        <input
-          v-model="form.password"
-          :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-          class="w-full min-h-12 rounded-xl bg-surface-container-lowest px-4 text-base text-on-surface shadow-sm outline-none ring-1 ring-transparent focus:ring-primary"
-          placeholder="Contraseña (mín. 8 caracteres)"
-          type="password"
-        />
-        <p v-if="formError" class="rounded-lg bg-error-container px-3 py-2 text-xs text-on-error-container" role="alert">
-          {{ formError }}
-        </p>
-        <button
-          type="submit"
-          class="font-label w-full rounded-xl bg-primary min-h-12 text-base flex items-center justify-center font-semibold text-on-primary hover:bg-primary-container disabled:opacity-60"
-          :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? 'Un momento…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta' }}
-        </button>
-      </form>
-
-      <p class="text-center text-xs text-on-surface-variant">
-        Demo: cliente@demo.com / cliente1234
-      </p>
+      <button
+        type="submit"
+        class="font-label flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
+        :disabled="isSubmitting"
+      >
+        {{ isSubmitting ? 'Un momento…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta' }}
+      </button>
 
       <button
         v-if="diner.hasTable"
         type="button"
         class="font-label min-h-11 w-full text-center text-sm font-semibold text-primary underline-offset-2 hover:underline"
-        @click="diner.confirmTable(); goBack()"
+        @click="continueAsGuest"
       >
         Prefiero seguir como invitado
       </button>
+    </form>
+
+    <template #footer>
+      <p class="text-center text-xs text-on-surface-variant">Demo: cliente@demo.com / cliente1234</p>
     </template>
-  </div>
+  </AuthMinimalLayout>
 </template>

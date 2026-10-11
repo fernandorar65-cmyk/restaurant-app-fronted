@@ -6,8 +6,7 @@ import { landingRouteFor } from '@/app/router/landing'
 
 import { usePageTitle } from '@/composables/usePageTitle'
 import { login } from '@/modules/auth/api'
-import AuthConsoleLayout from '@/modules/auth/components/AuthConsoleLayout.vue'
-import AuthModeTabs from '@/modules/auth/components/AuthModeTabs.vue'
+import AuthMinimalLayout from '@/modules/auth/components/AuthMinimalLayout.vue'
 import AuthTextField from '@/modules/auth/components/AuthTextField.vue'
 import { validateEmail, validatePassword } from '@/modules/auth/validation'
 import { HttpError } from '@/services/http'
@@ -82,26 +81,9 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AuthConsoleLayout>
-    <AuthModeTabs current="login" />
-
-    <div class="mb-8">
-      <h1 class="font-headline text-3xl leading-snug font-semibold tracking-tight text-on-surface">
-        Bienvenido de nuevo
-      </h1>
-      <p class="mt-2 text-sm leading-relaxed text-secondary">
-        Introduce tus credenciales para acceder al panel de Restaurant CMR.
-      </p>
-    </div>
-
-    <form class="space-y-5" novalidate @submit.prevent="onSubmit">
-      <p
-        v-if="formError"
-        class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
-        role="alert"
-      >
-        {{ formError }}
-      </p>
+  <AuthMinimalLayout audience="restaurant" mode="login" title="Bienvenido de nuevo" subtitle="Entra al portal de tu restaurante.">
+    <form class="space-y-4" novalidate @submit.prevent="onSubmit">
+      <p v-if="formError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">{{ formError }}</p>
 
       <AuthTextField
         id="login-email"
@@ -109,57 +91,50 @@ async function onSubmit(): Promise<void> {
         label="Correo electrónico"
         type="email"
         autocomplete="email"
-        placeholder="chef@restaurantcmr.com"
+        placeholder="tu@restaurante.com"
         :error="fieldErrors.email"
       />
-
       <AuthTextField
         id="login-password"
         v-model="form.password"
         label="Contraseña"
         type="password"
         autocomplete="current-password"
-        placeholder="••••••••••••"
+        placeholder="Tu contraseña"
         :error="fieldErrors.password"
       />
 
-      <label class="flex cursor-pointer items-center gap-3 pt-1 select-none">
-        <input
-          v-model="rememberSession"
-          class="h-4 w-4 cursor-pointer rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary"
-          type="checkbox"
-        />
-        <span class="font-label text-xs font-medium text-secondary">Mantener sesión en este dispositivo</span>
+      <label class="flex cursor-pointer items-center gap-2.5 select-none">
+        <input v-model="rememberSession" class="h-4 w-4 cursor-pointer rounded accent-primary" type="checkbox" />
+        <span class="text-sm text-on-surface-variant">Mantener sesión en este dispositivo</span>
       </label>
 
-      <div class="pt-3">
-        <button
-          type="submit"
-          class="font-label flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-container px-6 py-3.5 text-sm font-semibold tracking-wide text-on-primary shadow-md transition-all hover:from-primary-container hover:to-primary hover:shadow-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-          :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? 'Ingresando…' : 'Ingresar' }}
-          <svg class="h-4 w-4 text-tertiary-fixed" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-          </svg>
-        </button>
-      </div>
+      <button type="submit" class="font-label flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60" :disabled="isSubmitting">
+        {{ isSubmitting ? 'Ingresando…' : 'Ingresar' }}
+      </button>
     </form>
 
-    <section class="mt-8 space-y-3" aria-labelledby="demo-accounts-title">
-      <h2 id="demo-accounts-title" class="text-sm font-semibold text-on-surface">Probar con una cuenta demo</h2>
-      <div class="grid grid-cols-2 gap-2">
-        <button
-          v-for="account in DEMO_ACCOUNTS"
-          :key="account.email"
-          type="button"
-          class="flex min-h-14 flex-col items-start justify-center rounded-xl bg-surface-container-low px-3 py-2 text-left ring-1 ring-outline-variant/40 transition-colors hover:bg-surface-container hover:ring-primary"
-          @click="useDemo(account)"
-        >
-          <span class="text-sm font-semibold text-on-surface">{{ account.role }}</span>
-          <span class="text-xs text-on-surface-variant">{{ account.hint }}</span>
-        </button>
-      </div>
-    </section>
-  </AuthConsoleLayout>
+    <template #footer>
+      <details class="group rounded-xl ring-1 ring-outline-variant/50">
+        <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-medium text-on-surface-variant">
+          Probar con una cuenta demo
+          <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
+        </summary>
+        <div class="grid grid-cols-2 gap-2 px-3 pb-3">
+          <button
+            v-for="account in DEMO_ACCOUNTS"
+            :key="account.email"
+            type="button"
+            class="flex flex-col items-start rounded-lg bg-surface-container-low px-3 py-2 text-left transition-colors hover:bg-surface-container"
+            @click="useDemo(account)"
+          >
+            <span class="text-sm font-semibold text-on-surface">{{ account.role }}</span>
+            <span class="text-xs text-on-surface-variant">{{ account.hint }}</span>
+          </button>
+        </div>
+      </details>
+    </template>
+  </AuthMinimalLayout>
 </template>

@@ -5,8 +5,7 @@ import { useRouter } from 'vue-router'
 import { landingRouteFor } from '@/app/router/landing'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { register as registerAccount } from '@/modules/auth/api'
-import AuthConsoleLayout from '@/modules/auth/components/AuthConsoleLayout.vue'
-import AuthModeTabs from '@/modules/auth/components/AuthModeTabs.vue'
+import AuthMinimalLayout from '@/modules/auth/components/AuthMinimalLayout.vue'
 import AuthTextField from '@/modules/auth/components/AuthTextField.vue'
 import { validateEmail, validateName, validatePassword } from '@/modules/auth/validation'
 import { HttpError } from '@/services/http'
@@ -70,65 +69,33 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AuthConsoleLayout>
-    <AuthModeTabs current="register" />
+  <AuthMinimalLayout audience="restaurant" mode="register" title="Registra tu restaurante" subtitle="Crea tu cuenta de dueño para empezar.">
+    <form class="space-y-4" novalidate @submit.prevent="onSubmit">
+      <p v-if="formError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">{{ formError }}</p>
 
-    <div class="mb-8">
-      <h1 class="font-headline text-3xl leading-snug font-semibold tracking-tight text-on-surface">
-        Crear cuenta
-      </h1>
-      <p class="mt-2 text-sm leading-relaxed text-secondary">
-        Regístrate para acceder al panel de Restaurant CMR.
-      </p>
-    </div>
-
-    <form class="space-y-5" novalidate @submit.prevent="onSubmit">
-      <p
-        v-if="formError"
-        class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container"
-        role="alert"
-      >
-        {{ formError }}
-      </p>
-
-      <AuthTextField
-        id="register-name"
-        v-model="form.name"
-        label="Nombre"
-        autocomplete="name"
-        placeholder="Ana Pérez"
-        :error="fieldErrors.name"
-      />
-
+      <AuthTextField id="register-name" v-model="form.name" label="Nombre" autocomplete="name" placeholder="Ana Pérez" :error="fieldErrors.name" />
       <AuthTextField
         id="register-email"
         v-model="form.email"
         label="Correo electrónico"
         type="email"
         autocomplete="email"
-        placeholder="chef@restaurantcmr.com"
+        placeholder="tu@restaurante.com"
         :error="fieldErrors.email"
       />
-
       <AuthTextField
         id="register-password"
         v-model="form.password"
         label="Contraseña"
         type="password"
         autocomplete="new-password"
-        placeholder="••••••••••••"
+        placeholder="Mínimo 8 caracteres"
         :error="fieldErrors.password"
       />
 
-      <div class="pt-3">
-        <button
-          type="submit"
-          class="font-label flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-container px-6 py-3.5 text-sm font-semibold tracking-wide text-on-primary shadow-md transition-all hover:from-primary-container hover:to-primary hover:shadow-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-          :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
-        </button>
-      </div>
+      <button type="submit" class="font-label flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60" :disabled="isSubmitting">
+        {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
+      </button>
     </form>
-  </AuthConsoleLayout>
+  </AuthMinimalLayout>
 </template>
