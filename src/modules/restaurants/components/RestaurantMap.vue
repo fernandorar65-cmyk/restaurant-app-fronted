@@ -99,7 +99,12 @@ function renderUser(): void {
     : null
 }
 
-/** Encuadra todas las sedes (y al comensal, si compartió su ubicación). */
+/** Zoom de calle: se distinguen avenidas y cuadras alrededor del comensal. */
+const USER_ZOOM = 15
+/** Sedes a esta distancia o menos se incluyen en el encuadre al ubicar al comensal. */
+const NEARBY_KM = 3
+
+/** Encuadra todas las sedes. */
 function fitAll(): void {
   if (!map) {
     return
@@ -107,15 +112,41 @@ function fitAll(): void {
 
   const points: L.LatLngExpression[] = locatedRestaurants().map((site) => [site.lat, site.lng])
 
-  if (props.userLocation) {
-    points.push([props.userLocation.lat, props.userLocation.lng])
-  }
-
   if (points.length === 1) {
     map.setView(points[0]!, 14)
   } else if (points.length > 1) {
     map.fitBounds(L.latLngBounds(points), { paddingTopLeft: [70, 80], paddingBottomRight: [70, 40], maxZoom: 14 })
   }
+}
+
+/**
+ * Acerca el mapa al comensal. Si hay sedes a pocos km, las encuadra junto a él para
+ * que se vean en la misma pantalla; si no, se centra solo en su ubicación.
+ */
+function focusUser(): void {
+  const user = props.userLocation
+
+  if (!map || !user) {
+    return
+  }
+
+  const here = L.latLng(user.lat, user.lng)
+  const nearby = locatedRestaurants()
+    .map((site) => L.latLng(site.lat, site.lng))
+    .filter((point) => here.distanceTo(point) <= NEARBY_KM * 1000)
+
+  if (nearby.length === 0) {
+    map.flyTo(here, USER_ZOOM, { duration: 1 })
+    return
+  }
+
+  // Márgenes amplios: arriba está el buscador y abajo el botón "Cerca de mí".
+  map.flyToBounds(L.latLngBounds([here, ...nearby]), {
+    paddingTopLeft: [90, 110],
+    paddingBottomRight: [90, 100],
+    maxZoom: 16,
+    duration: 1,
+  })
 }
 
 function flyToSelected(): void {
@@ -153,7 +184,11 @@ watch(
   () => props.restaurants,
   () => {
     renderMarkers()
-    fitAll()
+
+    // Con la ubicación del comensal, filtrar no debe alejar el mapa de su zona.
+    if (!props.userLocation) {
+      fitAll()
+    }
   },
 )
 
@@ -167,13 +202,18 @@ watch(
 
 watch(
   () => props.userLocation,
-  () => {
+  (location) => {
     renderUser()
-    fitAll()
+
+    if (location) {
+      focusUser()
+    } else {
+      fitAll()
+    }
   },
 )
 
-defineExpose({ fitAll })
+defineExpose({ fitAll, focusUser })
 </script>
 
 <template>

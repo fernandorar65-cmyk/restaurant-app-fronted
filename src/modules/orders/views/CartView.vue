@@ -6,7 +6,6 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import EmptyState from '@/components/base/EmptyState.vue'
 import QuantityStepper from '@/modules/menus/components/QuantityStepper.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import TableCodeDialog from '@/modules/payments/components/TableCodeDialog.vue'
 import {
   addOrderedProducts,
   BusinessRuleError,
@@ -30,7 +29,6 @@ const submitError = ref<string | null>(null)
 const issues = ref<CartIssue[]>([])
 const sent = ref<{ attentionId: string; count: number } | null>(null)
 const isCheckingOut = ref(false)
-const isAskingTable = ref(false)
 
 const blockingIssues = computed(() => issues.value.filter((issue) => issue.kind !== 'price-changed'))
 const priceIssues = computed(() => issues.value.filter((issue) => issue.kind === 'price-changed'))
@@ -112,8 +110,8 @@ async function confirmOrder(): Promise<void> {
 }
 
 /**
- * Sin mesa confirmada: revisa la orden contra la carta, pide el código de mesa si
- * no hay uno guardado para esta sede y pasa a elegir el método de pago.
+ * Sin mesa confirmada: revisa la orden contra la carta y pasa a elegir cómo recibir
+ * el pedido (en mesa, llego al local o delivery) antes del método de pago.
  */
 async function continueToPayment(): Promise<void> {
   const restaurantId = diner.restaurantId
@@ -135,22 +133,11 @@ async function continueToPayment(): Promise<void> {
       return
     }
 
-    if (diner.tableCode) {
-      await router.push({ name: 'checkout' })
-    } else {
-      isAskingTable.value = true
-    }
+    await router.push({ name: 'checkout-fulfillment' })
   } catch (error) {
     submitError.value = errorMessage(error, 'No pudimos revisar tu orden. Revisa tu conexión y vuelve a intentarlo.')
   } finally {
     isCheckingOut.value = false
-  }
-}
-
-async function saveTableCode(code: string): Promise<void> {
-  if (diner.restaurantId) {
-    diner.setTableCode(diner.restaurantId, code)
-    await router.push({ name: 'checkout' })
   }
 }
 
@@ -286,12 +273,5 @@ async function goToStatus(): Promise<void> {
         </div>
       </template>
     </template>
-
-    <TableCodeDialog
-      v-if="isAskingTable"
-      :restaurant-name="diner.restaurantName"
-      @save="saveTableCode"
-      @close="isAskingTable = false"
-    />
   </div>
 </template>

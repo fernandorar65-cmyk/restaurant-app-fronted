@@ -22,6 +22,18 @@ export interface RestaurantKpis {
   occupancyPercent: number
 }
 
+/** Cómo puede pedir el comensal en esta sede y condiciones del delivery. */
+export interface SiteFulfillment {
+  dineIn: boolean
+  /** Pedido anticipado: lo deja listo para cuando llegue (comer allí o para llevar). */
+  pickup: boolean
+  delivery: boolean
+  deliveryRadiusKm: number
+  deliveryFee: number
+  /** Importe mínimo del pedido para delivery. 0 = sin mínimo. */
+  minOrder: number
+}
+
 export interface RestaurantSite {
   id: string
   code: string
@@ -48,6 +60,7 @@ export interface RestaurantSite {
   /** Ubicación para el mapa del comensal; sin coordenadas la sede no aparece en el mapa. */
   lat?: number
   lng?: number
+  fulfillment: SiteFulfillment
 }
 
 export type TableTagTone = 'critical' | 'neutral' | 'alert'

@@ -77,6 +77,11 @@ function toMenuProduct(value: MenuProduct): MenuProduct {
     categoryId: String(value.categoryId),
     isActive: typeof value.isActive === 'boolean' ? value.isActive : true,
     position: typeof value.position === 'number' ? value.position : 0,
+    ingredients: Array.isArray(value.ingredients) ? value.ingredients.filter((item) => typeof item === 'string') : [],
+    portion: typeof value.portion === 'string' ? value.portion : '',
+    presentation: typeof value.presentation === 'string' ? value.presentation : '',
+    longDescription: typeof value.longDescription === 'string' ? value.longDescription : '',
+    prepMinutes: typeof value.prepMinutes === 'number' && value.prepMinutes > 0 ? value.prepMinutes : null,
   }
 }
 
@@ -276,8 +281,8 @@ export async function deleteMenuCategory(id: string): Promise<void> {
  * compara en minúsculas; con este campo "jamon" encuentra "Jamón". En el backend
  * real esto lo resolverá la base de datos (p. ej. unaccent + ILIKE en Postgres).
  */
-function productSearchText(draft: Pick<MenuProductDraft, 'name' | 'description' | 'tags'>): string {
-  return normalizeSearch([draft.name, draft.description, ...draft.tags].join(' '))
+function productSearchText(draft: Pick<MenuProductDraft, 'name' | 'description' | 'tags' | 'ingredients'>): string {
+  return normalizeSearch([draft.name, draft.description, ...draft.tags, ...draft.ingredients].join(' '))
 }
 
 /**

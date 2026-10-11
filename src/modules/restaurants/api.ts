@@ -6,6 +6,7 @@ import type {
   RestaurantOperationalStatus,
   RestaurantSite,
   SiteOperation,
+  SiteFulfillment,
   SiteStaffMember,
   StaffArea,
   StaffShiftStatus,
@@ -79,6 +80,21 @@ function toOrganization(value: Organization): Organization {
   }
 }
 
+/** Sin configuración guardada, la sede solo atiende en mesa (comportamiento previo). */
+function toFulfillment(value: unknown): SiteFulfillment {
+  const record = isRecord(value) ? value : {}
+  const number = (key: string): number => (typeof record[key] === 'number' ? (record[key] as number) : 0)
+
+  return {
+    dineIn: record.dineIn !== false,
+    pickup: record.pickup === true,
+    delivery: record.delivery === true,
+    deliveryRadiusKm: number('deliveryRadiusKm'),
+    deliveryFee: number('deliveryFee'),
+    minOrder: number('minOrder'),
+  }
+}
+
 function toRestaurantSite(value: RestaurantSite): RestaurantSite {
   return {
     ...value,
@@ -88,6 +104,7 @@ function toRestaurantSite(value: RestaurantSite): RestaurantSite {
     timezone: typeof value.timezone === 'string' && value.timezone ? value.timezone : 'Europe/Madrid',
     lat: typeof value.lat === 'number' ? value.lat : undefined,
     lng: typeof value.lng === 'number' ? value.lng : undefined,
+    fulfillment: toFulfillment(value.fulfillment),
   }
 }
 

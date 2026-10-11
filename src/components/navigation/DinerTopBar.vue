@@ -19,7 +19,8 @@ const title = computed(() => (isHome.value ? null : diner.restaurantName) ?? 'Re
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 border-b border-outline-variant/50 bg-surface/90 backdrop-blur-xl">
+  <!-- z-40: sus menús (perfil, tema) deben quedar sobre el buscador y las pestañas de la carta (z-30/z-20). -->
+  <header class="sticky top-0 z-40 border-b border-outline-variant/50 bg-surface/90 backdrop-blur-xl">
     <div class="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
       <RouterLink :to="{ name: 'home' }" class="flex min-w-0 items-center gap-2.5" aria-label="Inicio">
         <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-on-primary" aria-hidden="true">

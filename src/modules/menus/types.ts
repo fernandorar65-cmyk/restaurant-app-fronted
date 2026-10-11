@@ -31,6 +31,16 @@ export interface MenuProduct {
   position: number
   tags: string[]
   allergens: string[]
+  /** Ingredientes principales, en el orden en que se quieren mostrar. */
+  ingredients: string[]
+  /** Tamaño de la porción: "6 unidades", "Para compartir · 400 g". Vacío = no se muestra. */
+  portion: string
+  /** Cómo llega a la mesa (emplatado, acompañamientos, recomendaciones). Vacío = no se muestra. */
+  presentation: string
+  /** Texto largo para el detalle del plato; la descripción corta queda para la tarjeta de la carta. */
+  longDescription: string
+  /** Tiempo aproximado de preparación en minutos. null = no se muestra. */
+  prepMinutes: number | null
 }
 
 export interface MenuCategoryDraft {
@@ -48,4 +58,9 @@ export interface MenuProductDraft {
   isAvailable: boolean
   tags: string[]
   allergens: string[]
+  ingredients: string[]
+  portion: string
+  presentation: string
+  longDescription: string
+  prepMinutes: number | null
 }

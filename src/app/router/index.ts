@@ -46,9 +46,24 @@ export const router = createRouter({
           component: () => import('@/modules/orders/views/CartView.vue'),
         },
         {
+          path: 'pedido/entrega',
+          name: 'checkout-fulfillment',
+          component: () => import('@/modules/payments/views/FulfillmentView.vue'),
+        },
+        {
           path: 'pago',
           name: 'checkout',
           component: () => import('@/modules/payments/views/CheckoutView.vue'),
+        },
+        {
+          path: 'pago/listo',
+          name: 'checkout-result',
+          component: () => import('@/modules/payments/views/CheckoutResultView.vue'),
+        },
+        {
+          path: 'pago/:method',
+          name: 'checkout-method',
+          component: () => import('@/modules/payments/views/PaymentMethodView.vue'),
         },
         {
           path: 'orders/:attentionId',

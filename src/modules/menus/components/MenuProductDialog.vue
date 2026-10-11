@@ -47,6 +47,11 @@ async function onImageSelected(event: Event): Promise<void> {
 }
 const tagsInput = ref(props.product?.tags.join(', ') ?? '')
 const allergensInput = ref(props.product?.allergens.join(', ') ?? '')
+const ingredientsInput = ref(props.product?.ingredients.join(', ') ?? '')
+const portion = ref(props.product?.portion ?? '')
+const presentation = ref(props.product?.presentation ?? '')
+const longDescription = ref(props.product?.longDescription ?? '')
+const prepMinutes = ref<number | ''>(props.product?.prepMinutes ?? '')
 
 function closeDialog(): void {
   dialogEl.value?.close()
@@ -74,6 +79,11 @@ function submit(): void {
     isAvailable: isAvailable.value,
     tags: parseList(tagsInput.value),
     allergens: parseList(allergensInput.value),
+    ingredients: parseList(ingredientsInput.value),
+    portion: portion.value.trim(),
+    presentation: presentation.value.trim(),
+    longDescription: longDescription.value.trim(),
+    prepMinutes: Number(prepMinutes.value) > 0 ? Math.round(Number(prepMinutes.value)) : null,
   })
 }
 
@@ -174,6 +184,64 @@ onMounted(async () => {
           class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
           placeholder="Gluten, Lácteos"
           type="text"
+        />
+      </label>
+
+      <label class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+          Ingredientes (separados por coma)
+        </span>
+        <input
+          v-model="ingredientsInput"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          placeholder="Jamón ibérico, Leche entera, Harina de trigo"
+          type="text"
+        />
+      </label>
+
+      <label class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+          Descripción larga (detalle del plato)
+        </span>
+        <textarea
+          v-model="longDescription"
+          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          placeholder="Origen de los ingredientes, técnica, sabor y con qué combina."
+          rows="4"
+        />
+      </label>
+
+      <label class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+          Tiempo de preparación (minutos)
+        </span>
+        <input
+          v-model="prepMinutes"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          min="1"
+          max="240"
+          placeholder="15"
+          type="number"
+        />
+      </label>
+
+      <label class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Porción</span>
+        <input
+          v-model="portion"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          placeholder="6 unidades · Para compartir · 400 g"
+          type="text"
+        />
+      </label>
+
+      <label class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Presentación</span>
+        <textarea
+          v-model="presentation"
+          class="w-full rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+          placeholder="Cómo llega a la mesa: emplatado, acompañamientos, recomendaciones."
+          rows="3"
         />
       </label>
 
