@@ -172,13 +172,13 @@ async function confirmReject(product: OrderedProduct): Promise<void> {
 
 async function openAttention(attention: AttentionWithProducts): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-order-detail', params: { restaurantId: restaurantId.value, attentionId: attention.id } })
+    await router.push({ name: 'site-order-detail', params: { siteSlug: route.params.siteSlug, attentionId: attention.id } })
   }
 }
 
 async function closeAttention(): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-orders', params: { restaurantId: restaurantId.value } })
+    await router.push({ name: 'site-orders', params: { siteSlug: route.params.siteSlug } })
   }
 }
 

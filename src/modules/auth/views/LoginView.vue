@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { landingRouteFor } from '@/app/router/landing'
+import { ensureSiteDirectory } from '@/app/router/site-directory'
 
 import { usePageTitle } from '@/composables/usePageTitle'
 import { login } from '@/modules/auth/api'
@@ -69,6 +70,8 @@ async function onSubmit(): Promise<void> {
     })
 
     session.setSession(authSession, { persist: rememberSession.value })
+    // La primera vista puede ser una sede: con el directorio cargado, su URL ya lleva el nombre del local.
+    await ensureSiteDirectory()
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
     await router.push(redirect && redirect.startsWith('/') ? redirect : landingRouteFor(authSession.user))
   } catch (error) {

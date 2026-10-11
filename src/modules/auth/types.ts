@@ -46,6 +46,7 @@ export interface JsonUser {
 /** Sede a cargo de un usuario del restaurante, resumida para su perfil. */
 export interface StaffProfileSite {
   id: string
+  slug: string
   name: string
   city: string
   imageUrl: string

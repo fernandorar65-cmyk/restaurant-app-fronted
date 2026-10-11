@@ -198,7 +198,7 @@ const cardClass = 'space-y-4 rounded-2xl bg-surface-container-lowest p-5 ring-1 
             <ul v-else class="space-y-2">
               <li v-for="site in profile.restaurants" :key="site.id">
                 <RouterLink
-                  :to="{ name: 'site-dashboard', params: { restaurantId: site.id } }"
+                  :to="{ name: 'site-dashboard', params: { siteSlug: site.slug } }"
                   class="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-surface-container-low"
                 >
                   <img :src="site.imageUrl" alt="" class="h-11 w-11 shrink-0 rounded-lg object-cover" />

@@ -87,8 +87,8 @@ const liveTables = computed<LiveTable[]>(() =>
 )
 
 const restaurantId = computed(() => {
-  const value = route.params.restaurantId
-  return typeof value === 'string' ? value : null
+  // Lo resuelve la guarda del router a partir del slug de la URL (/owner/sede/:siteSlug).
+  return route.meta.siteId ?? null
 })
 
 const tableStats = computed(() => {
@@ -457,7 +457,7 @@ watch(
           <RouterLink
             v-if="session.can('orders.manage')"
             class="font-label inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container"
-            :to="{ name: 'site-orders', params: { restaurantId: restaurant.id } }"
+            :to="{ name: 'site-orders', params: { siteSlug: restaurant.slug } }"
           >
             Ver pedidos entrantes
           </RouterLink>
@@ -572,7 +572,7 @@ watch(
                   <RouterLink
                     v-if="selectedAttention"
                     class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
-                    :to="{ name: 'site-order-detail', params: { restaurantId: restaurant.id, attentionId: selectedAttention.id } }"
+                    :to="{ name: 'site-order-detail', params: { siteSlug: restaurant.slug, attentionId: selectedAttention.id } }"
                   >
                     Ver detalle
                   </RouterLink>

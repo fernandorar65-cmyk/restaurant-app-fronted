@@ -7,7 +7,7 @@ import { HttpError } from '@/services/http'
 import { useSessionStore } from '@/stores/session'
 
 /**
- * Sede de la ruta actual (`:restaurantId`) para las vistas del portal. Fija la
+ * Sede de la ruta actual (`/owner/sede/:siteSlug`) para las vistas del portal. Fija la
  * sede activa en la sesión y llama a `onReady` cada vez que cambia.
  */
 export function useSiteContext(onReady: (site: RestaurantSite) => Promise<void> | void) {
@@ -19,8 +19,8 @@ export function useSiteContext(onReady: (site: RestaurantSite) => Promise<void> 
   const loadError = ref<string | null>(null)
 
   const restaurantId = computed(() => {
-    const value = route.params.restaurantId
-    return typeof value === 'string' ? value : null
+    // Lo resuelve la guarda del router a partir del slug de la URL (/owner/sede/:siteSlug).
+    return route.meta.siteId ?? null
   })
 
   const currency = computed(() => restaurant.value?.currency ?? 'EUR')

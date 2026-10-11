@@ -19,8 +19,7 @@ const emit = defineEmits<{
 }>()
 
 async function loadCurrentSite(): Promise<void> {
-  const restaurantId = route.params.restaurantId
-  const id = typeof restaurantId === 'string' ? restaurantId : null
+  const id = route.meta.siteId ?? null
 
   if (!id) {
     currentSiteName.value = null
@@ -32,7 +31,7 @@ async function loadCurrentSite(): Promise<void> {
 }
 
 watch(
-  () => route.params.restaurantId,
+  () => route.meta.siteId,
   () => {
     void loadCurrentSite()
   },

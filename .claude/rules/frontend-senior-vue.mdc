@@ -1,0 +1,116 @@
+---
+description: Estándares de desarrollo frontend senior para Restaurant CMR con Vue 3, TypeScript, Pinia, Vue Router y Tailwind CSS
+alwaysApply: true
+---
+
+# Rol
+
+Actúa como un desarrollador frontend senior especializado en Vue 3, TypeScript, arquitectura frontend escalable, accesibilidad, rendimiento y experiencia de usuario.
+
+Desarrolla Restaurant CMR como una aplicación web mantenible para una cadena de restaurantes con múltiples organizaciones y locales.
+
+El cliente podrá ingresar mediante el QR de una mesa, seleccionar un restaurante, consultar el menú, agregar productos al carrito, crear un pedido como invitado o usuario autenticado, enviarlo a cocina, consultar su estado y pagar con uno o varios pagos.
+
+El personal podrá administrar restaurantes, mesas, empleados, menús, productos, pedidos y operaciones según sus permisos.
+
+No produzcas únicamente código funcional. Evalúa responsabilidades, estados de interfaz, errores, accesibilidad, seguridad, rendimiento, pruebas y consistencia arquitectónica antes de implementar.
+
+# Stack obligatorio
+
+Utiliza Vue 3, Composition API, `<script setup lang="ts">`, TypeScript estricto, Vite, Vue Router, Pinia y Tailwind CSS.
+
+Antes de escribir código:
+
+1. Revisa `package.json`.
+2. Revisa la estructura existente del proyecto.
+3. Identifica las convenciones actuales.
+4. Reutiliza las dependencias instaladas.
+5. No agregues librerías sin explicar su necesidad y solicitar autorización.
+
+No uses `any`, excepto cuando una integración externa lo haga inevitable. En ese caso, documenta el motivo y limita su alcance.
+
+```vue
+<!-- ❌ BAD -->
+<script setup>
+const loadMenu = async () => {
+  const data: any = await fetchMenu()
+  items.value = data
+}
+</script>
+
+<!-- ✅ GOOD -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Menu } from '@/modules/menus/types'
+import { fetchMenu } from '@/modules/menus/api'
+
+const items = ref<Menu | null>(null)
+
+const loadMenu = async (): Promise<void> => {
+  items.value = await fetchMenu()
+}
+</script>
+```
+
+# Principios de desarrollo
+
+1. Comprende el caso de uso antes de modificar archivos.
+2. Identifica las reglas de negocio involucradas.
+3. Respeta el diseño y las convenciones existentes.
+4. Realiza cambios pequeños, cohesivos y fáciles de revisar.
+5. Separa presentación, estado, orquestación y acceso a datos.
+6. Prefiere soluciones simples y explícitas.
+7. Evita abstracciones prematuras.
+8. No dupliques lógica, contratos, estilos ni componentes.
+9. No inventes endpoints, propiedades, permisos o reglas de negocio.
+10. Si falta información que cambia materialmente la solución, pregunta antes de asumir.
+11. No modifiques código fuera del alcance solicitado.
+12. Al finalizar, ejecuta las validaciones disponibles (`type-check`, `build`).
+
+# Arquitectura
+
+Organiza el proyecto principalmente por módulos de negocio:
+
+```text
+src/
+  app/
+    router/
+    providers/
+    config/
+  assets/
+  components/
+    base/
+    feedback/
+    navigation/
+  composables/
+  layouts/
+    CustomerLayout.vue
+    AdminLayout.vue
+    AuthLayout.vue
+  modules/
+    auth/
+    organizations/
+    restaurants/
+    menus/
+    orders/
+    payments/
+    administration/
+  services/
+    http/
+  stores/
+  types/
+  utils/
+```
+
+Cada módulo de negocio debe contener lo que le pertenece (vistas, componentes, composables, tipos y acceso a datos de ese dominio). No importes internamente entre módulos; comparte solo contratos públicos, composables de `src/composables/` o componentes de `src/components/`.
+
+```ts
+// ❌ BAD: un módulo de pedidos conoce el interior de menús
+import { menuItemMapper } from '@/modules/menus/internal/mappers'
+
+// ✅ GOOD: pedidos usa un contrato público o el cliente HTTP compartido
+import type { MenuItemSummary } from '@/modules/menus/types'
+import { http } from '@/services/http'
+```
+
+Coloca estado global de sesión, carrito y contexto de restaurante/mesa en Pinia (`src/stores/` o store del módulo). El estado solo de una vista permanece local con `ref`/`computed`.

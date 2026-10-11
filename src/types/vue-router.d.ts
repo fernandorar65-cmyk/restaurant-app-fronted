@@ -10,5 +10,7 @@ declare module 'vue-router' {
     permission?: Permission
     /** Basta con tener cualquiera de estos permisos. */
     anyPermission?: readonly Permission[]
+    /** Id de la sede de una ruta /owner/sede/:siteSlug (lo resuelve la guarda del router). */
+    siteId?: string
   }
 }

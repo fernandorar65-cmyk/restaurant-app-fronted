@@ -154,7 +154,7 @@ async function registerClosing(): Promise<void> {
             v-for="attention in summary.openAttentions"
             :key="attention.id"
             class="font-label rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
-            :to="{ name: 'site-account-detail', params: { restaurantId: restaurant.id, attentionId: attention.id } }"
+            :to="{ name: 'site-account-detail', params: { siteSlug: restaurant.slug, attentionId: attention.id } }"
           >
             Mesa {{ attention.tableNumber }} · {{ formatTime(attention.openedAt, restaurant.timezone) }}
           </RouterLink>

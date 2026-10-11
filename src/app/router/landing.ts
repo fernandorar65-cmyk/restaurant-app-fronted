@@ -1,5 +1,7 @@
 import type { RouteLocationRaw } from 'vue-router'
 
+import { siteSlugFor } from '@/app/router/site-directory'
+
 import type { Permission } from '@/modules/auth/permissions'
 import type { AuthUser } from '@/modules/auth/types'
 
@@ -17,7 +19,7 @@ const SITE_LANDING: Array<{ permission: Permission; routeName: string }> = [
 /** Primera vista de sede a la que el usuario tiene acceso. */
 export function siteLandingRoute(user: AuthUser | null, restaurantId: string): RouteLocationRaw | null {
   const match = SITE_LANDING.find((item) => user?.permissions.includes(item.permission))
-  return match ? { name: match.routeName, params: { restaurantId } } : null
+  return match ? { name: match.routeName, params: { siteSlug: siteSlugFor(restaurantId) } } : null
 }
 
 /** A dónde va cada usuario al iniciar sesión, según su rol y sus sedes. */

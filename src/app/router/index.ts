@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteLocationNormalized } from 'vue-router'
+import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
 import { landingRouteFor } from '@/app/router/landing'
+import { ensureSiteDirectory, findSite } from '@/app/router/site-directory'
 import PortalLayout from '@/layouts/PortalLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import CustomerLayout from '@/layouts/CustomerLayout.vue'
@@ -120,7 +121,7 @@ export const router = createRouter({
       ],
     },
     {
-      path: '/restaurant-owner/auth',
+      path: '/owner/auth',
       component: AuthLayout,
       meta: { guestOnly: true },
       children: [
@@ -146,155 +147,165 @@ export const router = createRouter({
       },
     },
     { path: '/auth', redirect: { name: 'login' } },
+    { path: '/restaurant-owner/auth/:rest(.*)*', redirect: (to) => to.fullPath.replace('/restaurant-owner', '/owner') },
     { path: '/auth/login', redirect: (to) => ({ name: 'login', query: to.query }) },
     { path: '/auth/register', redirect: (to) => ({ name: 'register', query: to.query }) },
+    // ── RESTAURANTE (dueño y personal) ────────────────────────────────
+    // Todo el portal vive bajo /owner. Requiere login; cada ruta pide un permiso.
     {
-      path: '/dashboard',
+      path: '/owner',
       component: PortalLayout,
       meta: { requiresAuth: true },
       children: [
+        { path: '', redirect: { name: 'dashboard' } },
         {
-          path: '',
+          // URL antigua con el id de la sede: se traduce al nombre del local.
+          path: 'sedes/:legacyId/:rest(.*)*',
+          component: () => import('@/components/feedback/NotFoundView.vue'),
+          beforeEnter: async (to) => {
+            const { ensureSiteDirectory, siteSlugFor } = await import('@/app/router/site-directory')
+            await ensureSiteDirectory()
+            const rest = Array.isArray(to.params.rest) ? to.params.rest.join('/') : ''
+            return { path: `/owner/sede/${siteSlugFor(String(to.params.legacyId))}${rest ? `/${rest}` : ''}`, query: to.query }
+          },
+        },
+        {
+          path: 'dashboard',
           name: 'dashboard',
           component: () => import('@/modules/administration/views/DashboardView.vue'),
           meta: { anyPermission: SITE_PERMISSIONS },
         },
         {
-          path: '/sin-acceso',
+          path: 'sin-acceso',
           name: 'no-access',
           component: () => import('@/components/feedback/NoAccessView.vue'),
         },
-      ],
-    },
-    {
-      path: '/sedes/:restaurantId',
-      component: PortalLayout,
-      meta: { requiresAuth: true },
-      children: [
         {
-          path: '',
+          path: 'finanzas',
+          name: 'finance',
+          component: () => import('@/modules/finance/views/FinanceView.vue'),
+          meta: { permission: 'reports.view' },
+        },
+        {
+          // Detalle de ingresos y gastos de un local. La guarda verifica el acceso a la sede.
+          path: 'finanzas/:restaurantId',
+          name: 'finance-site',
+          component: () => import('@/modules/finance/views/FinanceSiteView.vue'),
+          meta: { permission: 'reports.view' },
+        },
+        {
+          path: 'sede/:siteSlug',
           name: 'site-dashboard',
           component: () => import('@/modules/restaurants/views/SiteDashboardView.vue'),
           meta: { permission: 'sites.manage' },
         },
         {
-          path: 'pedidos',
+          path: 'sede/:siteSlug/pedidos',
           name: 'site-orders',
           component: () => import('@/modules/orders/views/SiteOrdersView.vue'),
           meta: { permission: 'orders.manage' },
         },
         {
-          path: 'pedidos/:attentionId',
+          path: 'sede/:siteSlug/pedidos/:attentionId',
           name: 'site-order-detail',
           component: () => import('@/modules/orders/views/SiteOrdersView.vue'),
           meta: { permission: 'orders.manage' },
         },
         {
-          path: 'cocina',
+          path: 'sede/:siteSlug/cocina',
           name: 'site-kitchen',
           component: () => import('@/modules/orders/views/KitchenQueueView.vue'),
           meta: { permission: 'kitchen.manage' },
         },
         {
-          path: 'entregas',
+          path: 'sede/:siteSlug/entregas',
           name: 'site-deliveries',
           component: () => import('@/modules/orders/views/DeliveriesView.vue'),
           meta: { permission: 'delivery.manage' },
         },
         {
-          path: 'menu',
+          path: 'sede/:siteSlug/menu',
           name: 'site-menu',
           component: () => import('@/modules/menus/views/SiteMenuView.vue'),
           meta: { permission: 'menu.manage' },
         },
         {
-          path: 'cuentas',
+          path: 'sede/:siteSlug/cuentas',
           name: 'site-accounts',
           component: () => import('@/modules/orders/views/SiteAccountsView.vue'),
           meta: { permission: 'payments.manage' },
         },
         {
-          path: 'cuentas/:attentionId',
+          path: 'sede/:siteSlug/cuentas/:attentionId',
           name: 'site-account-detail',
           component: () => import('@/modules/orders/views/SiteAccountsView.vue'),
           meta: { permission: 'payments.manage' },
         },
         {
-          path: 'metricas',
+          path: 'sede/:siteSlug/metricas',
           name: 'site-metrics',
           component: () => import('@/modules/reports/views/SiteMetricsView.vue'),
           meta: { permission: 'reports.view' },
         },
         {
-          path: 'cierre',
+          path: 'sede/:siteSlug/cierre',
           name: 'site-closing',
           component: () => import('@/modules/reports/views/DailyClosingView.vue'),
           meta: { permission: 'reports.view' },
         },
-      ],
-    },
-    {
-      // Perfil del dueño / personal: cualquier usuario con sesión, sin permiso específico.
-      path: '/cuenta',
-      component: PortalLayout,
-      meta: { requiresAuth: true },
-      children: [
         {
-          path: '',
+          path: 'cuenta',
           name: 'staff-profile',
           component: () => import('@/modules/auth/views/StaffProfileView.vue'),
         },
-      ],
-    },
-    {
-      path: '/admin',
-      component: PortalLayout,
-      meta: { requiresAuth: true },
-      children: [
         {
-          path: '',
+          path: 'admin',
           name: 'admin-home',
           component: () => import('@/modules/administration/views/AdminHomeView.vue'),
           meta: { anyPermission: ADMIN_PERMISSIONS },
         },
         {
-          path: 'empleados',
+          path: 'admin/empleados',
           name: 'admin-employees',
           component: () => import('@/modules/administration/views/EmployeesView.vue'),
           meta: { permission: 'staff.manage' },
         },
         {
-          path: 'usuarios',
+          path: 'admin/usuarios',
           name: 'admin-users',
           component: () => import('@/modules/administration/views/UsersView.vue'),
           meta: { permission: 'users.manage' },
         },
         {
-          path: 'roles',
+          path: 'admin/roles',
           name: 'admin-roles',
           component: () => import('@/modules/administration/views/RolesView.vue'),
           meta: { permission: 'users.manage' },
         },
         {
-          path: 'inventario',
+          path: 'admin/inventario',
           name: 'admin-inventory',
           component: () => import('@/modules/administration/views/InventoryView.vue'),
           meta: { permission: 'inventory.manage' },
         },
         {
-          path: 'restaurantes',
+          path: 'admin/restaurantes',
           name: 'admin-restaurants',
           component: () => import('@/modules/administration/views/RestaurantsAdminView.vue'),
           meta: { permission: 'org.manage' },
         },
         {
-          path: 'configuracion',
+          path: 'admin/configuracion',
           name: 'admin-settings',
           component: () => import('@/modules/administration/views/OrganizationSettingsView.vue'),
           meta: { permission: 'org.manage' },
         },
       ],
     },
+    // Rutas antiguas del portal: redirigen a /owner conservando la ruta y los parámetros.
+    ...['dashboard', 'sin-acceso', 'finanzas', 'sedes', 'cuenta', 'admin'].map(
+      (prefix): RouteRecordRaw => ({ path: `/${prefix}/:rest(.*)*`, redirect: (to) => `/owner${to.fullPath}` }),
+    ),
     {
       // Landing comercial para dueños de restaurante. Pública y sin layout propio.
       path: '/para-restaurantes',
@@ -309,7 +320,7 @@ export const router = createRouter({
   ],
 })
 
-router.beforeEach((to: RouteLocationNormalized) => {
+router.beforeEach(async (to: RouteLocationNormalized) => {
   const session = useSessionStore()
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
@@ -325,7 +336,27 @@ router.beforeEach((to: RouteLocationNormalized) => {
     return true
   }
 
-  const restaurantId = typeof to.params.restaurantId === 'string' ? to.params.restaurantId : null
+  await ensureSiteDirectory()
+
+  let restaurantId = typeof to.params.restaurantId === 'string' ? to.params.restaurantId : null
+
+  // Rutas de sede (/owner/sede/:siteSlug): el slug se traduce al id de la sede, que
+  // queda en route.meta.siteId para las vistas, los permisos y la API.
+  if (typeof to.params.siteSlug === 'string') {
+    const site = await findSite(to.params.siteSlug)
+
+    if (!site) {
+      return { name: 'not-found', params: { pathMatch: to.path.slice(1).split('/') } }
+    }
+
+    // Si llegó con el id (o un slug viejo), se corrige la URL al nombre del local.
+    if (site.slug !== to.params.siteSlug) {
+      return { name: to.name ?? undefined, params: { ...to.params, siteSlug: site.slug }, query: to.query, hash: to.hash, replace: true }
+    }
+
+    restaurantId = site.id
+    to.meta.siteId = restaurantId
+  }
 
   if (restaurantId && !session.canAccessRestaurant(restaurantId)) {
     return { name: 'no-access', query: { motivo: 'sede' } }

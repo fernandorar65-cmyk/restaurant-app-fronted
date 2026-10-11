@@ -230,7 +230,7 @@ export async function fetchStaffProfile(userId: string): Promise<StaffProfile> {
     allRestaurants,
     restaurants: restaurants
       .filter((site) => allRestaurants || authUser.restaurantIds.includes(site.id))
-      .map((site) => ({ id: site.id, name: site.name, city: site.city, imageUrl: site.imageUrl })),
+      .map((site) => ({ id: site.id, slug: site.slug, name: site.name, city: site.city, imageUrl: site.imageUrl })),
     employee,
   }
 }

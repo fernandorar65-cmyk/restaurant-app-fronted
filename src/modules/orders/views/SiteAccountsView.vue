@@ -106,13 +106,13 @@ const selectedAttention = computed(() => {
 
 async function openAccount(attention: AttentionWithProducts): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-account-detail', params: { restaurantId: restaurantId.value, attentionId: attention.id } })
+    await router.push({ name: 'site-account-detail', params: { siteSlug: route.params.siteSlug, attentionId: attention.id } })
   }
 }
 
 async function closeAccountDialog(): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-accounts', params: { restaurantId: restaurantId.value } })
+    await router.push({ name: 'site-accounts', params: { siteSlug: route.params.siteSlug } })
   }
 }
 

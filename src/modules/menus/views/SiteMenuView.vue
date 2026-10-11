@@ -67,8 +67,8 @@ const selectedMenu = computed(() => menus.value.find((menu) => menu.id === selec
 const hasActiveMenu = computed(() => menus.value.some((menu) => menu.status === 'active'))
 
 const restaurantId = computed(() => {
-  const value = route.params.restaurantId
-  return typeof value === 'string' ? value : null
+  // Lo resuelve la guarda del router a partir del slug de la URL (/owner/sede/:siteSlug).
+  return route.meta.siteId ?? null
 })
 
 const visibleCategories = computed(() => {
