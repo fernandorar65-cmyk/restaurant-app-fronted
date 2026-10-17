@@ -4,12 +4,17 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { siteLandingRoute } from '@/app/router/landing'
+import { ensureSiteDirectory } from '@/app/router/site-directory'
+import { grantRestaurantAccess } from '@/modules/auth/api'
+import type { NewRestaurantDraft } from '@/modules/restaurants/api'
+import RestaurantEditDialog from '@/modules/restaurants/components/RestaurantEditDialog.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { fetchOrganizations, fetchRestaurants } from '@/modules/restaurants/api'
+import { createRestaurant, fetchOrganizations, fetchRestaurants } from '@/modules/restaurants/api'
 import RestaurantSiteCard from '@/modules/restaurants/components/RestaurantSiteCard.vue'
 import type { Organization, RestaurantCategory, RestaurantSite } from '@/modules/restaurants/types'
 import { HttpError } from '@/services/http'
 import { useSessionStore } from '@/stores/session'
+import { useToastStore } from '@/stores/toast'
 
 usePageTitle('Sedes')
 
@@ -22,6 +27,9 @@ const loadError = ref<string | null>(null)
 const isLoading = ref(true)
 const searchQuery = ref('')
 const activeCategory = ref<'all' | RestaurantCategory>('all')
+const toast = useToastStore()
+const isCreatingSite = ref(false)
+const createError = ref<string | null>(null)
 
 const categoryFilters = computed(() => {
   const counts = {
@@ -78,6 +86,32 @@ async function loadDirectory(): Promise<void> {
   }
 }
 
+/** Alta de una sede nueva con su cantidad de pisos. */
+async function createSite(draft: NewRestaurantDraft): Promise<void> {
+  createError.value = null
+
+  try {
+    const site = await createRestaurant(draft)
+
+    // Quien la creó con acceso restringido a algunas sedes, pasa a tener acceso a esta.
+    if (session.user) {
+      await grantRestaurantAccess(session.user.id, site.id)
+      await session.refreshUser()
+    }
+
+    await ensureSiteDirectory(true)
+    isCreatingSite.value = false
+    await loadDirectory()
+    const floors = draft.floorsCount ?? 1
+    toast.show(`Sede "${site.name}" creada`, {
+      message: `Con ${floors} ${floors === 1 ? 'piso' : 'pisos'}. Ya puedes agregar sus mesas desde Gestión de mesas.`,
+      tone: 'success',
+    })
+  } catch {
+    createError.value = 'No se pudo crear la sede. Inténtalo de nuevo.'
+  }
+}
+
 async function enterSite(site: RestaurantSite): Promise<void> {
   session.setRestaurant(site.id)
   await router.push(siteLandingRoute(session.user, site.id) ?? { name: 'no-access' })
@@ -107,6 +141,18 @@ onMounted(() => {
           </p>
         </div>
 
+        <div class="flex flex-wrap items-center gap-3">
+        <button
+          v-if="session.can('org.manage')"
+          type="button"
+          class="font-label inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+          @click="isCreatingSite = true"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Nueva sede
+        </button>
         <div
           v-if="organization"
           class="flex items-center justify-between gap-4 rounded border border-outline-variant/60 bg-surface-container-low p-2.5 sm:justify-start sm:px-4 sm:py-2.5"
@@ -131,6 +177,7 @@ onMounted(() => {
               <span class="text-xs font-semibold text-on-surface">{{ organization.name }}</span>
             </div>
           </div>
+        </div>
         </div>
       </div>
 
@@ -224,5 +271,10 @@ onMounted(() => {
         @enter="enterSite(site)"
       />
     </div>
+
+    <RestaurantEditDialog v-if="isCreatingSite" :restaurant="null" @close="isCreatingSite = false" @save="createSite" />
+    <p v-if="createError" class="fixed right-4 bottom-4 z-50 rounded-xl bg-error-container px-4 py-3 text-sm text-on-error-container shadow-lg" role="alert">
+      {{ createError }}
+    </p>
   </div>
 </template>

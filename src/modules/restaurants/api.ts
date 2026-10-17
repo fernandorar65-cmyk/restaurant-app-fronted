@@ -6,6 +6,7 @@ import type {
   RestaurantOperationalStatus,
   RestaurantSite,
   SiteOperation,
+  SiteFloor,
   SiteFulfillment,
   SiteStaffMember,
   StaffArea,
@@ -168,14 +169,23 @@ export interface RestaurantDraft {
 export interface NewRestaurantDraft extends RestaurantDraft {
   code: string
   imageUrl: string
+  /** Cantidad de pisos del local; se crean como "Piso 1", "Piso 2"… (renombrables después). */
+  floorsCount?: number
+}
+
+/** Pisos iniciales de una sede nueva. */
+function initialFloors(count: number): SiteFloor[] {
+  const total = Math.min(Math.max(Math.round(count) || 1, 1), 10)
+  return Array.from({ length: total }, (_, index) => ({ id: `piso-${index + 1}`, name: `Piso ${index + 1}` }))
 }
 
 /** Alta de sede: crea el restaurante y su registro operativo (plano de sala vacío). */
 export async function createRestaurant(draft: NewRestaurantDraft): Promise<RestaurantSite> {
+  const { floorsCount, ...restaurantDraft } = draft
   const payload = await http<unknown>('/restaurants', {
     method: 'POST',
     body: {
-      ...draft,
+      ...restaurantDraft,
       slug: slugify(draft.name),
       badgeLabel: draft.categoryLabel,
       badgeTone: 'blue',
@@ -206,6 +216,7 @@ export async function createRestaurant(draft: NewRestaurantDraft): Promise<Resta
     body: {
       restaurantId: site.id,
       shiftLabel: 'Sin turno configurado',
+      floors: initialFloors(floorsCount ?? 1),
       kpis: {
         revenue: '—',
         revenueHint: '—',
@@ -355,12 +366,29 @@ function isSiteOperation(value: unknown): value is SiteOperation {
   )
 }
 
+/** Sin pisos guardados, la sede tiene una sola planta. */
+const DEFAULT_FLOOR: SiteFloor = { id: 'planta-baja', name: 'Planta baja' }
+
+function toFloors(value: unknown): SiteFloor[] {
+  const floors = Array.isArray(value)
+    ? value
+        .filter((item): item is Record<string, unknown> => isRecord(item) && typeof item.id === 'string' && typeof item.name === 'string')
+        .map((item) => ({ id: item.id as string, name: item.name as string }))
+    : []
+  return floors.length > 0 ? floors : [DEFAULT_FLOOR]
+}
+
 function toSiteOperation(value: SiteOperation): SiteOperation {
+  const floors = toFloors(value.floors)
+  const floorIds = new Set(floors.map((floor) => floor.id))
+
   return {
     ...value,
     id: String(value.id),
     restaurantId: String(value.restaurantId),
-    tables: value.tables.map(toLiveTable),
+    floors,
+    // Una mesa sin piso (o con un piso que ya no existe) queda en el primero.
+    tables: value.tables.map(toLiveTable).map((table) => ({ ...table, floorId: floorIds.has(table.floorId) ? table.floorId : floors[0]!.id })),
     staff: value.staff.map((member) => ({
       ...member,
       id: String(member.id),
@@ -384,6 +412,20 @@ export async function fetchSiteOperation(restaurantId: string): Promise<SiteOper
   })
 
   return match ? toSiteOperation(match) : null
+}
+
+/** Guarda pisos y mesas juntos (al eliminar un piso, sus mesas pasan a otro). */
+export async function updateSiteOperationFloors(operationId: string, floors: SiteFloor[], tables: LiveTable[]): Promise<SiteOperation> {
+  const payload = await http<unknown>(`/siteOperations/${operationId}`, {
+    method: 'PATCH',
+    body: { floors, tables },
+  })
+
+  if (!isSiteOperation(payload)) {
+    throw new Error('No se pudieron guardar los pisos.')
+  }
+
+  return toSiteOperation(payload)
 }
 
 export async function updateSiteOperationTables(operationId: string, tables: LiveTable[]): Promise<SiteOperation> {

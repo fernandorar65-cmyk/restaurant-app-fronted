@@ -1,5 +1,6 @@
 import type { RouteLocationRaw } from 'vue-router'
 
+import { FEATURES } from '@/app/features'
 import { siteSlugFor } from '@/app/router/site-directory'
 
 import type { Permission } from '@/modules/auth/permissions'
@@ -8,7 +9,7 @@ import type { AuthUser } from '@/modules/auth/types'
 /** Vista principal de cada permiso dentro de una sede, en orden de prioridad. */
 const SITE_LANDING: Array<{ permission: Permission; routeName: string }> = [
   { permission: 'sites.manage', routeName: 'site-dashboard' },
-  { permission: 'kitchen.manage', routeName: 'site-kitchen' },
+  ...(FEATURES.kitchenQueue ? [{ permission: 'kitchen.manage' as Permission, routeName: 'site-kitchen' }] : []),
   { permission: 'orders.manage', routeName: 'site-orders' },
   { permission: 'payments.manage', routeName: 'site-accounts' },
   { permission: 'menu.manage', routeName: 'site-menu' },

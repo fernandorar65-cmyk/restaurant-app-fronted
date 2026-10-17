@@ -39,6 +39,9 @@ const category = ref<RestaurantCategory>(props.restaurant?.category ?? 'bistro')
 const status = ref<RestaurantOperationalStatus>(props.restaurant?.status ?? 'active')
 const currency = ref(props.restaurant?.currency ?? 'EUR')
 const timezone = ref(props.restaurant?.timezone ?? 'Europe/Madrid')
+/** Solo al crear: cuántos pisos tiene el local (se nombran Piso 1, Piso 2…). */
+const floorsCount = ref(1)
+const MAX_FLOORS = 10
 const formError = ref<string | null>(null)
 
 function closeDialog(): void {
@@ -64,6 +67,7 @@ function submit(): void {
     statusLabel: statusLabel.value.trim(),
     category: category.value,
     categoryLabel: CATEGORY_LABELS[category.value],
+    ...(props.restaurant ? {} : { floorsCount: floorsCount.value }),
   })
 }
 
@@ -123,6 +127,38 @@ onMounted(async () => {
             <option v-for="(label, key) in CATEGORY_LABELS" :key="key" :value="key">{{ label }}</option>
           </select>
         </label>
+      </div>
+
+      <!-- Pisos del local: solo al crear (luego se gestionan desde Gestión de mesas → Pisos) -->
+      <div v-if="!restaurant" class="space-y-1.5">
+        <span id="floors-count-label" class="font-label block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Pisos del local</span>
+        <div class="flex items-center gap-3">
+          <div class="inline-flex items-center rounded-xl bg-surface ring-1 ring-outline-variant/60" role="group" aria-labelledby="floors-count-label">
+            <button
+              type="button"
+              class="flex h-11 w-11 items-center justify-center rounded-l-xl text-lg font-semibold text-on-surface hover:bg-surface-container disabled:opacity-40"
+              :disabled="floorsCount <= 1"
+              aria-label="Quitar un piso"
+              @click="floorsCount--"
+            >
+              −
+            </button>
+            <span class="w-10 text-center text-base font-semibold text-on-surface tabular-nums" aria-live="polite">{{ floorsCount }}</span>
+            <button
+              type="button"
+              class="flex h-11 w-11 items-center justify-center rounded-r-xl text-lg font-semibold text-on-surface hover:bg-surface-container disabled:opacity-40"
+              :disabled="floorsCount >= MAX_FLOORS"
+              aria-label="Agregar un piso"
+              @click="floorsCount++"
+            >
+              +
+            </button>
+          </div>
+          <span class="text-xs text-on-surface-variant">
+            {{ Array.from({ length: Math.min(floorsCount, 3) }, (_, index) => `Piso ${index + 1}`).join(', ') }}{{ floorsCount > 3 ? '…' : '' }}.
+            Podrás renombrarlos en Gestión de mesas.
+          </span>
+        </div>
       </div>
 
       <label class="block space-y-1.5">
@@ -211,7 +247,7 @@ onMounted(async () => {
           type="submit"
           class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
         >
-          Guardar
+          {{ restaurant ? 'Guardar' : 'Crear sede' }}
         </button>
       </div>
     </form>

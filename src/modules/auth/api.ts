@@ -260,3 +260,19 @@ export async function changeStaffPassword(userId: string, currentPassword: strin
 
   await http<unknown>(`/users/${userId}`, { method: 'PATCH', body: { password: nextPassword } })
 }
+
+/**
+ * Agrega una sede a las sedes de un usuario con acceso restringido (p. ej. el dueño
+ * que acaba de crearla). Un usuario sin restricción (lista vacía) ya ve todas.
+ * Contrato pensado para el backend: lo hará el propio POST /restaurants.
+ */
+export async function grantRestaurantAccess(userId: string, restaurantId: string): Promise<void> {
+  const user = await fetchJsonUser(userId)
+  const current = Array.isArray(user.restaurantIds) ? user.restaurantIds.map(String) : []
+
+  if (current.length === 0 || current.includes(restaurantId)) {
+    return
+  }
+
+  await http<unknown>(`/users/${userId}`, { method: 'PATCH', body: { restaurantIds: [...current, restaurantId] } })
+}

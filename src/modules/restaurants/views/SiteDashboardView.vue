@@ -7,14 +7,12 @@ import KpiTile from '@/components/base/KpiTile.vue'
 import SitePageHeader from '@/components/base/SitePageHeader.vue'
 import StatusBadge from '@/components/base/StatusBadge.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { employeeAreaLabel, employeeStatusLabel, employeeStatusTone } from '@/modules/administration/admin-labels'
-import { fetchEmployees } from '@/modules/administration/api'
-import type { Employee, EmployeeArea } from '@/modules/administration/types'
 import { fetchAttentionsWithProductsBySite, isAttentionActive } from '@/modules/orders/api'
 import StaffOrderDialog from '@/modules/orders/components/StaffOrderDialog.vue'
 import { isBillableProduct, orderedProductStatusLabel, orderedProductStatusTone } from '@/modules/orders/order-status-labels'
 import type { AttentionWithProducts } from '@/modules/orders/types'
-import { fetchRestaurantById, fetchSiteOperation, updateSiteOperationTables } from '@/modules/restaurants/api'
+import { fetchRestaurantById, fetchSiteOperation, updateSiteOperationFloors, updateSiteOperationTables } from '@/modules/restaurants/api'
+import FloorsDialog from '@/modules/restaurants/components/FloorsDialog.vue'
 import SiteFloorTable from '@/modules/restaurants/components/SiteFloorTable.vue'
 import SiteTableCard from '@/modules/restaurants/components/SiteTableCard.vue'
 import TableFormDialog from '@/modules/restaurants/components/TableFormDialog.vue'
@@ -24,20 +22,23 @@ import type {
   RestaurantSite,
   SiteOperation,
   TableFloorStatus,
+  SiteFloor,
 } from '@/modules/restaurants/types'
 import { HttpError } from '@/services/http'
 import { useConfirmStore } from '@/stores/confirm'
 import { useSessionStore } from '@/stores/session'
 import { useSiteActivityStore } from '@/stores/site-activity'
+import { useToastStore } from '@/stores/toast'
 import { formatMoney } from '@/utils/money'
 import { formatTime } from '@/utils/time'
 
-usePageTitle('Sala y mesas')
+usePageTitle('Gestión de mesas')
 
 const confirm = useConfirmStore()
 
 const route = useRoute()
 const session = useSessionStore()
+const toast = useToastStore()
 const activity = useSiteActivityStore()
 
 const restaurant = ref<RestaurantSite | null>(null)
@@ -45,8 +46,10 @@ const operation = ref<SiteOperation | null>(null)
 const loadError = ref<string | null>(null)
 const isLoading = ref(true)
 const floorFilter = ref<'all' | TableFloorStatus>('all')
-const staffFilter = ref<'all' | EmployeeArea>('all')
-const employees = ref<Employee[]>([])
+/** Piso que se está viendo; 'all' = todos (agrupados por piso). */
+const activeFloor = ref<'all' | string>('all')
+const isEditingFloors = ref(false)
+const isSavingFloors = ref(false)
 const selectedTableNumber = ref<string | null>(null)
 /** undefined = diálogo cerrado · null = nueva mesa · LiveTable = editar. */
 const editingTable = ref<LiveTable | null | undefined>(undefined)
@@ -109,13 +112,6 @@ const tableStats = computed(() => {
   }
 })
 
-/** Empleados reales de la sede (módulo de administración). */
-const staffStats = computed(() => ({
-  total: employees.value.length,
-  active: employees.value.filter((employee) => employee.status === 'active').length,
-  onLeave: employees.value.filter((employee) => employee.status === 'on-leave').length,
-}))
-
 const serviceStats = computed(() => {
   const active = attentions.value.filter(isAttentionActive)
   const products = active.flatMap((attention) => attention.products)
@@ -128,21 +124,34 @@ const serviceStats = computed(() => {
   }
 })
 
-const visibleTables = computed(() => {
-  const tables = liveTables.value
+const floors = computed(() => operation.value?.floors ?? [])
+const hasFloors = computed(() => floors.value.length > 1)
 
-  if (floorFilter.value === 'all') {
-    return tables
-  }
-
-  return tables.filter((table) => table.floorStatus === floorFilter.value)
+/* Si el piso elegido deja de existir (o la sede queda con uno solo), se vuelve a "Todos". */
+watch(floors, (list) => {
+  if (activeFloor.value !== 'all' && !list.some((floor) => floor.id === activeFloor.value)) activeFloor.value = 'all'
 })
 
-const visibleStaff = computed(() =>
-  staffFilter.value === 'all'
-    ? employees.value
-    : employees.value.filter((employee) => employee.area === staffFilter.value),
+const visibleTables = computed(() =>
+  liveTables.value.filter(
+    (table) =>
+      (activeFloor.value === 'all' || table.floorId === activeFloor.value) &&
+      (floorFilter.value === 'all' || table.floorStatus === floorFilter.value),
+  ),
 )
+
+/** Con varios pisos y "Todos", las mesas se agrupan por piso; si no, un solo grupo. */
+const tableGroups = computed(() => {
+  if (!hasFloors.value || activeFloor.value !== 'all') {
+    return [{ id: activeFloor.value, name: null as string | null, tables: visibleTables.value }]
+  }
+
+  return floors.value
+    .map((floor) => ({ id: floor.id, name: floor.name as string | null, tables: visibleTables.value.filter((table) => table.floorId === floor.id) }))
+    .filter((group) => group.tables.length > 0)
+})
+
+const floorCount = (id: string) => liveTables.value.filter((table) => table.floorId === id).length
 
 const selectedTable = computed(() => {
   return liveTables.value.find((table) => table.number === selectedTableNumber.value) ?? null
@@ -180,13 +189,6 @@ const floorFilters: Array<{ id: 'all' | TableFloorStatus; label: string }> = [
   { id: 'available', label: floorStatusLabel.available },
   { id: 'reserved', label: floorStatusLabel.reserved },
   { id: 'cleaning', label: floorStatusLabel.cleaning },
-]
-
-const staffFilters: Array<{ id: 'all' | EmployeeArea; label: string }> = [
-  { id: 'all', label: 'Todos' },
-  { id: 'floor', label: employeeAreaLabel.floor },
-  { id: 'kitchen', label: employeeAreaLabel.kitchen },
-  { id: 'management', label: employeeAreaLabel.management },
 ]
 
 const tableDetailEl = ref<HTMLElement | null>(null)
@@ -280,6 +282,87 @@ async function saveTable(table: LiveTable): Promise<void> {
     editingTable.value = undefined
   } catch {
     tableActionError.value = original ? 'No se pudo guardar la mesa.' : 'No se pudo crear la mesa.'
+  }
+}
+
+/** Mueve la mesa seleccionada a otro piso. */
+/** Mueve una mesa a otro piso (desde el selector o arrastrándola). */
+async function moveTable(tableNumber: string, floorId: string): Promise<void> {
+  const currentOperation = operation.value
+  const table = currentOperation?.tables.find((item) => item.number === tableNumber)
+
+  if (!currentOperation || !table || table.floorId === floorId) {
+    return
+  }
+
+  tableActionError.value = null
+
+  try {
+    operation.value = await updateSiteOperationTables(
+      currentOperation.id,
+      currentOperation.tables.map((item) => (item.number === tableNumber ? { ...item, floorId } : item)),
+    )
+    toast.show(`Mesa ${tableNumber} movida a ${floors.value.find((floor) => floor.id === floorId)?.name ?? 'otro piso'}`, { tone: 'success' })
+  } catch {
+    tableActionError.value = 'No se pudo mover la mesa de piso.'
+  }
+}
+
+function moveSelectedTable(floorId: string): void {
+  if (selectedTable.value) void moveTable(selectedTable.value.number, floorId)
+}
+
+/* ── Arrastrar mesas entre pisos ───────────────────────────────── */
+
+const draggingTable = ref<LiveTable | null>(null)
+const dropFloor = ref<string | null>(null)
+
+/** Se puede soltar en cualquier piso distinto al de la mesa. */
+function canDropOn(floorId: string): boolean {
+  return draggingTable.value !== null && hasFloors.value && draggingTable.value.floorId !== floorId
+}
+
+function onTableDragStart(event: DragEvent, table: LiveTable): void {
+  draggingTable.value = table
+  event.dataTransfer?.setData('text/plain', table.number)
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
+}
+
+function onTableDragEnd(): void {
+  draggingTable.value = null
+  dropFloor.value = null
+}
+
+function onFloorDragOver(event: DragEvent, floorId: string): void {
+  if (canDropOn(floorId)) {
+    event.preventDefault()
+    dropFloor.value = floorId
+  }
+}
+
+function onFloorDrop(floorId: string): void {
+  const table = draggingTable.value
+  onTableDragEnd()
+  if (table && table.floorId !== floorId) void moveTable(table.number, floorId)
+}
+
+async function saveFloors(payload: { floors: SiteFloor[]; tables: LiveTable[] }): Promise<void> {
+  const currentOperation = operation.value
+
+  if (!currentOperation) {
+    return
+  }
+
+  isSavingFloors.value = true
+  tableActionError.value = null
+
+  try {
+    operation.value = await updateSiteOperationFloors(currentOperation.id, payload.floors, payload.tables)
+    isEditingFloors.value = false
+  } catch {
+    tableActionError.value = 'No se pudieron guardar los pisos.'
+  } finally {
+    isSavingFloors.value = false
   }
 }
 
@@ -383,13 +466,11 @@ async function loadSite(): Promise<void> {
   session.setRestaurant(id)
 
   try {
-    const [site, siteOperation, siteAttentions, allEmployees] = await Promise.all([
+    const [site, siteOperation, siteAttentions] = await Promise.all([
       fetchRestaurantById(id),
       fetchSiteOperation(id),
       fetchAttentionsWithProductsBySite(id),
-      fetchEmployees(),
     ])
-    employees.value = allEmployees.filter((employee) => employee.restaurantId === id)
     restaurant.value = site
     operation.value = siteOperation
     attentions.value = siteAttentions
@@ -449,8 +530,8 @@ watch(
     <template v-else-if="restaurant && operation">
       <SitePageHeader
         :restaurant="restaurant"
-        section="Sala y mesas"
-        title="Sala y mesas"
+        section="Gestión de mesas"
+        title="Gestión de mesas"
         description="Plano, estado de las mesas, códigos QR y atenciones abiertas. La ocupación se calcula con los pedidos reales."
       >
         <template #actions>
@@ -478,35 +559,32 @@ watch(
         <KpiTile
           label="Atenciones abiertas"
           :value="serviceStats.open"
-          :hint="`${serviceStats.inKitchen} en cocina · ${serviceStats.accountRequested} piden cuenta`"
+          :hint="`${serviceStats.inKitchen} en preparación · ${serviceStats.accountRequested} piden cuenta`"
         />
         <KpiTile label="Por cobrar" :value="formatMoney(serviceStats.openTotal, currency)" hint="Total de las atenciones abiertas" />
       </div>
 
       <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-        <section class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-8">
-          <div class="flex flex-col justify-between gap-4 pb-5 sm:flex-row sm:items-center">
+        <section class="rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-12">
+          <div class="flex flex-col justify-between gap-4 pb-4 sm:flex-row sm:items-start">
             <div>
               <h2 class="font-headline text-xl font-semibold text-on-surface">Plano de sala</h2>
-              <p class="mt-1 text-sm text-on-surface-variant">Cada punto es una silla. Toca una mesa para ver su atención y su QR.</p>
+              <p class="mt-1 text-sm text-on-surface-variant">
+                Cada punto es una silla. Toca una mesa para ver su atención y su QR.
+                <template v-if="hasFloors"> Arrastra una mesa a otro piso para moverla.</template>
+              </p>
             </div>
-            <div class="flex flex-wrap items-center gap-1.5">
-              <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar mesas">
-                <button
-                  v-for="filter in floorFilters"
-                  :key="filter.id"
-                  type="button"
-                  class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
-                  :class="
-                    floorFilter === filter.id
-                      ? 'bg-primary-container text-on-primary-container'
-                      : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-                  "
-                  @click="floorFilter = filter.id"
-                >
-                  {{ filter.label }}
-                </button>
-              </div>
+            <div class="flex shrink-0 flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                class="font-label inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-surface-container px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                @click="isEditingFloors = true"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
+                </svg>
+                Pisos{{ hasFloors ? ` (${floors.length})` : '' }}
+              </button>
               <button
                 type="button"
                 class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
@@ -524,16 +602,90 @@ watch(
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-6">
-            <SiteFloorTable
-              v-for="table in visibleTables"
-              :key="table.number"
-              :table="table"
-              :selected="table.number === selectedTableNumber"
-              @select="selectTable(table.number)"
-            />
+          <!-- Pestañas de piso: solo si la sede tiene más de uno -->
+          <div v-if="hasFloors" class="-mx-1 mb-3 flex gap-1 overflow-x-auto border-b border-outline-variant/50 px-1" role="tablist" aria-label="Pisos">
+            <button
+              v-for="tab in [{ id: 'all', name: 'Todos', count: liveTables.length }, ...floors.map((floor) => ({ id: floor.id, name: floor.name, count: floorCount(floor.id) }))]"
+              :key="tab.id"
+              type="button"
+              role="tab"
+              :aria-selected="activeFloor === tab.id"
+              class="font-label -mb-px inline-flex min-h-10 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-semibold transition-colors"
+              :class="[
+                activeFloor === tab.id ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface',
+                tab.id !== 'all' && canDropOn(tab.id) ? 'rounded-t-lg bg-primary-fixed/40 text-primary' : '',
+                tab.id !== 'all' && dropFloor === tab.id ? 'bg-primary-fixed! ring-2 ring-primary ring-inset' : '',
+              ]"
+              @click="activeFloor = tab.id"
+              @dragover="tab.id !== 'all' && onFloorDragOver($event, tab.id)"
+              @dragleave="dropFloor = dropFloor === tab.id ? null : dropFloor"
+              @drop.prevent="tab.id !== 'all' && onFloorDrop(tab.id)"
+            >
+              {{ tab.name }}
+              <span class="rounded-full bg-surface-container px-1.5 text-xs text-on-surface-variant">{{ tab.count }}</span>
+            </button>
           </div>
-          <p v-if="visibleTables.length === 0" class="pt-4 text-sm text-on-surface-variant">No hay mesas en este estado.</p>
+
+          <div class="mb-4 flex flex-wrap gap-1.5" role="group" aria-label="Filtrar mesas por estado">
+            <button
+              v-for="filter in floorFilters"
+              :key="filter.id"
+              type="button"
+              class="font-label min-h-9 rounded-full px-3 py-1.5 text-sm font-semibold"
+              :class="
+                floorFilter === filter.id
+                  ? 'bg-primary-container text-on-primary-container'
+                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+              "
+              :aria-pressed="floorFilter === filter.id"
+              @click="floorFilter = filter.id"
+            >
+              {{ filter.label }}
+            </button>
+          </div>
+
+          <div class="space-y-5">
+            <div
+              v-for="group in tableGroups"
+              :key="group.id"
+              class="rounded-xl transition-[background-color,box-shadow]"
+              :class="[
+                group.name && canDropOn(group.id) ? 'bg-primary-fixed/25 outline-2 outline-dashed outline-primary/50 outline-offset-4' : '',
+                group.name && dropFloor === group.id ? 'bg-primary-fixed/50' : '',
+              ]"
+              @dragover="group.name && onFloorDragOver($event, group.id)"
+              @dragleave="dropFloor = dropFloor === group.id ? null : dropFloor"
+              @drop.prevent="group.name && onFloorDrop(group.id)"
+            >
+              <h3 v-if="group.name" class="font-label mb-2 flex items-center gap-2 text-xs font-semibold tracking-wider text-on-surface-variant uppercase">
+                {{ group.name }}
+                <span class="h-px flex-1 bg-outline-variant/50" aria-hidden="true" />
+              </h3>
+              <div class="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8 2xl:grid-cols-10">
+                <SiteFloorTable
+                  v-for="table in group.tables"
+                  :key="table.number"
+                  :table="table"
+                  :selected="table.number === selectedTableNumber"
+                  :draggable="hasFloors"
+                  :class="[hasFloors ? 'cursor-grab active:cursor-grabbing' : '', draggingTable?.number === table.number ? 'opacity-40' : '']"
+                  :title="hasFloors ? 'Arrastra la mesa a otra pestaña o sección para cambiarla de piso' : undefined"
+                  @select="selectTable(table.number)"
+                  @dragstart="onTableDragStart($event, table)"
+                  @dragend="onTableDragEnd"
+                />
+              </div>
+            </div>
+          </div>
+          <p v-if="visibleTables.length === 0" class="pt-4 text-sm text-on-surface-variant">
+            {{
+              liveTables.length === 0
+                ? 'Esta sede todavía no tiene mesas. Usa "+ Mesa" para agregar la primera.'
+                : activeFloor !== 'all' && floorCount(activeFloor) === 0
+                  ? 'Este piso todavía no tiene mesas. Usa "+ Mesa" para agregar una.'
+                  : 'No hay mesas en este estado.'
+            }}
+          </p>
 
           <div v-if="selectedTable" ref="tableDetailEl" class="mt-6 scroll-mt-20 border-t border-outline-variant/50 pt-5">
             <div class="mb-3 flex items-center justify-between gap-3">
@@ -564,6 +716,19 @@ watch(
               </div>
             </div>
             <SiteTableCard :table="selectedTable" highlight />
+
+            <label v-if="hasFloors" class="mt-3 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
+              <span>Piso</span>
+              <select
+                :value="selectedTable.floorId"
+                class="min-h-9 rounded-lg bg-surface-container px-3 text-sm font-semibold text-on-surface outline-none focus:ring-2 focus:ring-primary"
+                :aria-label="`Mover la mesa ${selectedTable.number} a otro piso`"
+                @change="moveSelectedTable(($event.target as HTMLSelectElement).value)"
+              >
+                <option v-for="floor in floors" :key="floor.id" :value="floor.id">{{ floor.name }}</option>
+              </select>
+              <span class="text-xs">Cámbialo para mover la mesa de piso.</span>
+            </label>
 
             <div class="mt-4 space-y-3 rounded-xl bg-surface p-4">
               <div class="flex flex-wrap items-center justify-between gap-2">
@@ -662,50 +827,25 @@ watch(
           <p v-if="tableActionError" class="mt-3 text-xs text-error">{{ tableActionError }}</p>
         </section>
 
-        <section class="space-y-4 rounded-2xl bg-surface-container-lowest p-5 shadow-sm sm:p-6 lg:col-span-4">
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="font-headline text-xl font-semibold text-on-surface">Equipo de la sede</h2>
-            <span class="text-sm text-on-surface-variant">{{ staffStats.active }} activos · {{ staffStats.onLeave }} de licencia</span>
-          </div>
-          <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar equipo por área">
-            <button
-              v-for="filter in staffFilters"
-              :key="filter.id"
-              type="button"
-              class="font-label min-h-9 rounded-full px-3 text-sm font-semibold"
-              :class="staffFilter === filter.id ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'"
-              :aria-pressed="staffFilter === filter.id"
-              @click="staffFilter = filter.id"
-            >
-              {{ filter.label }}
-            </button>
-          </div>
-          <ul class="divide-y divide-outline-variant/40">
-            <li v-for="employee in visibleStaff" :key="employee.id" class="flex items-center justify-between gap-3 py-2.5">
-              <div class="min-w-0">
-                <p class="truncate text-sm font-semibold text-on-surface">{{ employee.name }}</p>
-                <p class="truncate text-sm text-on-surface-variant">{{ employee.roleName }} · {{ employeeAreaLabel[employee.area] }}</p>
-              </div>
-              <StatusBadge :tone="employeeStatusTone[employee.status]" :label="employeeStatusLabel[employee.status]" />
-            </li>
-          </ul>
-          <p v-if="visibleStaff.length === 0" class="text-sm text-on-surface-variant">No hay empleados en esta área.</p>
-          <RouterLink
-            v-if="session.can('staff.manage')"
-            class="font-label inline-flex text-sm font-semibold text-primary underline-offset-2 hover:underline"
-            :to="{ name: 'admin-employees' }"
-          >
-            Gestionar empleados →
-          </RouterLink>
-        </section>
       </div>
 
       <TableFormDialog
         v-if="editingTable !== undefined"
         :table="editingTable"
         :existing-numbers="operation.tables.map((table) => table.number)"
+        :floors="floors"
+        :default-floor-id="activeFloor === 'all' ? null : activeFloor"
         @close="editingTable = undefined"
         @save="saveTable"
+      />
+
+      <FloorsDialog
+        v-if="isEditingFloors"
+        :floors="floors"
+        :tables="operation.tables"
+        :saving="isSavingFloors"
+        @close="isEditingFloors = false"
+        @save="saveFloors"
       />
 
       <StaffOrderDialog

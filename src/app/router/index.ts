@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
+import { FEATURES } from '@/app/features'
 import { landingRouteFor } from '@/app/router/landing'
 import { ensureSiteDirectory, findSite } from '@/app/router/site-directory'
 import PortalLayout from '@/layouts/PortalLayout.vue'
@@ -216,6 +217,8 @@ export const router = createRouter({
           name: 'site-kitchen',
           component: () => import('@/modules/orders/views/KitchenQueueView.vue'),
           meta: { permission: 'kitchen.manage' },
+          // Sección deshabilitada (ver FEATURES.kitchenQueue): lleva a Gestión de pedidos.
+          beforeEnter: (to) => (FEATURES.kitchenQueue ? true : { name: 'site-orders', params: { siteSlug: to.params.siteSlug } }),
         },
         {
           // La sección Entregas se eliminó: la URL antigua lleva a Gestión de pedidos.
@@ -239,6 +242,12 @@ export const router = createRouter({
           name: 'site-account-detail',
           component: () => import('@/modules/orders/views/SiteAccountsView.vue'),
           meta: { permission: 'payments.manage' },
+        },
+        {
+          path: 'sede/:siteSlug/insumos',
+          name: 'site-supplies',
+          component: () => import('@/modules/inventory/views/SiteSuppliesView.vue'),
+          meta: { permission: 'inventory.manage' },
         },
         {
           path: 'sede/:siteSlug/metricas',

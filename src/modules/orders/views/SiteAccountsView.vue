@@ -1,79 +1,109 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import StatusBadge from '@/components/base/StatusBadge.vue'
-import SkeletonBlock from '@/components/base/SkeletonBlock.vue'
-import SitePageHeader from '@/components/base/SitePageHeader.vue'
-import { useNow } from '@/composables/useNow'
-import { usePageTitle } from '@/composables/usePageTitle'
-import { useSiteContext } from '@/composables/useSiteContext'
-import { errorMessage, fetchAllStatusHistory, fetchAttentionsWithProductsBySite, isAttentionActive } from '@/modules/orders/api'
-import AccountDialog from '@/modules/orders/components/AccountDialog.vue'
-import { attentionStatusLabel, attentionStatusTone } from '@/modules/orders/order-status-labels'
-import type { AttentionWithProducts } from '@/modules/orders/types'
-import { computeAccount } from '@/modules/payments/account'
-import type { AccountSummary } from '@/modules/payments/account'
-import { fetchAllPayments } from '@/modules/payments/api'
-import type { Payment } from '@/modules/payments/types'
-import type { RestaurantSite } from '@/modules/restaurants/types'
-import { useSiteActivityStore } from '@/stores/site-activity'
-import { formatMoney } from '@/utils/money'
-import { formatElapsed } from '@/utils/time'
+import BasePagination from "@/components/base/BasePagination.vue";
+import StatusBadge from "@/components/base/StatusBadge.vue";
+import SkeletonBlock from "@/components/base/SkeletonBlock.vue";
+import SitePageHeader from "@/components/base/SitePageHeader.vue";
+import { useNow } from "@/composables/useNow";
+import { usePageTitle } from "@/composables/usePageTitle";
+import { useSiteContext } from "@/composables/useSiteContext";
+import ExpensesPanel from "@/modules/expenses/components/ExpensesPanel.vue";
+import {
+  errorMessage,
+  fetchAllStatusHistory,
+  fetchAttentionsWithProductsBySite,
+  isAttentionActive,
+} from "@/modules/orders/api";
+import AccountDialog from "@/modules/orders/components/AccountDialog.vue";
+import {
+  attentionStatusLabel,
+  attentionStatusTone,
+} from "@/modules/orders/order-status-labels";
+import type { AttentionWithProducts } from "@/modules/orders/types";
+import { computeAccount } from "@/modules/payments/account";
+import type { AccountSummary } from "@/modules/payments/account";
+import { fetchAllPayments } from "@/modules/payments/api";
+import type { Payment } from "@/modules/payments/types";
+import type { RestaurantSite } from "@/modules/restaurants/types";
+import { useSiteActivityStore } from "@/stores/site-activity";
+import { formatMoney } from "@/utils/money";
+import { formatElapsed } from "@/utils/time";
 
-usePageTitle('Cuentas de sede')
+usePageTitle("Cuentas de sede");
 
 interface AccountRow {
-  attention: AttentionWithProducts
-  account: AccountSummary
+  attention: AttentionWithProducts;
+  account: AccountSummary;
   /** Momento en que el comensal pidió la cuenta. */
-  requestedAt: string | null
+  requestedAt: string | null;
 }
 
-const route = useRoute()
-const router = useRouter()
-const activity = useSiteActivityStore()
-const now = useNow(30000)
+const route = useRoute();
+const router = useRouter();
+const activity = useSiteActivityStore();
+const now = useNow(30000);
 
-const attentions = ref<AttentionWithProducts[]>([])
-const payments = ref<Payment[]>([])
-const requestedAtById = ref<Map<string, string>>(new Map())
-const showClosed = ref(false)
-const actionError = ref<string | null>(null)
+const attentions = ref<AttentionWithProducts[]>([]);
+const payments = ref<Payment[]>([]);
+const requestedAtById = ref<Map<string, string>>(new Map());
+const actionError = ref<string | null>(null);
 
-const { restaurant, restaurantId, currency, isLoading, loadError } = useSiteContext(loadAccounts)
+/** Pestaña activa: cobros de mesas o gastos de la sede (?vista=gastos). */
+const tab = computed<"cobros" | "gastos">(() =>
+  route.query.vista === "gastos" ? "gastos" : "cobros",
+);
+
+function selectTab(next: "cobros" | "gastos"): void {
+  void router.replace({
+    query: { ...route.query, vista: next === "gastos" ? "gastos" : undefined },
+  });
+}
+
+const { restaurant, restaurantId, currency, isLoading, loadError } =
+  useSiteContext(loadAccounts);
 
 async function loadAccounts(site?: RestaurantSite): Promise<void> {
-  const id = site?.id ?? restaurantId.value
+  const id = site?.id ?? restaurantId.value;
 
   if (!id) {
-    return
+    return;
   }
 
   const [siteAttentions, allPayments, history] = await Promise.all([
     fetchAttentionsWithProductsBySite(id),
     fetchAllPayments(),
     fetchAllStatusHistory(),
-  ])
-  const ids = new Set(siteAttentions.map((attention) => attention.id))
-  const requested = new Map<string, string>()
+  ]);
+  const ids = new Set(siteAttentions.map((attention) => attention.id));
+  const requested = new Map<string, string>();
 
   for (const entry of history) {
-    if (entry.entityType === 'attention' && entry.toStatus === 'account-requested' && ids.has(entry.entityId)) {
-      requested.set(entry.entityId, entry.changedAt)
+    if (
+      entry.entityType === "attention" &&
+      entry.toStatus === "account-requested" &&
+      ids.has(entry.entityId)
+    ) {
+      requested.set(entry.entityId, entry.changedAt);
     }
   }
 
-  attentions.value = siteAttentions
-  payments.value = allPayments.filter((payment) => ids.has(payment.attentionId))
-  requestedAtById.value = requested
+  attentions.value = siteAttentions;
+  payments.value = allPayments.filter((payment) =>
+    ids.has(payment.attentionId),
+  );
+  requestedAtById.value = requested;
 }
 
 async function reload(): Promise<void> {
   try {
-    await loadAccounts()
+    await loadAccounts();
   } catch (error) {
-    actionError.value = errorMessage(error, 'No se pudieron actualizar las cuentas.')
+    actionError.value = errorMessage(
+      error,
+      "No se pudieron actualizar las cuentas.",
+    );
   }
 }
 
@@ -86,45 +116,126 @@ const rows = computed<AccountRow[]>(() =>
     ),
     requestedAt: requestedAtById.value.get(attention.id) ?? null,
   })),
-)
+);
 
-const requestedRows = computed(() =>
-  rows.value
-    .filter((row) => row.attention.status === 'account-requested')
-    .sort((a, b) => ((a.requestedAt ?? '') < (b.requestedAt ?? '') ? -1 : 1)),
-)
-const openRows = computed(() => rows.value.filter((row) => row.attention.status === 'open'))
-const closedRows = computed(() => rows.value.filter((row) => !isAttentionActive(row.attention)))
+/** Filtro de la tabla de cobros. */
+type AccountFilter = "active" | "requested" | "closed" | "all";
+const filter = ref<AccountFilter>("active");
+const search = ref("");
+
+const counts = computed(() => ({
+  active: rows.value.filter((row) => isAttentionActive(row.attention)).length,
+  requested: rows.value.filter(
+    (row) => row.attention.status === "account-requested",
+  ).length,
+  closed: rows.value.filter((row) => !isAttentionActive(row.attention)).length,
+  all: rows.value.length,
+}));
+
+const FILTERS: Array<{ id: AccountFilter; label: string }> = [
+  { id: "active", label: "Activas" },
+  { id: "requested", label: "Pidieron la cuenta" },
+  { id: "closed", label: "Cerradas y canceladas" },
+  { id: "all", label: "Todas" },
+];
+
+/** Primero las que pidieron la cuenta (la más antigua arriba), luego abiertas y al final las cerradas recientes. */
+function sortRank(row: AccountRow): number {
+  if (row.attention.status === "account-requested") return 0;
+  return row.attention.status === "open" ? 1 : 2;
+}
+
+const tableRows = computed(() => {
+  const term = search.value.trim().toLowerCase();
+  return rows.value
+    .filter((row) => {
+      if (filter.value === "active") return isAttentionActive(row.attention);
+      if (filter.value === "requested")
+        return row.attention.status === "account-requested";
+      if (filter.value === "closed") return !isAttentionActive(row.attention);
+      return true;
+    })
+    .filter(
+      (row) =>
+        !term ||
+        `mesa ${row.attention.tableNumber} ${row.attention.guestName ?? ""}`
+          .toLowerCase()
+          .includes(term),
+    )
+    .sort((a, b) => {
+      const rank = sortRank(a) - sortRank(b);
+      if (rank !== 0) return rank;
+      if (sortRank(a) === 0)
+        return (a.requestedAt ?? "") < (b.requestedAt ?? "") ? -1 : 1;
+      if (sortRank(a) === 1)
+        return a.attention.openedAt < b.attention.openedAt ? -1 : 1;
+      return (a.attention.closedAt ?? a.attention.openedAt) <
+        (b.attention.closedAt ?? b.attention.openedAt)
+        ? 1
+        : -1;
+    });
+});
+
+function formatClosedAt(iso: string): string {
+  return new Intl.DateTimeFormat("es", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: restaurant.value?.timezone,
+  }).format(new Date(iso));
+}
+
+const page = ref(1);
+const pageSize = ref(15);
+watch([filter, search], () => (page.value = 1));
+const pagedRows = computed(() =>
+  tableRows.value.slice(
+    (page.value - 1) * pageSize.value,
+    page.value * pageSize.value,
+  ),
+);
+
 const openTotal = computed(() =>
-  rows.value.filter((row) => isAttentionActive(row.attention)).reduce((sum, row) => sum + row.account.remaining, 0),
-)
+  rows.value
+    .filter((row) => isAttentionActive(row.attention))
+    .reduce((sum, row) => sum + row.account.remaining, 0),
+);
 
 const selectedAttention = computed(() => {
-  const id = route.params.attentionId
-  return typeof id === 'string' ? (attentions.value.find((attention) => attention.id === id) ?? null) : null
-})
+  const id = route.params.attentionId;
+  return typeof id === "string"
+    ? (attentions.value.find((attention) => attention.id === id) ?? null)
+    : null;
+});
 
 async function openAccount(attention: AttentionWithProducts): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-account-detail', params: { siteSlug: route.params.siteSlug, attentionId: attention.id } })
+    await router.push({
+      name: "site-account-detail",
+      params: { siteSlug: route.params.siteSlug, attentionId: attention.id },
+    });
   }
 }
 
 async function closeAccountDialog(): Promise<void> {
   if (restaurantId.value) {
-    await router.push({ name: 'site-accounts', params: { siteSlug: route.params.siteSlug } })
+    await router.push({
+      name: "site-accounts",
+      params: { siteSlug: route.params.siteSlug },
+    });
   }
 }
 
 async function handleChanged(): Promise<void> {
-  await reload()
-  void activity.refresh()
+  await reload();
+  void activity.refresh();
 }
 
 watch(
   () => activity.revision,
   () => void reload(),
-)
+);
 </script>
 
 <template>
@@ -142,107 +253,284 @@ watch(
       <SitePageHeader
         :restaurant="restaurant"
         section="Cuentas"
-        title="Cuentas y cobros"
-        description="Primero las mesas que pidieron la cuenta. Registra uno o varios pagos; la cuenta se cierra sola cuando el saldo llega a cero."
+        :title="tab === 'gastos' ? 'Gastos de la sede' : 'Cuentas y cobros'"
+        :description="
+          tab === 'gastos'
+            ? 'Registra insumos, sueldos, alquiler, servicios y demás gastos del local, mes a mes.'
+            : 'Las mesas que pidieron la cuenta aparecen primero. Registra uno o varios pagos; la cuenta se cierra sola cuando el saldo llega a cero.'
+        "
       >
-        <template #actions>
-          <div class="rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm">
-            <span class="font-label block text-xs font-semibold tracking-wider text-on-surface-variant uppercase">
+        <template v-if="tab === 'cobros'" #actions>
+          <div
+            class="rounded-xl bg-surface-container-lowest px-4 py-2.5 shadow-sm"
+          >
+            <span
+              class="font-label block text-xs font-semibold tracking-wider text-on-surface-variant uppercase"
+            >
               Pendiente por cobrar
             </span>
-            <span class="font-headline text-lg font-semibold text-on-surface">{{ formatMoney(openTotal, currency) }}</span>
+            <span class="font-headline text-lg font-semibold text-on-surface">{{
+              formatMoney(openTotal, currency)
+            }}</span>
           </div>
         </template>
       </SitePageHeader>
 
-      <p v-if="actionError" class="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
-        {{ actionError }}
-      </p>
-
-      <section class="space-y-3">
-        <h2 class="font-headline flex items-center gap-2 text-lg font-semibold text-on-surface">
-          Cuentas solicitadas
-          <span v-if="requestedRows.length > 0" class="rounded-full bg-error px-2 py-0.5 text-xs font-bold text-on-error">
-            {{ requestedRows.length }}
-          </span>
-        </h2>
-        <p v-if="requestedRows.length === 0" class="rounded-2xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant shadow-sm">
-          Ninguna mesa está esperando la cuenta.
-        </p>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <button
-            v-for="row in requestedRows"
-            :key="row.attention.id"
-            type="button"
-            class="flex flex-col gap-2 rounded-2xl bg-tertiary-fixed/40 p-4 text-left shadow-sm ring-2 ring-tertiary-container transition-shadow hover:shadow-md"
-            @click="openAccount(row.attention)"
-          >
-            <div class="flex items-center justify-between">
-              <span class="font-headline text-base font-bold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
-              <span v-if="row.requestedAt" class="font-label text-xs font-semibold text-on-tertiary-container">
-                pidió {{ formatElapsed(row.requestedAt, now) }}
-              </span>
-            </div>
-            <p class="text-xs text-on-surface-variant">
-              Total {{ formatMoney(row.account.total, currency) }} · pagado {{ formatMoney(row.account.paid, currency) }}
-            </p>
-            <div class="flex items-end justify-between gap-2">
-              <p class="font-headline text-2xl font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
-              <span class="font-label rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-on-primary">Cobrar →</span>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      <section class="space-y-3">
-        <h2 class="font-headline text-lg font-semibold text-on-surface">Mesas con cuenta abierta</h2>
-        <p v-if="openRows.length === 0" class="text-sm text-on-surface-variant">No hay otras cuentas abiertas.</p>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <button
-            v-for="row in openRows"
-            :key="row.attention.id"
-            type="button"
-            class="flex flex-col gap-2 rounded-2xl bg-surface-container-lowest p-4 text-left shadow-sm transition-shadow hover:shadow-md"
-            @click="openAccount(row.attention)"
-          >
-            <div class="flex items-center justify-between">
-              <span class="font-headline text-sm font-bold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
-              <span class="text-xs text-on-surface-variant">{{ row.attention.products.length }} productos</span>
-            </div>
-            <div class="flex items-end justify-between gap-2">
-              <div>
-                <p class="font-headline text-xl font-semibold text-on-surface">{{ formatMoney(row.account.remaining, currency) }}</p>
-                <p v-if="row.account.paid > 0" class="text-sm text-success">Pagado {{ formatMoney(row.account.paid, currency) }}</p>
-              </div>
-              <span class="text-sm font-semibold text-primary">Ver cuenta →</span>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      <section class="space-y-3">
+      <div
+        class="inline-flex gap-1 rounded-xl bg-surface-container p-1"
+        role="tablist"
+        aria-label="Secciones de cuentas"
+      >
         <button
+          v-for="option in [
+            ['cobros', 'Cobros'],
+            ['gastos', 'Gastos'],
+          ] as const"
+          :key="option[0]"
           type="button"
-          class="font-label rounded-full min-h-9 px-3 py-1.5 text-sm font-semibold"
-          :class="showClosed ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'"
-          @click="showClosed = !showClosed"
+          role="tab"
+          :aria-selected="tab === option[0]"
+          class="font-label min-h-9 rounded-lg px-4 text-sm font-semibold transition-colors"
+          :class="
+            tab === option[0]
+              ? 'bg-surface-container-lowest text-on-surface shadow-sm'
+              : 'text-on-surface-variant hover:text-on-surface'
+          "
+          @click="selectTab(option[0])"
         >
-          {{ showClosed ? 'Ocultar cerradas y canceladas' : `Ver cerradas y canceladas (${closedRows.length})` }}
+          {{ option[1] }}
         </button>
-        <div v-if="showClosed" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <button
-            v-for="row in closedRows"
-            :key="row.attention.id"
-            type="button"
-            class="flex items-center justify-between gap-2 rounded-xl bg-surface-container-lowest p-3 text-left shadow-sm hover:shadow-md"
-            @click="openAccount(row.attention)"
+      </div>
+
+      <ExpensesPanel
+        v-if="tab === 'gastos' && restaurantId"
+        :restaurant-id="restaurantId"
+        :currency="currency"
+      />
+
+      <template v-else>
+        <p
+          v-if="actionError"
+          class="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container"
+          role="alert"
+        >
+          {{ actionError }}
+        </p>
+
+        <section class="space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="option in FILTERS"
+              :key="option.id"
+              type="button"
+              class="font-label inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-semibold"
+              :class="
+                filter === option.id
+                  ? 'bg-primary-container text-on-primary-container'
+                  : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
+              "
+              @click="filter = option.id"
+            >
+              {{ option.label }}
+              <span
+                class="rounded-full px-1.5 text-xs tabular-nums"
+                :class="
+                  option.id === 'requested' && counts.requested > 0
+                    ? 'bg-error text-on-error'
+                    : filter === option.id
+                      ? 'bg-on-primary-container/15'
+                      : 'bg-surface-container-lowest/70'
+                "
+                >{{ counts[option.id] }}</span
+              >
+            </button>
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Buscar mesa"
+              aria-label="Buscar mesa"
+              class="min-h-10 w-full rounded-xl bg-surface-container-lowest px-3 text-sm text-on-surface shadow-sm ring-1 ring-outline-variant/40 outline-none placeholder:text-outline focus:ring-2 focus:ring-primary sm:ml-auto sm:w-56"
+            />
+          </div>
+
+          <p
+            v-if="tableRows.length === 0"
+            class="rounded-2xl bg-surface-container-lowest p-6 text-center text-sm text-on-surface-variant shadow-sm"
           >
-            <span class="text-sm font-semibold text-on-surface">Mesa {{ row.attention.tableNumber }}</span>
-            <StatusBadge :tone="attentionStatusTone[row.attention.status]" :label="attentionStatusLabel[row.attention.status]" />
-            <span class="text-sm font-semibold text-on-surface">{{ formatMoney(row.account.paid, currency) }}</span>
-          </button>
-        </div>
-      </section>
+            {{
+              filter === "requested"
+                ? "Ninguna mesa está esperando la cuenta."
+                : "No hay cuentas que coincidan."
+            }}
+          </p>
+
+          <div
+            v-else
+            class="md:overflow-x-auto md:rounded-2xl md:bg-surface-container-lowest md:shadow-sm"
+          >
+            <table
+              class="responsive-table w-full text-left text-sm md:min-w-[860px]"
+            >
+              <thead class="bg-surface-container-low text-on-surface-variant">
+                <tr>
+                  <th
+                    class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Mesa
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Estado
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Tiempo
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-right text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Productos
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-right text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Total
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-right text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Pagado
+                  </th>
+                  <th
+                    class="font-label px-4 py-3 text-right text-xs font-semibold tracking-wide uppercase"
+                  >
+                    Pendiente
+                  </th>
+                  <th class="px-4 py-3">
+                    <span class="sr-only">Acciones</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40">
+                <tr
+                  v-for="row in pagedRows"
+                  :key="row.attention.id"
+                  class="cursor-pointer transition-colors hover:bg-surface-container-low"
+                  :class="
+                    row.attention.status === 'account-requested'
+                      ? 'md:bg-tertiary-fixed/25 ring-2 ring-tertiary-container md:ring-0'
+                      : ''
+                  "
+                  @click="openAccount(row.attention)"
+                >
+                  <td class="cell-main px-4 py-3">
+                    <span
+                      class="font-headline text-base font-semibold text-on-surface"
+                      >Mesa {{ row.attention.tableNumber }}</span
+                    >
+                    <span
+                      v-if="row.attention.guestName"
+                      class="block text-xs text-on-surface-variant"
+                      >{{ row.attention.guestName }}</span
+                    >
+                  </td>
+                  <td class="px-4 py-3" data-label="Estado">
+                    <StatusBadge
+                      :tone="attentionStatusTone[row.attention.status]"
+                      :label="attentionStatusLabel[row.attention.status]"
+                    />
+                  </td>
+                  <td
+                    class="px-4 py-3 text-on-surface-variant"
+                    data-label="Tiempo"
+                  >
+                    <span
+                      v-if="
+                        row.attention.status === 'account-requested' &&
+                        row.requestedAt
+                      "
+                      class="font-semibold text-on-tertiary-container"
+                      >Pidió {{ formatElapsed(row.requestedAt, now) }}</span
+                    >
+                    <span v-else-if="isAttentionActive(row.attention)"
+                      >Abierta
+                      {{ formatElapsed(row.attention.openedAt, now) }}</span
+                    >
+                    <span v-else-if="row.attention.closedAt"
+                      >Cerró {{ formatClosedAt(row.attention.closedAt) }}</span
+                    >
+                    <span v-else>—</span>
+                  </td>
+                  <td
+                    class="px-4 py-3 tabular-nums md:text-right"
+                    data-label="Productos"
+                  >
+                    {{ row.attention.products.length }}
+                  </td>
+                  <td
+                    class="px-4 py-3 tabular-nums md:text-right"
+                    data-label="Total"
+                  >
+                    {{ formatMoney(row.account.total, currency) }}
+                  </td>
+                  <td
+                    class="px-4 py-3 tabular-nums md:text-right"
+                    :class="
+                      row.account.paid > 0
+                        ? 'text-success'
+                        : 'text-on-surface-variant'
+                    "
+                    data-label="Pagado"
+                  >
+                    {{ formatMoney(row.account.paid, currency) }}
+                  </td>
+                  <td
+                    class="px-4 py-3 font-semibold tabular-nums md:text-right"
+                    :class="
+                      row.account.remaining > 0
+                        ? 'text-on-surface'
+                        : 'text-on-surface-variant'
+                    "
+                    data-label="Pendiente"
+                  >
+                    {{ formatMoney(row.account.remaining, currency) }}
+                  </td>
+                  <td class="cell-actions px-4 py-3 md:text-right">
+                    <button
+                      type="button"
+                      class="font-label min-h-9 rounded-lg px-3 text-sm font-semibold whitespace-nowrap"
+                      :class="
+                        row.attention.status === 'account-requested'
+                          ? 'bg-primary text-on-primary hover:bg-primary-container'
+                          : 'text-primary hover:bg-surface-container'
+                      "
+                      @click.stop="openAccount(row.attention)"
+                    >
+                      {{
+                        row.attention.status === "account-requested"
+                          ? "Cobrar →"
+                          : isAttentionActive(row.attention)
+                            ? "Ver cuenta"
+                            : "Detalle"
+                      }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <BasePagination
+            v-if="tableRows.length > 0"
+            v-model:page="page"
+            v-model:page-size="pageSize"
+            :total="tableRows.length"
+            item-label="cuentas"
+          />
+        </section>
+      </template>
 
       <AccountDialog
         v-if="selectedAttention"

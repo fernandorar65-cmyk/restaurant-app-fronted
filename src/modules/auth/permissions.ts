@@ -54,5 +54,6 @@ export const SITE_PERMISSIONS: readonly Permission[] = [
   'kitchen.manage',
   'menu.manage',
   'payments.manage',
+  'inventory.manage',
   'reports.view',
 ]

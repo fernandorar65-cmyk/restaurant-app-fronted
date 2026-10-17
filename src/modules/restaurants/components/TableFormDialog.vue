@@ -2,12 +2,15 @@
 import { nextTick, onMounted, ref } from 'vue'
 
 import { tableStatusLabel } from '@/modules/restaurants/site-labels'
-import type { LiveTable, TableStatus } from '@/modules/restaurants/types'
+import type { LiveTable, SiteFloor, TableStatus } from '@/modules/restaurants/types'
 
 const props = defineProps<{
   /** Mesa a editar; sin ella el diálogo crea una mesa nueva. */
   table?: LiveTable | null
   existingNumbers: string[]
+  floors: SiteFloor[]
+  /** Piso preseleccionado para una mesa nueva (el que se está viendo). */
+  defaultFloorId?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -21,6 +24,7 @@ const code = ref(props.table?.code ?? '')
 const seats = ref(props.table?.seats ?? 2)
 const location = ref(props.table?.location ?? 'Sala principal')
 const status = ref<TableStatus>(props.table?.status ?? 'active')
+const floorId = ref(props.table?.floorId ?? props.defaultFloorId ?? props.floors[0]?.id ?? '')
 const formError = ref<string | null>(null)
 
 function closeDialog(): void {
@@ -47,6 +51,7 @@ function submit(): void {
 
   const base: LiveTable = props.table ?? {
     number: trimmed,
+    floorId: floorId.value,
     code: '',
     status: 'active',
     seats: seats.value,
@@ -68,6 +73,7 @@ function submit(): void {
   emit('save', {
     ...base,
     number: trimmed,
+    floorId: floorId.value,
     code: code.value.trim() || `M-${trimmed}`,
     status: status.value,
     seats: seats.value,
@@ -126,8 +132,19 @@ onMounted(async () => {
         </label>
       </div>
 
+      <!-- Piso: solo si la sede tiene más de uno -->
+      <label v-if="floors.length > 1" class="block space-y-1.5">
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Piso</span>
+        <select
+          v-model="floorId"
+          class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"
+        >
+          <option v-for="floor in floors" :key="floor.id" :value="floor.id">{{ floor.name }}</option>
+        </select>
+      </label>
+
       <label class="block space-y-1.5">
-        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Ubicación / nombre</span>
+        <span class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Zona / nombre</span>
         <input
           v-model="location"
           class="w-full min-h-11 rounded-lg bg-surface px-3 py-2 text-sm text-on-surface shadow-inner outline-none ring-1 ring-transparent focus:ring-primary"

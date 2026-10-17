@@ -74,8 +74,16 @@ export type StaffArea = 'kitchen' | 'floor' | 'support'
 
 export type StaffShiftStatus = 'on-shift' | 'break' | 'absent'
 
+/** Piso o planta de una sede (planta baja, primer piso, terraza…). */
+export interface SiteFloor {
+  id: string
+  name: string
+}
+
 export interface LiveTable {
   number: string
+  /** Piso donde está la mesa (id de SiteFloor). */
+  floorId: string
   code: string
   status: TableStatus
   seats: number
@@ -136,6 +144,8 @@ export interface SiteOperation {
     cellarShare: string
     cellarDetail: string
   }
+  /** Pisos de la sede, en orden. Siempre hay al menos uno. */
+  floors: SiteFloor[]
   tables: LiveTable[]
   staff: SiteStaffMember[]
   quality: {

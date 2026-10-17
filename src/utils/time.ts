@@ -14,7 +14,14 @@ export function formatElapsed(isoDate: string, now: number = Date.now()): string
   }
 
   const hours = Math.floor(minutes / 60)
-  return `hace ${hours} h ${minutes % 60} min`
+
+  if (hours < 24) {
+    return `hace ${hours} h ${minutes % 60} min`
+  }
+
+  // Más de un día: días y horas, sin minutos.
+  const days = Math.floor(hours / 24)
+  return hours % 24 ? `hace ${days} d ${hours % 24} h` : `hace ${days} d`
 }
 
 export function formatTime(isoDate: string, timeZone?: string): string {
