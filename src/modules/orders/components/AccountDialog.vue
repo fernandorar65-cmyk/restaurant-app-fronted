@@ -337,7 +337,7 @@ onMounted(async () => {
                   v-for="parts in [2, 3, 4, 5]"
                   :key="parts"
                   type="button"
-                  class="font-label min-h-11 min-w-11 rounded-xl bg-surface-container-lowest px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
+                  class="font-label min-h-11 min-w-11 rounded-full bg-surface-container-lowest px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
                   @click="splitTotal(parts)"
                 >
                   {{ parts }}
@@ -375,7 +375,7 @@ onMounted(async () => {
                     v-for="parts in [2, 3, 4]"
                     :key="parts"
                     type="button"
-                    class="font-label min-h-11 min-w-11 rounded-xl bg-surface px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
+                    class="font-label min-h-11 min-w-11 rounded-full bg-surface px-3 text-sm font-semibold ring-1 ring-outline-variant/50 hover:ring-primary"
                     @click="splitProduct(item.product.id, item.pending, parts)"
                   >
                     {{ parts }}
@@ -432,7 +432,7 @@ onMounted(async () => {
 
           <button
             type="button"
-            class="font-label flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-base font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
+            class="font-label flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-base font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
             :disabled="isSubmitting || amountToCharge <= 0 || amountToCharge > account.remaining + MONEY_EPSILON"
             @click="registerPayment"
           >
@@ -513,7 +513,7 @@ onMounted(async () => {
         <button
           v-if="isActive && account.paid === 0 && !isCancelling"
           type="button"
-          class="font-label rounded-xl bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
+          class="font-label rounded-full bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
           @click="isCancelling = true"
         >
           Cancelar atención
@@ -521,14 +521,14 @@ onMounted(async () => {
         <button
           v-if="isActive && account.total === 0 && !isLoadingPayments"
           type="button"
-          class="font-label rounded-xl bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-full bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
           @click="closeWithoutCharge"
         >
           Cerrar sin cargo
         </button>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-full bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cerrar

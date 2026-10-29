@@ -95,13 +95,30 @@ const summary = computed(() => {
 
 const summaryClass: Record<string, string> = {
   success: 'bg-success-container text-on-success-container',
-  progress: 'bg-primary-fixed text-on-primary-fixed',
+  progress: 'bg-deep text-on-deep shadow-md',
   waiting: 'bg-surface-container text-on-surface',
 }
 
-function stepIndex(status: OrderedProductStatus): number {
-  return orderedProductStatusSteps.indexOf(status)
+/** Etapas del pedido con cuántas unidades hay en cada una (seguimiento de un vistazo). */
+const STAGE_ICON: Record<string, string> = {
+  sent: 'M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5',
+  preparing:
+    'M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z',
+  ready: 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+  delivered:
+    'M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M3 16.5l1.5-.75a3.354 3.354 0 0 1 3 0 3.354 3.354 0 0 0 3 0 3.354 3.354 0 0 1 3 0 3.354 3.354 0 0 0 3 0 3.354 3.354 0 0 1 3 0L21 16.5m-18 0v4.125c0 .621.504 1.125 1.125 1.125h15.75c.621 0 1.125-.504 1.125-1.125V16.5',
 }
+
+const STAGE_LABEL: Record<string, string> = { sent: 'Enviado', preparing: 'En cocina', ready: 'Listo', delivered: 'Servido' }
+
+const stages = computed(() =>
+  orderedProductStatusSteps.map((status) => ({
+    status,
+    label: STAGE_LABEL[status] ?? orderedProductStatusLabel[status],
+    icon: STAGE_ICON[status] ?? '',
+    count: products.value.filter((product) => product.status === status).length,
+  })),
+)
 
 /** Avisa al comensal cuando un producto pasa a listo o es rechazado. */
 function notifyChanges(next: OrderedProduct[]): void {
@@ -235,7 +252,7 @@ watch(
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p class="text-sm font-medium text-on-surface-variant">Mesa {{ attention.tableNumber }}</p>
-          <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu pedido</h1>
+          <h1 class="font-headline text-4xl font-semibold text-on-surface">Tu <span class="text-heading-accent">pedido</span></h1>
         </div>
         <StatusBadge size="md" :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
       </div>
@@ -247,7 +264,7 @@ watch(
         role="status"
         aria-live="polite"
       >
-        <span class="relative flex h-3 w-3 shrink-0" aria-hidden="true">
+        <span class="relative flex h-3 w-3 shrink-0" :class="{ 'text-deep-accent': summary.tone === 'progress' }" aria-hidden="true">
           <span v-if="summary.tone !== 'waiting'" class="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-40" />
           <span class="relative inline-flex h-3 w-3 rounded-full bg-current" />
         </span>
@@ -256,6 +273,42 @@ watch(
           <p class="text-sm opacity-90">{{ summary.text }}</p>
         </div>
       </div>
+
+      <section
+        v-if="isActive && products.length > 0"
+        class="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30"
+        aria-label="Seguimiento del pedido"
+      >
+        <ol class="grid grid-cols-4 gap-2">
+          <li v-for="(stage, index) in stages" :key="stage.status" class="relative flex flex-col items-center gap-1.5 text-center">
+            <span
+              v-if="index > 0"
+              class="absolute top-5 right-1/2 h-0.5 w-[calc(100%+0.5rem)]"
+              :class="stage.count > 0 || stages.slice(index).some((item) => item.count > 0) ? 'bg-primary/40' : 'bg-surface-container-high'"
+              aria-hidden="true"
+            />
+            <span
+              class="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+              :class="
+                stage.count > 0
+                  ? stage.status === 'ready'
+                    ? 'bg-success text-on-success'
+                    : 'bg-primary text-on-primary'
+                  : 'bg-surface-container text-outline'
+              "
+              aria-hidden="true"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" :d="stage.icon" />
+              </svg>
+            </span>
+            <span class="text-xs font-semibold" :class="stage.count > 0 ? 'text-on-surface' : 'text-on-surface-variant'">{{ stage.label }}</span>
+            <span class="font-label text-xs text-on-surface-variant tabular-nums">
+              {{ stage.count === 0 ? '—' : `${stage.count} ${stage.count === 1 ? 'producto' : 'productos'}` }}
+            </span>
+          </li>
+        </ol>
+      </section>
 
       <div
         v-if="attention.status === 'account-requested'"
@@ -300,27 +353,8 @@ watch(
               </span>
               <span class="shrink-0 text-base font-semibold text-on-surface">{{ formatMoney(product.subtotal, currency) }}</span>
             </div>
-            <div
-              v-if="stepIndex(product.status) >= 0"
-              class="flex gap-1"
-              role="progressbar"
-              :aria-valuenow="stepIndex(product.status) + 1"
-              aria-valuemin="1"
-              :aria-valuemax="orderedProductStatusSteps.length"
-              :aria-label="`Progreso de ${product.name}`"
-            >
-              <span
-                v-for="(step, stepPosition) in orderedProductStatusSteps"
-                :key="step"
-                class="h-1.5 flex-1 rounded-full transition-colors"
-                :class="stepPosition <= stepIndex(product.status) ? (product.status === 'ready' || product.status === 'delivered' ? 'bg-success' : 'bg-primary') : 'bg-surface-container-high'"
-              />
-            </div>
             <div class="flex flex-wrap items-center gap-2">
               <StatusBadge :tone="orderedProductStatusTone[product.status]" :label="orderedProductStatusLabel[product.status]" />
-              <span v-if="stepIndex(product.status) >= 0" class="text-xs font-semibold text-on-surface-variant">
-                Paso {{ stepIndex(product.status) + 1 }} de {{ orderedProductStatusSteps.length }}
-              </span>
               <span class="text-sm" :class="product.status === 'rejected' ? 'text-error' : 'text-on-surface-variant'">
                 {{ product.status === 'rejected' ? (product.rejectionReason ?? orderedProductStatusHint.rejected) : orderedProductStatusHint[product.status] }}
               </span>

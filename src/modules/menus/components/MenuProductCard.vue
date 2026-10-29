@@ -19,36 +19,53 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <article
-    class="group flex gap-4 rounded-2xl bg-surface-container-lowest p-3 ring-1 ring-outline-variant/40 transition hover:ring-outline-variant"
-    :class="{ 'opacity-60': !product.isAvailable }"
-  >
-    <div class="flex min-w-0 flex-1 flex-col gap-1.5 py-1 pl-1">
-      <button type="button" class="text-left" @click="emit('detail')">
-        <h3 class="font-headline text-[1.0625rem] leading-snug font-semibold text-on-surface">{{ product.name }}</h3>
-        <p class="mt-1 line-clamp-2 text-sm leading-relaxed text-on-surface-variant">{{ product.description }}</p>
-      </button>
-      <div v-if="product.tags.length > 0" class="flex flex-wrap gap-1">
+  <!-- Fila de la lista de la carta: texto a la izquierda y foto con el botón "+" flotante a la derecha. -->
+  <article class="group flex gap-3 py-4" :class="{ 'opacity-60': !product.isAvailable }">
+    <button type="button" class="flex min-w-0 flex-1 flex-col gap-1 text-left" @click="emit('detail')">
+      <span v-if="product.tags.includes('Recomendado chef')" class="font-label inline-flex items-center gap-1 text-xs font-bold text-tertiary">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
+        </svg>
+        Recomendado
+      </span>
+      <h3 class="text-base leading-snug font-semibold text-on-surface">{{ product.name }}</h3>
+      <p class="line-clamp-2 text-sm leading-snug text-on-surface-variant">{{ product.description }}</p>
+      <span class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1.5">
+        <span class="font-label text-base font-bold text-on-surface tabular-nums">{{ formatMoney(product.price, currency) }}</span>
         <span
-          v-for="tag in product.tags"
+          v-for="tag in product.tags.filter((item) => item !== 'Recomendado chef')"
           :key="tag"
-          class="font-label inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold"
-          :class="
-            tag === 'Recomendado chef'
-              ? 'bg-tertiary-fixed/60 text-on-tertiary-container'
-              : 'bg-surface-container text-on-surface-variant'
-          "
+          class="font-label rounded-md bg-surface-container px-1.5 py-0.5 text-xs font-semibold text-on-surface-variant"
         >
-          <svg v-if="tag === 'Recomendado chef'" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
-          </svg>
           {{ tag }}
         </span>
-      </div>
-      <div class="mt-auto flex items-center justify-between gap-2 pt-1">
-        <span class="font-label text-base font-bold text-on-surface">{{ formatMoney(product.price, currency) }}</span>
+      </span>
+    </button>
+
+    <div class="relative h-28 w-28 shrink-0 self-start sm:h-32 sm:w-32">
+      <button
+        type="button"
+        class="relative h-full w-full overflow-hidden rounded-2xl bg-surface-container"
+        :aria-label="`Ver detalle de ${product.name}`"
+        @click="emit('detail')"
+      >
+        <img
+          v-if="product.imageUrl"
+          :alt="product.name"
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          :src="product.imageUrl"
+          loading="lazy"
+        />
+        <span
+          v-if="!product.isAvailable"
+          class="font-label absolute inset-x-0 bottom-0 bg-on-surface/80 py-1 text-center text-xs font-semibold text-surface"
+        >
+          Agotado
+        </span>
+      </button>
+      <div v-if="orderable && product.isAvailable" class="absolute -right-1.5 -bottom-3">
         <QuantityStepper
-          v-if="orderable && product.isAvailable"
+          variant="floating"
           :quantity="quantity"
           :label="product.name"
           @increase="emit('increase')"
@@ -56,24 +73,5 @@ const emit = defineEmits<{
         />
       </div>
     </div>
-    <button
-      type="button"
-      class="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-surface-container sm:h-32 sm:w-32"
-      :aria-label="`Ver detalle de ${product.name}`"
-      @click="emit('detail')"
-    >
-      <img
-        :alt="product.name"
-        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        :src="product.imageUrl"
-        loading="lazy"
-      />
-      <span
-        v-if="!product.isAvailable"
-        class="font-label absolute inset-x-0 bottom-0 bg-on-surface/80 py-1 text-center text-xs font-semibold text-surface"
-      >
-        Agotado
-      </span>
-    </button>
   </article>
 </template>

@@ -297,7 +297,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
         <template #actions>
           <button
             type="button"
-            class="font-label rounded-xl bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-full bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             :disabled="!selectedMenu"
             @click="isPreviewOpen = true"
           >
@@ -305,14 +305,14 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-full bg-surface-container-lowest min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             @click="openNewCategory"
           >
             + Categoría
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+            class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
             @click="openNewProduct"
           >
             + Producto
@@ -531,7 +531,7 @@ watch(restaurantId, () => void loadMenu(), { immediate: true })
             </button>
             <button
               type="button"
-              class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+              class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
               @click="openEditProduct(product)"
             >
               Editar

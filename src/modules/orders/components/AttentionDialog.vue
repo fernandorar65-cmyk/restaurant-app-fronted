@@ -231,7 +231,7 @@ onMounted(async () => {
                   <button
                     v-else-if="session.can('orders.manage') && canCancelOrderedProduct(product.status)"
                     type="button"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high"
                     @click="askReason(product, 'cancelled')"
                   >
                     Cancelar
@@ -239,7 +239,7 @@ onMounted(async () => {
                   <button
                     v-if="canAdvance(product)"
                     type="button"
-                    class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+                    class="font-label rounded-full bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
                     :disabled="busyId === product.id"
                     @click="advance(product)"
                   >
@@ -332,7 +332,7 @@ onMounted(async () => {
         <button
           v-if="isActive && session.can('orders.manage') && !isCancellingAttention"
           type="button"
-          class="font-label rounded-xl bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
+          class="font-label rounded-full bg-surface-container min-h-11 px-3 py-2.5 text-sm font-semibold text-error hover:bg-surface-container-high"
           @click="isCancellingAttention = true"
         >
           Cancelar atención
@@ -340,14 +340,14 @@ onMounted(async () => {
         <button
           v-if="isActive && session.can('orders.manage')"
           type="button"
-          class="font-label rounded-xl bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-full bg-primary min-h-11 px-3 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
           @click="emit('addProducts')"
         >
           + Agregar productos
         </button>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-full bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cerrar

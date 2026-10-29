@@ -149,7 +149,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingItem = null"
         >
           + Insumo
@@ -232,7 +232,7 @@ onMounted(() => {
                   <button
                     v-if="stockDraft[item.id] !== undefined && stockDraft[item.id] !== item.stock"
                     type="button"
-                    class="font-label rounded-lg bg-primary min-h-9 px-2.5 py-1 text-sm font-semibold text-on-primary"
+                    class="font-label rounded-full bg-primary min-h-9 px-2.5 py-1 text-sm font-semibold text-on-primary"
                     @click="setStock(item, stockDraft[item.id] ?? item.stock)"
                   >
                     Guardar
@@ -248,7 +248,7 @@ onMounted(() => {
                   <button
                     v-if="item.isActive && item.status !== 'ok'"
                     type="button"
-                    class="font-label rounded-lg bg-primary px-2.5 py-1.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
+                    class="font-label rounded-full bg-primary px-2.5 py-1.5 text-xs font-semibold text-on-primary hover:bg-primary-container"
                     @click="restock(item)"
                   >
                     Reabastecer

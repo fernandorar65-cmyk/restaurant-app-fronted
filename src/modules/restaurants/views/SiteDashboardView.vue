@@ -537,7 +537,7 @@ watch(
         <template #actions>
           <RouterLink
             v-if="session.can('orders.manage')"
-            class="font-label inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+            class="font-label inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container"
             :to="{ name: 'site-orders', params: { siteSlug: restaurant.slug } }"
           >
             Ir a gestión de pedidos
@@ -577,7 +577,7 @@ watch(
             <div class="flex shrink-0 flex-wrap items-center gap-1.5">
               <button
                 type="button"
-                class="font-label inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-surface-container px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                class="font-label inline-flex min-h-9 items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                 @click="isEditingFloors = true"
               >
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -587,14 +587,14 @@ watch(
               </button>
               <button
                 type="button"
-                class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                 @click="printAllQrs"
               >
                 Imprimir QR
               </button>
               <button
                 type="button"
-                class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
+                class="font-label rounded-full bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
                 @click="editingTable = null"
               >
                 + Mesa
@@ -701,7 +701,7 @@ watch(
               <div class="flex gap-1.5">
                 <button
                   type="button"
-                  class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                  class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                   @click="editingTable = selectedTable"
                 >
                   Editar
@@ -736,14 +736,14 @@ watch(
                 <div v-if="session.can('orders.manage') && selectedTable.status === 'active'" class="flex gap-1.5">
                   <RouterLink
                     v-if="selectedAttention"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     :to="{ name: 'site-order-detail', params: { siteSlug: restaurant.slug, attentionId: selectedAttention.id } }"
                   >
                     Ver detalle
                   </RouterLink>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
+                    class="font-label rounded-full bg-primary min-h-9 px-3 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-container"
                     @click="staffOrderTable = selectedTable.number"
                   >
                     + Pedido manual
@@ -792,28 +792,28 @@ watch(
                 <div class="mt-2 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="copyTableLink"
                   >
                     Copiar enlace
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="toggleTableQr"
                   >
                     {{ selectedTable.qrActive ? 'Desactivar QR' : 'Activar QR' }}
                   </button>
                   <button
                     type="button"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     @click="regenerateTableQr"
                   >
                     Regenerar QR
                   </button>
                   <a
                     v-if="selectedTableUrl && selectedTable.qrActive"
-                    class="font-label rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+                    class="font-label rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
                     :href="selectedTableUrl"
                     rel="noopener"
                     target="_blank"

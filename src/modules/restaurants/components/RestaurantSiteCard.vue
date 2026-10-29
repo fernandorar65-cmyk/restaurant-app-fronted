@@ -14,13 +14,13 @@ const badgeClass: Record<RestaurantBadgeTone, string> = {
   amber: 'bg-amber-500 text-slate-950',
   emerald: 'bg-success text-on-success',
   wine: 'bg-amber-700 text-white',
-  blue: 'bg-blue-600 text-white',
+  blue: 'bg-deep text-on-deep',
 }
 </script>
 
 <template>
   <article
-    class="flex flex-col justify-between overflow-hidden rounded-lg border border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md"
+    class="flex flex-col justify-between overflow-hidden rounded-3xl border border-outline-variant/60 bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md"
   >
     <div class="relative h-56 w-full overflow-hidden bg-slate-900">
       <img :alt="restaurant.name" class="h-full w-full object-cover object-center" :src="restaurant.imageUrl" />

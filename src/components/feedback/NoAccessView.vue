@@ -42,7 +42,7 @@ const message = computed(() => {
     <p v-if="session.user?.roleName" class="text-xs text-on-surface-variant">Rol actual: {{ session.user.roleName }}</p>
     <RouterLink
       v-if="hasRole"
-      class="font-label rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+      class="font-label rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
       :to="landingRouteFor(session.user)"
     >
       Ir a mi inicio

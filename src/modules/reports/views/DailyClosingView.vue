@@ -130,7 +130,7 @@ async function registerClosing(): Promise<void> {
           </button>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
+            class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-50"
             :disabled="isSaving"
             @click="registerClosing"
           >
@@ -153,7 +153,7 @@ async function registerClosing(): Promise<void> {
           <RouterLink
             v-for="attention in summary.openAttentions"
             :key="attention.id"
-            class="font-label rounded-lg bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+            class="font-label rounded-full bg-surface-container-lowest min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
             :to="{ name: 'site-account-detail', params: { siteSlug: restaurant.slug, attentionId: attention.id } }"
           >
             Mesa {{ attention.tableNumber }} · {{ formatTime(attention.openedAt, restaurant.timezone) }}

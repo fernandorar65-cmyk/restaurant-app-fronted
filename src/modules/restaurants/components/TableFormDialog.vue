@@ -170,14 +170,14 @@ onMounted(async () => {
       <div class="flex items-center justify-end gap-2 pt-1">
         <button
           type="button"
-          class="font-label rounded-xl bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label rounded-full bg-surface-container min-h-11 px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
+          class="font-label rounded-full bg-primary min-h-11 px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container"
         >
           {{ table ? 'Guardar' : 'Crear mesa' }}
         </button>

@@ -122,7 +122,19 @@ export const orderedProductStatusTone: Record<OrderedProductStatus, StatusTone> 
   sent: 'neutral',
   preparing: 'progress',
   ready: 'success',
-  delivered: 'muted',
+  // Con check (tono info): "muted" lleva el ícono de prohibido y se confundía con cancelado.
+  delivered: 'info',
   rejected: 'danger',
   cancelled: 'muted',
+}
+
+/** Color de acento (franjas, puntos) de cada tono: el mismo que usa StatusBadge para ese estado. */
+export const statusToneAccentClass: Record<StatusTone, string> = {
+  neutral: 'bg-outline',
+  info: 'bg-primary-fixed-dim',
+  progress: 'bg-primary',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  danger: 'bg-error',
+  muted: 'bg-outline-variant',
 }

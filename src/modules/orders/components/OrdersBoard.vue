@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import StatusBadge from '@/components/base/StatusBadge.vue'
 import { isAttentionActive } from '@/modules/orders/api'
 import {
   nextOrderedProductActionLabel,
   nextOrderedProductStatus,
   orderedProductStatusLabel,
+  orderedProductStatusTone,
   orderedProductStepPermission,
+  statusToneAccentClass,
 } from '@/modules/orders/order-status-labels'
 import { delayLabel, delayLevel, groupByRound, INCOMING_DELAY_MINUTES, KITCHEN_DELAY_MINUTES } from '@/modules/orders/rounds'
 import type { AttentionWithProducts, OrderedProduct, OrderedProductStatus } from '@/modules/orders/types'
@@ -33,11 +36,12 @@ const emit = defineEmits<{
 
 const session = useSessionStore()
 
-const COLUMNS: Array<{ status: OrderedProductStatus; title: string; hint: string; dot: string }> = [
-  { status: 'sent', title: 'Nuevos', hint: 'Por confirmar', dot: 'bg-error' },
-  { status: 'preparing', title: 'En preparación', hint: 'En cocina', dot: 'bg-primary' },
-  { status: 'ready', title: 'Listos', hint: 'Para servir', dot: 'bg-tertiary' },
-  { status: 'delivered', title: 'Entregados', hint: 'Mesas en curso', dot: 'bg-success' },
+/* El color de cada columna es el del estado (orderedProductStatusTone), igual que en las etiquetas. */
+const COLUMNS: Array<{ status: OrderedProductStatus; title: string; hint: string }> = [
+  { status: 'sent', title: 'Nuevos', hint: 'Por confirmar' },
+  { status: 'preparing', title: 'En preparación', hint: 'En cocina' },
+  { status: 'ready', title: 'Listos', hint: 'Para servir' },
+  { status: 'delivered', title: 'Entregados', hint: 'Mesas en curso' },
 ]
 
 export interface BoardCard {
@@ -72,7 +76,8 @@ const columns = computed(() =>
     const items = cards.value.filter((card) => card.status === column.status)
     // Activas: la más antigua primero (atender en orden). Entregados: la más reciente primero.
     items.sort((a, b) => (column.status === 'delivered' ? (a.requestedAt < b.requestedAt ? 1 : -1) : a.requestedAt < b.requestedAt ? -1 : 1))
-    return { ...column, items, units: items.reduce((sum, card) => sum + card.products.reduce((acc, product) => acc + product.quantity, 0), 0) }
+    const tone = orderedProductStatusTone[column.status]
+    return { ...column, tone, accent: statusToneAccentClass[tone], items, units: items.reduce((sum, card) => sum + card.products.reduce((acc, product) => acc + product.quantity, 0), 0) }
   }),
 )
 
@@ -148,14 +153,13 @@ function onDrop(status: OrderedProductStatus): void {
         @drop.prevent="onDrop(column.status)"
       >
         <header class="space-y-0.5 px-1.5 pt-1 pb-2.5">
-          <h3 class="flex items-center gap-2 text-sm font-semibold whitespace-nowrap text-on-surface">
-            <span class="h-2 w-2 shrink-0 rounded-full" :class="column.dot" aria-hidden="true" />
-            {{ column.title }}
+          <h3 class="flex items-center gap-2 whitespace-nowrap">
+            <StatusBadge size="md" :tone="column.tone" :label="column.title" />
             <span class="font-label ml-auto rounded-full bg-surface-container-highest px-2 py-0.5 text-xs text-on-surface-variant">
               {{ column.items.length }}
             </span>
           </h3>
-          <p class="pl-4 text-xs text-on-surface-variant">{{ column.hint }}</p>
+          <p class="pl-1 text-xs text-on-surface-variant">{{ column.hint }}</p>
         </header>
 
         <div class="flex flex-1 flex-col gap-2">
@@ -177,7 +181,7 @@ function onDrop(status: OrderedProductStatus): void {
             @dragend="onDragEnd"
           >
             <!-- Franja del color de la columna (estado); la demora la indica la etiqueta del tiempo -->
-            <span class="absolute inset-y-0 left-0 w-1" :class="column.dot" aria-hidden="true" />
+            <span class="absolute inset-y-0 left-0 w-1" :class="column.accent" aria-hidden="true" />
 
             <div class="space-y-3 py-3 pr-3 pl-4">
               <header class="flex items-start justify-between gap-2">
@@ -255,7 +259,7 @@ function onDrop(status: OrderedProductStatus): void {
                 <button
                   v-if="canAdvance(card)"
                   type="button"
-                  class="font-label inline-flex min-h-8 shrink-0 items-center gap-1 rounded-lg bg-primary px-3 text-xs font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:opacity-50"
+                  class="font-label inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full bg-primary px-3 text-xs font-semibold whitespace-nowrap text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:opacity-50"
                   :disabled="busyKey === card.key"
                   :aria-label="`${nextOrderedProductActionLabel(card.status)}: mesa ${card.attention.tableNumber}, pasa a ${orderedProductStatusLabel[nextOrderedProductStatus(card.status)!]}`"
                   @click.stop="advance(card)"

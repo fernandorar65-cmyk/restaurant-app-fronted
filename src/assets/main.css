@@ -1,39 +1,45 @@
 @import 'tailwindcss';
 
+/*
+ * Marca RentaSol, inspirada en Spenza: verde esmeralda brillante con azul petróleo para
+ * títulos y contenido sobre el verde, sobre neutros limpios. Contrastes AA verificados.
+ */
 @theme {
   --font-sans:
     Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-headline: 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --font-headline: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-label: 'Public Sans', Poppins, ui-sans-serif, sans-serif;
 
-  --color-background: #faf9fa;
-  --color-surface: #faf9fa;
-  --color-surface-bright: #faf9fa;
+  --color-background: #f6f8f8;
+  --color-surface: #f6f8f8;
+  --color-surface-bright: #f6f8f8;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f5f3f4;
-  --color-surface-container: #efedee;
-  --color-surface-container-high: #e9e8e9;
-  --color-surface-container-highest: #e3e2e3;
-  --color-surface-dim: #dbdadb;
-  --color-on-surface: #1b1c1d;
-  --color-on-surface-variant: #434653;
-  --color-secondary: #5a5f63;
-  --color-secondary-container: #dfe3e8;
-  --color-on-secondary-container: #606569;
-  --color-outline: #737784;
-  --color-outline-variant: #c3c6d5;
-  --color-primary: #094cb2;
-  --color-primary-container: #3366cc;
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #e7ebff;
-  --color-tertiary: #6d5e00;
-  --color-tertiary-container: #bfab49;
-  --color-on-tertiary-container: #4a3f00;
-  --color-primary-fixed: #d9e2ff;
-  --color-primary-fixed-dim: #b1c5ff;
-  --color-on-primary-fixed: #001946;
-  --color-tertiary-fixed: #f9e37a;
+  --color-surface-container-low: #f0f3f3;
+  --color-surface-container: #e9eeee;
+  --color-surface-container-high: #e2e8e8;
+  --color-surface-container-highest: #dbe2e3;
+  --color-surface-dim: #d3dbdc;
+  --color-on-surface: #0f2430;
+  --color-on-surface-variant: #4a5c67;
+  --color-secondary: #4f6170;
+  --color-secondary-container: #dde6e8;
+  --color-on-secondary-container: #3c4d57;
+  --color-outline: #6f7f86;
+  --color-outline-variant: #cdd6d8;
+  --color-primary: #00ca83;
+  --color-primary-container: #00b373;
+  --color-on-primary: #0b3549;
+  --color-on-primary-container: #0b3549;
+  /* El esmeralda no alcanza 4.5:1 como texto sobre blanco: textos, bordes y anillos usan este tono. */
+  --color-primary-ink: #007a52;
+  --color-tertiary: #9a5b00;
+  --color-tertiary-container: #f5b74e;
+  --color-on-tertiary-container: #4a2c00;
+  --color-primary-fixed: #d4f7e8;
+  --color-primary-fixed-dim: #7fe5bf;
+  --color-on-primary-fixed: #00573a;
+  --color-tertiary-fixed: #ffe2b0;
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
@@ -48,6 +54,13 @@
   --color-on-warning: #ffffff;
   --color-warning-container: #ffe3b8;
   --color-on-warning-container: #4f2f00;
+
+  /* Títulos de marca (azul petróleo con acento verde) y bloques de contraste. */
+  --color-heading: #155983;
+  --color-heading-accent: #009e64;
+  --color-deep: #0b3549;
+  --color-on-deep: #ffffff;
+  --color-deep-accent: #00ca83;
 }
 
 /*
@@ -56,24 +69,34 @@
  * - Pantalla de cocina: también puede activarlo solo en su contenedor.
  */
 .theme-dark {
-  --color-background: #111316;
-  --color-surface: #16181c;
-  --color-surface-bright: #2a2d33;
-  --color-surface-container-lowest: #1d2025;
-  --color-surface-container-low: #22252b;
-  --color-surface-container: #2a2d33;
-  --color-surface-container-high: #33373e;
-  --color-surface-container-highest: #3d414a;
-  --color-on-surface: #f1f1f4;
-  --color-on-surface-variant: #c4c7d2;
-  --color-outline-variant: #454955;
-  --color-primary: #a9c4ff;
-  --color-primary-container: #2f5fbf;
-  --color-on-primary: #00255c;
-  --color-primary-fixed: #23396a;
-  --color-on-primary-fixed: #dbe5ff;
-  --color-tertiary-fixed: #5a4b00;
-  --color-on-tertiary-container: #fbe68a;
+  --color-background: #0f171c;
+  --color-surface: #131c22;
+  --color-surface-bright: #2a3942;
+  --color-surface-container-lowest: #172128;
+  --color-surface-container-low: #1c272e;
+  --color-surface-container: #223038;
+  --color-surface-container-high: #2a3942;
+  --color-surface-container-highest: #34444e;
+  --color-surface-dim: #0f171c;
+  --color-on-surface: #eaf2f5;
+  --color-on-surface-variant: #bccbd2;
+  --color-outline: #87979f;
+  --color-outline-variant: #3c4b54;
+  --color-secondary: #b9c8d2;
+  --color-secondary-container: #2c3b44;
+  --color-on-secondary-container: #d8e5ea;
+  --color-primary: #00ca83;
+  --color-primary-container: #00b373;
+  --color-on-primary: #0b3549;
+  --color-on-primary-container: #0b3549;
+  --color-primary-ink: #00ca83;
+  --color-primary-fixed: #0b3b2b;
+  --color-primary-fixed-dim: #00a56b;
+  --color-on-primary-fixed: #b5f3d9;
+  --color-tertiary: #f2b95a;
+  --color-tertiary-container: #8a5a10;
+  --color-tertiary-fixed: #5a3c00;
+  --color-on-tertiary-container: #ffdca0;
   --color-error: #ffb4ab;
   --color-on-error: #690005;
   --color-error-container: #5c1110;
@@ -86,18 +109,56 @@
   --color-on-warning: #3a2400;
   --color-warning-container: #5a3a00;
   --color-on-warning-container: #ffe3b8;
-  --color-surface-dim: #111316;
-  --color-outline: #8e919c;
-  --color-secondary: #c3c7cc;
-  --color-secondary-container: #3f4448;
-  --color-on-secondary-container: #dfe3e8;
-  --color-on-primary-container: #dbe5ff;
-  --color-primary-fixed-dim: #5b7fd1;
-  --color-tertiary: #e3c757;
-  --color-tertiary-container: #8c7a1e;
+  --color-heading: #dcecf5;
+  --color-heading-accent: #00ca83;
+  --color-deep: #145a78;
+  --color-on-deep: #ffffff;
+  --color-deep-accent: #7ff5c8;
   color-scheme: dark;
   background-color: var(--color-background);
   color: var(--color-on-surface);
+}
+
+/* Títulos al estilo Spenza: geométricos, muy gruesos y, sobre fondos claros, en azul petróleo. */
+:is(h1, h2).font-headline {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+:is(h1, h2).font-headline.text-on-surface {
+  color: var(--color-heading);
+}
+
+/* Botones en píldora, como los de Spenza. */
+.base-button {
+  border-radius: 9999px;
+}
+
+/* El verde de marca sirve de relleno; como texto, borde, anillo o control usa su versión legible. */
+:is(.text-primary, .hover\:text-primary:hover, .group:hover .group-hover\:text-primary) {
+  color: var(--color-primary-ink);
+}
+
+:is(.border-primary, .focus\:border-primary:focus) {
+  border-color: var(--color-primary-ink);
+}
+
+.accent-primary {
+  accent-color: var(--color-primary-ink);
+}
+
+:is(.focus-visible\:outline-primary:focus-visible, .peer:focus-visible ~ .peer-focus-visible\:outline-primary) {
+  outline-color: var(--color-primary-ink);
+}
+
+:is(
+    .ring-primary,
+    .hover\:ring-primary:hover,
+    .focus\:ring-primary:focus,
+    .focus-visible\:ring-primary:focus-visible,
+    .focus-within\:ring-primary:focus-within
+  ) {
+  --tw-ring-color: var(--color-primary-ink);
 }
 
 /* Mapa (Leaflet) en tema oscuro: se oscurecen los tiles sin tocar los marcadores. */

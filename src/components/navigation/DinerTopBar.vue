@@ -33,7 +33,7 @@ const title = computed(() => (isHome.value ? null : diner.restaurantName) ?? 'Re
           </svg>
         </span>
         <span class="min-w-0 leading-tight">
-          <span class="font-headline block truncate text-base font-semibold text-on-surface">
+          <span class="font-headline block truncate text-base font-extrabold tracking-tight text-heading">
             {{ title }}
           </span>
           <span v-if="isHome || !diner.restaurantId" class="block text-xs text-on-surface-variant">Pide desde tu mesa</span>

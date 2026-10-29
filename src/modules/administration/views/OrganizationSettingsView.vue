@@ -106,7 +106,7 @@ onMounted(() => {
 
       <button
         type="submit"
-        class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-60"
+        class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container disabled:opacity-60"
         :disabled="isSaving"
       >
         {{ isSaving ? 'Guardando…' : 'Guardar cambios' }}

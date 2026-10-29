@@ -98,14 +98,14 @@ function logout(): void {
   >
     <div class="grid gap-2">
       <RouterLink
-        class="font-label flex min-h-12 items-center justify-center rounded-xl bg-primary text-base font-semibold text-on-primary hover:bg-primary-container"
+        class="font-label flex min-h-12 items-center justify-center rounded-full bg-primary text-base font-semibold text-on-primary hover:bg-primary-container"
         :to="{ name: 'diner-profile' }"
       >
         Ir a mi perfil
       </RouterLink>
       <button
         type="button"
-        class="font-label flex min-h-12 items-center justify-center rounded-xl text-base font-semibold text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
+        class="font-label flex min-h-12 items-center justify-center rounded-full text-base font-semibold text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
         @click="logout"
       >
         Cerrar sesión
@@ -153,7 +153,7 @@ function logout(): void {
 
       <button
         type="submit"
-        class="font-label flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
+        class="font-label flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
         :disabled="isSubmitting"
       >
         {{ isSubmitting ? 'Un momento…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta' }}

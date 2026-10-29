@@ -93,7 +93,7 @@ async function onSubmit(): Promise<void> {
         :error="fieldErrors.password"
       />
 
-      <button type="submit" class="font-label flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60" :disabled="isSubmitting">
+      <button type="submit" class="font-label flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60" :disabled="isSubmitting">
         {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
       </button>
     </form>

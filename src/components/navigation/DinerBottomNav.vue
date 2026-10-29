@@ -100,7 +100,7 @@ function isActive(item: NavItem): boolean {
           {{ item.label }}
           <span
             v-if="item.badge"
-            class="absolute top-1.5 left-1/2 ml-2 min-w-5 rounded-full bg-error px-1.5 text-center text-xs leading-5 font-bold text-on-error"
+            class="absolute top-1.5 left-1/2 ml-2 min-w-5 rounded-full bg-primary px-1.5 text-center text-xs leading-5 font-bold text-on-primary ring-2 ring-surface"
           >
             {{ item.badge }}
           </span>

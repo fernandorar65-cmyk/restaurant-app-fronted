@@ -124,7 +124,7 @@ onMounted(() => {
 
 <template>
   <div class="mx-auto max-w-7xl space-y-6 px-6 pt-8 lg:px-8">
-    <section class="space-y-6 rounded-lg border border-outline-variant/60 bg-surface-container-lowest p-6 shadow-sm">
+    <section class="space-y-6 rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-6 shadow-sm">
       <div class="flex flex-col justify-between gap-4 border-b border-outline-variant/60 pb-5 md:flex-row md:items-center">
         <div>
           <div class="mb-1 flex items-center gap-2">
@@ -145,7 +145,7 @@ onMounted(() => {
         <button
           v-if="session.can('org.manage')"
           type="button"
-          class="font-label inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+          class="font-label inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
           @click="isCreatingSite = true"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
@@ -159,7 +159,7 @@ onMounted(() => {
         >
           <div class="flex items-center gap-3">
             <div
-              class="flex h-9 w-9 items-center justify-center rounded border border-outline-variant/60 bg-surface-container-lowest text-primary"
+              class="flex h-9 w-9 items-center justify-center rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-primary"
               aria-hidden="true"
             >
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -182,26 +182,26 @@ onMounted(() => {
       </div>
 
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-4">
+        <div class="flex flex-col justify-between rounded-2xl bg-surface-container-low p-4">
           <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Sedes</span>
           <span class="font-headline text-2xl font-bold text-on-surface">{{ restaurants.length }}</span>
           <span class="mt-1 text-xs text-on-surface-variant">Locales en el directorio</span>
         </div>
-        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-4">
+        <div class="flex flex-col justify-between rounded-2xl bg-surface-container-low p-4">
           <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Alta cocina</span>
           <span class="font-headline text-2xl font-bold text-on-surface">
             {{ restaurants.filter((site) => site.category === 'fine-dining').length }}
           </span>
           <span class="mt-1 text-xs text-on-surface-variant">Sedes de esta categoría</span>
         </div>
-        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-4">
+        <div class="flex flex-col justify-between rounded-2xl bg-surface-container-low p-4">
           <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Cava y bistró</span>
           <span class="font-headline text-2xl font-bold text-on-surface">
             {{ restaurants.filter((site) => site.category === 'bistro').length }}
           </span>
           <span class="mt-1 text-xs text-on-surface-variant">Sedes de esta categoría</span>
         </div>
-        <div class="flex flex-col justify-between rounded border border-outline-variant/60 bg-surface-container-low p-4">
+        <div class="flex flex-col justify-between rounded-2xl bg-surface-container-low p-4">
           <span class="font-label text-xs font-semibold tracking-wider text-on-surface-variant uppercase">Laboratorio</span>
           <span class="font-headline text-2xl font-bold text-on-surface">
             {{ restaurants.filter((site) => site.category === 'lab').length }}
@@ -212,14 +212,14 @@ onMounted(() => {
     </section>
 
     <div
-      class="flex flex-col items-stretch justify-between gap-3 rounded-lg border border-outline-variant/60 bg-surface-container-lowest p-3 shadow-sm md:flex-row md:items-center"
+      class="flex flex-col items-stretch justify-between gap-3 rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-3 shadow-sm md:flex-row md:items-center"
     >
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" role="tablist" aria-label="Filtrar sedes">
         <button
           v-for="filter in categoryFilters"
           :key="filter.id"
           type="button"
-          class="font-label rounded px-3.5 py-1.5 text-xs whitespace-nowrap transition-colors"
+          class="font-label min-h-9 rounded-full px-4 py-1.5 text-xs whitespace-nowrap transition-colors"
           :class="
             activeCategory === filter.id
               ? 'bg-primary font-semibold text-on-primary shadow-sm'
@@ -248,7 +248,7 @@ onMounted(() => {
         </svg>
         <input
           v-model="searchQuery"
-          class="w-full rounded border border-outline-variant/60 bg-surface-container-low py-1.5 pr-3 pl-8 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+          class="w-full min-h-9 rounded-full border border-outline-variant/60 bg-surface-container-low py-1.5 pr-3 pl-8 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
           placeholder="Filtrar por nombre, ciudad o código..."
           type="search"
         />
@@ -256,7 +256,7 @@ onMounted(() => {
     </div>
 
     <p v-if="isLoading" class="text-sm text-on-surface-variant">Cargando sedes…</p>
-    <p v-else-if="loadError" class="rounded-lg border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
+    <p v-else-if="loadError" class="rounded-2xl border border-error-container bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
       {{ loadError }}
     </p>
     <p v-else-if="filteredRestaurants.length === 0" class="text-sm text-on-surface-variant">

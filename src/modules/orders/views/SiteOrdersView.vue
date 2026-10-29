@@ -297,7 +297,7 @@ watch(
           </div>
           <button
             type="button"
-            class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+            class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
             @click="openStaffOrder(null)"
           >
             + Pedido manual
@@ -416,7 +416,7 @@ watch(
                   </button>
                   <button
                     type="button"
-                    class="font-label min-h-11 rounded-xl bg-surface-container px-4 text-sm font-semibold text-on-surface hover:bg-surface-container-high disabled:opacity-50"
+                    class="font-label min-h-11 rounded-full bg-surface-container px-4 text-sm font-semibold text-on-surface hover:bg-surface-container-high disabled:opacity-50"
                     :disabled="busyKey === product.id"
                     @click="confirmProduct(product)"
                   >
@@ -428,7 +428,7 @@ watch(
 
             <button
               type="button"
-              class="font-label min-h-12 w-full rounded-xl bg-primary text-base font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+              class="font-label min-h-12 w-full rounded-full bg-primary text-base font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
               :disabled="busyKey === round.key"
               @click="confirmRound(round)"
             >

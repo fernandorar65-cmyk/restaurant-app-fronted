@@ -58,7 +58,7 @@ onMounted(() => {
         </button>
         <RouterLink :to="homeRoute" class="flex items-center gap-3">
           <div
-            class="flex h-9 w-9 items-center justify-center rounded bg-primary text-on-primary shadow-sm ring-1 ring-blue-700/20"
+            class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-on-primary shadow-sm"
             aria-hidden="true"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -70,7 +70,7 @@ onMounted(() => {
             </svg>
           </div>
           <span class="flex flex-col">
-            <span class="font-headline text-[17px] leading-none font-semibold tracking-tight text-on-surface">
+            <span class="font-headline text-[17px] leading-none font-extrabold tracking-tight text-heading">
               Restaurant-CMR
             </span>
             <span class="mt-0.5 hidden text-xs text-on-surface-variant sm:block">Portal del restaurante</span>
@@ -82,7 +82,7 @@ onMounted(() => {
           <component
             :is="canSwitchSite ? RouterLink : 'span'"
             :to="canSwitchSite ? { name: 'dashboard' } : undefined"
-            class="hidden min-h-10 items-center gap-2 rounded-xl bg-surface-container-low px-3 md:flex"
+            class="hidden min-h-10 items-center gap-2 rounded-full bg-surface-container-low px-4 md:flex"
             :class="canSwitchSite ? 'transition-colors hover:bg-surface-container' : ''"
           >
             <span class="h-2 w-2 rounded-full bg-success" aria-hidden="true" />

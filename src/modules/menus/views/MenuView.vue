@@ -12,11 +12,12 @@ import MenuProductDetailDialog from '@/modules/menus/components/MenuProductDetai
 import MenuSearch from '@/modules/menus/components/MenuSearch.vue'
 import type { MenuCategory, MenuProduct } from '@/modules/menus/types'
 import { fetchRestaurantBySlug, isRestaurantOpen } from '@/modules/restaurants/api'
+import SiteServiceInfo from '@/modules/restaurants/components/SiteServiceInfo.vue'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useCartStore } from '@/stores/cart'
 import { useDinerStore } from '@/stores/diner'
 import { formatMoney } from '@/utils/money'
-import { normalizeSearch } from '@/utils/string'
+import { getInitials, normalizeSearch } from '@/utils/string'
 
 usePageTitle('Menú')
 
@@ -200,7 +201,7 @@ onMounted(() => {
     <DinerNotice v-else-if="notice" :kind="notice" @retry="loadMenu">
       <RouterLink
         v-if="notice !== 'connection'"
-        class="font-label rounded-xl bg-surface-container px-5 py-2.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+        class="font-label rounded-full bg-surface-container px-5 py-2.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
         :to="{ name: 'home' }"
       >
         Ver otras sedes
@@ -208,16 +209,34 @@ onMounted(() => {
     </DinerNotice>
 
     <template v-else>
-      <header v-if="site" class="space-y-1 pt-1">
-        <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">{{ site.cuisine }}</p>
-        <h1 class="font-headline text-3xl font-semibold tracking-tight text-on-surface">La carta</h1>
-        <p class="flex items-center gap-1.5 text-sm text-on-surface-variant">
-          <svg class="h-4 w-4 shrink-0 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-          </svg>
-          <span class="truncate">{{ site.address }}</span>
-        </p>
+      <!-- Cabecera de la sede al estilo de las apps de delivery: portada, ficha flotante y datos de servicio. -->
+      <header v-if="site" class="-mx-4 -mt-5 sm:mx-0 sm:mt-0">
+        <div class="relative h-36 overflow-hidden bg-surface-container sm:h-48 sm:rounded-3xl">
+          <img v-if="site.imageUrl" :src="site.imageUrl" alt="" class="h-full w-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" aria-hidden="true" />
+        </div>
+        <div class="relative mx-4 -mt-12 space-y-3 rounded-3xl bg-surface-container-lowest p-4 shadow-md ring-1 ring-outline-variant/30 sm:mx-6">
+          <div class="flex items-center gap-3">
+            <span
+              class="font-label flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-on-primary shadow-sm"
+              aria-hidden="true"
+            >
+              {{ getInitials(site.name) }}
+            </span>
+            <div class="min-w-0">
+              <h1 class="font-headline truncate text-2xl leading-tight font-semibold text-on-surface">{{ site.name }}</h1>
+              <p class="truncate text-sm text-on-surface-variant">{{ site.cuisine }}</p>
+            </div>
+          </div>
+          <SiteServiceInfo :site="site" />
+          <p class="flex items-center gap-1.5 border-t border-outline-variant/40 pt-3 text-xs text-on-surface-variant">
+            <svg class="h-4 w-4 shrink-0 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <span class="truncate">{{ site.address }}</span>
+          </p>
+        </div>
       </header>
 
       <div
@@ -253,7 +272,7 @@ onMounted(() => {
 
       <div
         ref="tabsEl"
-        class="sticky top-14 z-20 -mx-4 flex gap-2 overflow-x-auto bg-background/95 px-4 py-2 backdrop-blur-sm [scrollbar-width:none]"
+        class="sticky top-14 z-20 -mx-4 flex gap-2 overflow-x-auto bg-background/95 px-4 py-2.5 backdrop-blur-sm [scrollbar-width:none]"
         role="tablist"
         aria-label="Categorías de la carta"
       >
@@ -267,8 +286,8 @@ onMounted(() => {
           class="font-label min-h-10 shrink-0 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors"
           :class="
             activeCategoryId === category.id
-              ? 'bg-on-surface text-surface'
-              : 'bg-surface-container-lowest text-on-surface-variant ring-1 ring-outline-variant/60 hover:bg-surface-container-low'
+              ? 'bg-deep text-on-deep shadow-sm'
+              : 'bg-surface-container-lowest text-on-surface-variant ring-1 ring-outline-variant/60 hover:text-on-surface'
           "
           @click="scrollToCategory(category.id)"
         >
@@ -282,9 +301,9 @@ onMounted(() => {
         :key="group.category.id"
         class="scroll-mt-32 space-y-3"
       >
-        <div class="border-b border-outline-variant/50 pb-2">
+        <div>
           <div class="flex items-baseline justify-between gap-3">
-            <h2 class="font-headline text-xl font-semibold text-on-surface">{{ group.category.name }}</h2>
+            <h2 class="font-headline text-xl text-on-surface">{{ group.category.name }}</h2>
             <span class="font-label shrink-0 text-xs text-outline">
               {{ group.items.length }} {{ group.items.length === 1 ? 'opción' : 'opciones' }}
             </span>
@@ -293,7 +312,7 @@ onMounted(() => {
             {{ group.category.description }}
           </p>
         </div>
-        <div class="space-y-3">
+        <div class="divide-y divide-outline-variant/40 rounded-3xl bg-surface-container-lowest px-4 shadow-sm ring-1 ring-outline-variant/30">
           <MenuProductCard
             v-for="product in group.items"
             :key="product.id"
@@ -325,14 +344,12 @@ onMounted(() => {
 
       <RouterLink
         v-if="canOrder && cart.itemCount > 0"
-        class="font-label fixed inset-x-4 bottom-20 z-20 mx-auto flex min-h-14 max-w-md items-center justify-between rounded-2xl bg-primary px-5 text-base font-semibold text-on-primary shadow-lg transition-colors hover:bg-primary-container"
+        class="font-label fixed inset-x-4 bottom-20 z-20 mx-auto grid min-h-14 max-w-md grid-cols-[auto_1fr_auto] items-center gap-3 rounded-full bg-primary px-4 text-base font-semibold text-on-primary shadow-xl transition-colors hover:bg-primary-container"
         :to="{ name: 'cart' }"
       >
-        <span class="flex items-center gap-2">
-          <span class="flex h-7 min-w-7 items-center justify-center rounded-full bg-on-primary/20 px-2 text-sm">{{ cart.itemCount }}</span>
-          Ver carrito
-        </span>
-        <span>{{ formatMoney(cart.subtotal, currency) }}</span>
+        <span class="flex h-8 min-w-8 items-center justify-center rounded-full bg-deep px-2 text-sm font-bold text-on-deep tabular-nums">{{ cart.itemCount }}</span>
+        <span class="text-center">Ver carrito</span>
+        <span class="tabular-nums">{{ formatMoney(cart.subtotal, currency) }}</span>
       </RouterLink>
     </template>
   </div>

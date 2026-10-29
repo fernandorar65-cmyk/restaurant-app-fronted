@@ -59,7 +59,7 @@ async function continueWithMethod(): Promise<void> {
       <CheckoutSummary :total="total" :delivery-fee="deliveryFee">
         <RouterLink
           :to="{ name: 'checkout-fulfillment' }"
-          class="font-label min-h-10 shrink-0 rounded-lg px-3 py-2 text-sm font-semibold text-primary hover:bg-surface-container-low"
+          class="font-label min-h-10 shrink-0 rounded-full px-3 py-2 text-sm font-semibold text-primary hover:bg-surface-container-low"
         >
           Cambiar
         </RouterLink>

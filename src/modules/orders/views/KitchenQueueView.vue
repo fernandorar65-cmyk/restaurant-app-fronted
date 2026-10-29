@@ -184,7 +184,7 @@ watch(
             </span>
             <button
               type="button"
-              class="font-label inline-flex min-h-11 items-center gap-2 rounded-xl bg-surface-container-lowest px-4 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+              class="font-label inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-container-lowest px-4 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
               :aria-pressed="isDark"
               @click="toggleDark"
             >
@@ -192,7 +192,7 @@ watch(
             </button>
             <button
               type="button"
-              class="font-label inline-flex min-h-11 items-center rounded-xl bg-surface-container-lowest px-4 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+              class="font-label inline-flex min-h-11 items-center rounded-full bg-surface-container-lowest px-4 text-sm font-semibold text-on-surface shadow-sm hover:bg-surface-container"
               @click="toggleFullscreen"
             >
               {{ isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}

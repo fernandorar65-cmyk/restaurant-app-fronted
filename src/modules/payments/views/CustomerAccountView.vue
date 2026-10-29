@@ -135,7 +135,7 @@ watch(
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p class="text-sm font-medium text-on-surface-variant">Mesa {{ attention.tableNumber }}</p>
-          <h1 class="font-headline text-3xl font-semibold text-on-surface">Tu cuenta</h1>
+          <h1 class="font-headline text-4xl font-semibold text-on-surface">Tu <span class="text-heading-accent">cuenta</span></h1>
         </div>
         <StatusBadge size="md" :tone="attentionStatusTone[attention.status]" :label="attentionStatusLabel[attention.status]" />
       </div>

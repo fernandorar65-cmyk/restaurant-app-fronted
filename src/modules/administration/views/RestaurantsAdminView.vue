@@ -89,7 +89,7 @@ onMounted(() => {
       <template #actions>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+          class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
           @click="editingRestaurant = null"
         >
           + Sede
@@ -120,7 +120,7 @@ onMounted(() => {
           </div>
           <button
             type="button"
-            class="font-label shrink-0 rounded-lg bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+            class="font-label shrink-0 rounded-full bg-surface-container min-h-9 px-3 py-1.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
             @click="editingRestaurant = restaurant"
           >
             Editar

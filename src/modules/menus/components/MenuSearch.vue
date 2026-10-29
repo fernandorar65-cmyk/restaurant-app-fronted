@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
 <template>
   <div ref="root" class="relative z-30">
     <label
-      class="flex min-h-12 items-center gap-2.5 rounded-full bg-surface-container-lowest px-4 ring-1 ring-outline-variant/50 focus-within:ring-2 focus-within:ring-primary"
+      class="flex min-h-12 items-center gap-2.5 rounded-full bg-surface-container px-4 focus-within:ring-2 focus-within:ring-primary"
     >
       <svg class="h-5 w-5 shrink-0 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />

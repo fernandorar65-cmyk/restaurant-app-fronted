@@ -70,7 +70,7 @@ onMounted(() => {
     <div v-if="!diner.customer" class="space-y-3 rounded-2xl bg-surface-container-lowest p-6 text-center shadow-sm">
       <p class="text-sm text-on-surface-variant">Ingresa con tu cuenta para ver el historial de tus visitas.</p>
       <RouterLink
-        class="font-label inline-flex rounded-xl bg-primary min-h-11 px-4 text-sm inline-flex items-center justify-center font-semibold text-on-primary"
+        class="font-label inline-flex rounded-full bg-primary min-h-11 px-4 text-sm inline-flex items-center justify-center font-semibold text-on-primary"
         :to="{ name: 'diner-auth', query: { redirect: '/mis-visitas' } }"
       >
         Ingresar

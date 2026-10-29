@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
           <button
             v-if="item.label !== 'Banco'"
             type="button"
-            class="font-label min-h-9 shrink-0 rounded-lg px-3 text-xs font-semibold text-primary hover:bg-surface-container"
+            class="font-label min-h-9 shrink-0 rounded-full px-3 text-xs font-semibold text-primary hover:bg-surface-container"
             @click="copy(item.label, item.value)"
           >
             {{ copiedLabel === item.label ? 'Copiado' : 'Copiar' }}

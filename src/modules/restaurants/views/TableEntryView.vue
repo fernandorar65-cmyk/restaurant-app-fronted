@@ -11,6 +11,7 @@ import type { Attention } from '@/modules/orders/types'
 import { fetchRestaurantById, fetchSiteOperation, isRestaurantOpen } from '@/modules/restaurants/api'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useDinerStore } from '@/stores/diner'
+import { getInitials } from '@/utils/string'
 
 usePageTitle('Mesa')
 
@@ -121,9 +122,17 @@ watch([tableNumber, queryRestaurantId, queryToken], () => void validate(), { imm
 
 <template>
   <div>
-    <div v-if="step === 'checking'" class="flex min-h-[50vh] flex-col items-center justify-center gap-3" role="status">
-      <span class="h-10 w-10 animate-spin rounded-full border-4 border-primary-fixed border-t-primary" aria-hidden="true" />
-      <p class="text-base text-on-surface-variant">Buscando tu mesa…</p>
+    <!-- Esqueleto con la misma forma que la confirmación: evita saltos al cargar. -->
+    <div v-if="step === 'checking'" class="mx-auto flex min-h-[65vh] max-w-md flex-col justify-center gap-6" role="status">
+      <div class="overflow-hidden rounded-3xl bg-surface-container-lowest ring-1 ring-outline-variant/30">
+        <div class="skeleton h-36 rounded-none" />
+        <div class="flex flex-col items-center gap-3 p-5">
+          <div class="skeleton h-4 w-40" />
+          <div class="skeleton h-12 w-48" />
+          <div class="skeleton h-4 w-56" />
+        </div>
+      </div>
+      <p class="text-center text-base text-on-surface-variant">Buscando tu mesa…</p>
     </div>
 
     <DinerNotice v-else-if="step === 'error'" :kind="errorKind" @retry="validate" />
@@ -136,12 +145,28 @@ watch([tableNumber, queryRestaurantId, queryToken], () => void validate(), { imm
     />
 
     <div v-else-if="restaurant" class="mx-auto flex min-h-[65vh] max-w-md flex-col justify-center gap-6">
+      <h1 class="font-headline text-center text-3xl text-on-surface">¿Estás en esta <span class="text-heading-accent">mesa?</span></h1>
+
       <div class="overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/30">
-        <img :src="restaurant.imageUrl" :alt="restaurant.name" class="h-36 w-full object-cover" />
-        <div class="space-y-1 p-5 text-center">
-          <p class="text-sm font-medium text-on-surface-variant">{{ restaurant.name }}</p>
-          <p class="font-headline text-5xl font-semibold text-on-surface">Mesa {{ tableNumber }}</p>
-          <p class="text-sm text-on-surface-variant">{{ restaurant.address }}</p>
+        <img :src="restaurant.imageUrl" alt="" class="h-36 w-full object-cover" />
+        <div class="relative flex flex-col items-center gap-1 px-5 pt-10 pb-6 text-center">
+          <span
+            class="font-label absolute -top-8 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-on-primary shadow-md ring-4 ring-surface-container-lowest"
+            aria-hidden="true"
+          >
+            {{ getInitials(restaurant.name) }}
+          </span>
+          <p class="text-base font-semibold text-on-surface">{{ restaurant.name }}</p>
+          <p class="font-label mt-2 rounded-2xl bg-primary-fixed px-6 py-2 text-4xl font-bold text-on-primary-fixed tabular-nums">
+            Mesa {{ tableNumber }}
+          </p>
+          <p class="mt-2 flex items-center gap-1.5 text-sm text-on-surface-variant">
+            <svg class="h-4 w-4 shrink-0 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            {{ restaurant.address }}
+          </p>
         </div>
       </div>
 

@@ -112,7 +112,7 @@ const emit = defineEmits<{
       <button
         v-else-if="orderable && quantity === 0"
         type="button"
-        class="font-label flex min-h-12 w-full items-center justify-between gap-3 rounded-xl bg-primary px-5 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
+        class="font-label flex min-h-12 w-full items-center justify-between gap-3 rounded-full bg-primary px-5 text-base font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
         @click="emit('increase')"
       >
         <span class="flex items-center gap-2">

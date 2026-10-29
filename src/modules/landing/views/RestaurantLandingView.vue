@@ -206,13 +206,13 @@ onBeforeUnmount(() => {
           <ThemeMenu />
           <RouterLink
             :to="{ name: 'login' }"
-            class="font-label hidden min-h-10 items-center rounded-xl px-3 text-sm font-semibold text-on-surface hover:bg-surface-container sm:flex"
+            class="font-label hidden min-h-10 items-center rounded-full px-3 text-sm font-semibold text-on-surface hover:bg-surface-container sm:flex"
           >
             Iniciar sesión
           </RouterLink>
           <RouterLink
             :to="{ name: 'register' }"
-            class="font-label flex min-h-10 items-center rounded-xl bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm hover:bg-primary-container"
+            class="font-label flex min-h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold whitespace-nowrap text-on-primary shadow-sm hover:bg-primary-container"
           >
             <span class="sm:hidden">Registrarme</span>
             <span class="hidden sm:inline">Registrar mi restaurante</span>
@@ -232,8 +232,8 @@ onBeforeUnmount(() => {
               <span class="h-1.5 w-1.5 rounded-full bg-tertiary" aria-hidden="true" />
               Para restaurantes
             </p>
-            <h1 style="--d: 90ms" class="hero-in font-headline text-4xl leading-[1.1] font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-              Tu restaurante conectado, <em class="text-primary italic">de la mesa a la cocina</em>.
+            <h1 style="--d: 90ms" class="hero-in font-headline text-4xl leading-[1.05] font-semibold tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
+              Tu restaurante conectado, <span class="text-heading-accent">de la mesa a la cocina</span>.
             </h1>
             <p style="--d: 180ms" class="hero-in max-w-xl text-lg leading-relaxed text-on-surface-variant">
               RentaSol reúne tu carta digital, los pedidos por QR, la cocina, los cobros, el delivery y las métricas de todas tus
@@ -242,14 +242,14 @@ onBeforeUnmount(() => {
             <div style="--d: 270ms" class="hero-in flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <RouterLink
                 :to="{ name: 'register' }"
-                class="font-label group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold whitespace-nowrap text-on-primary shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-container hover:shadow-lg"
+                class="font-label group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-semibold whitespace-nowrap text-on-primary shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-container hover:shadow-lg"
               >
                 Registrar mi restaurante
                 <span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </RouterLink>
               <RouterLink
                 :to="{ name: 'home' }"
-                class="font-label inline-flex min-h-12 items-center justify-center rounded-xl px-6 text-base font-semibold whitespace-nowrap text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
+                class="font-label inline-flex min-h-12 items-center justify-center rounded-full px-6 text-base font-semibold whitespace-nowrap text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
               >
                 Ver cómo lo usan los clientes
               </RouterLink>
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
         <div class="mx-auto max-w-6xl space-y-10 px-4 py-16 sm:px-6 lg:py-20">
           <div v-reveal class="max-w-2xl space-y-3">
             <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Qué incluye</p>
-            <h2 class="font-headline text-3xl font-semibold tracking-tight sm:text-4xl">Todo lo que necesita tu servicio</h2>
+            <h2 class="font-headline text-3xl font-semibold tracking-tight text-on-surface sm:text-4xl">Todo lo que necesita tu servicio</h2>
             <p class="text-on-surface-variant">Desde que el cliente abre la carta hasta que cierras la caja del día.</p>
           </div>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -354,7 +354,7 @@ onBeforeUnmount(() => {
         <div class="mx-auto max-w-6xl space-y-10 px-4 py-16 sm:px-6 lg:py-20">
           <div v-reveal class="max-w-2xl space-y-3">
             <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Cómo funciona</p>
-            <h2 class="font-headline text-3xl font-semibold tracking-tight sm:text-4xl">Empieza en tres pasos</h2>
+            <h2 class="font-headline text-3xl font-semibold tracking-tight text-on-surface sm:text-4xl">Empieza en tres pasos</h2>
           </div>
           <ol class="relative grid gap-4 md:grid-cols-3">
             <!-- Línea que une los pasos (escritorio) -->
@@ -380,7 +380,7 @@ onBeforeUnmount(() => {
         <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
           <div v-reveal class="space-y-5">
             <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Para tus clientes</p>
-            <h2 class="font-headline text-3xl font-semibold tracking-tight sm:text-4xl">Una experiencia que dan ganas de repetir</h2>
+            <h2 class="font-headline text-3xl font-semibold tracking-tight text-on-surface sm:text-4xl">Una experiencia que dan ganas de repetir</h2>
             <ul class="space-y-3">
               <li v-for="(point, index) in DINER_POINTS" :key="point" v-reveal="150 + index * 70" class="flex gap-3 text-on-surface-variant">
                 <svg class="mt-0.5 h-5 w-5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -432,7 +432,7 @@ onBeforeUnmount(() => {
         <div class="mx-auto max-w-3xl space-y-8 px-4 py-16 sm:px-6 lg:py-20">
           <div v-reveal class="space-y-3 text-center">
             <p class="font-label text-xs font-semibold tracking-widest text-tertiary uppercase">Preguntas frecuentes</p>
-            <h2 class="font-headline text-3xl font-semibold tracking-tight sm:text-4xl">Lo que suelen preguntarnos</h2>
+            <h2 class="font-headline text-3xl font-semibold tracking-tight text-on-surface sm:text-4xl">Lo que suelen preguntarnos</h2>
           </div>
           <div v-reveal="100" class="divide-y divide-outline-variant/50 rounded-2xl bg-surface-container-lowest ring-1 ring-outline-variant/40">
             <div v-for="(faq, index) in FAQS" :key="faq.question">
@@ -471,7 +471,7 @@ onBeforeUnmount(() => {
 
       <!-- Llamado final -->
       <section class="px-4 pb-16 sm:px-6">
-        <div v-reveal class="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-[#0F172A] px-6 py-14 text-center text-white sm:px-12">
+        <div v-reveal class="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-deep px-6 py-14 text-center text-on-deep sm:px-12">
           <img :src="AUTH_SHOWCASE_IMAGE_URL" alt="" class="ken-burns absolute inset-0 h-full w-full object-cover opacity-25" aria-hidden="true" />
           <div class="relative mx-auto max-w-2xl space-y-5">
             <h2 class="font-headline text-3xl font-semibold tracking-tight sm:text-4xl">Lleva tu restaurante a RentaSol</h2>
@@ -479,13 +479,13 @@ onBeforeUnmount(() => {
             <div class="flex flex-col justify-center gap-3 sm:flex-row">
               <RouterLink
                 :to="{ name: 'register' }"
-                class="font-label inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-base font-semibold text-[#0F172A] hover:bg-white/90"
+                class="font-label inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-base font-semibold text-deep hover:bg-white/90"
               >
                 Registrar mi restaurante
               </RouterLink>
               <RouterLink
                 :to="{ name: 'login' }"
-                class="font-label inline-flex min-h-12 items-center justify-center rounded-xl px-6 text-base font-semibold text-white ring-1 ring-white/40 hover:bg-white/10"
+                class="font-label inline-flex min-h-12 items-center justify-center rounded-full px-6 text-base font-semibold text-white ring-1 ring-white/40 hover:bg-white/10"
               >
                 Ya tengo cuenta
               </RouterLink>

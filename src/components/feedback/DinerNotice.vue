@@ -110,7 +110,7 @@ const iconClass = computed(() => {
       <button
         v-if="kind === 'connection'"
         type="button"
-        class="font-label rounded-xl bg-primary min-h-12 px-5 text-base inline-flex items-center justify-center font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+        class="font-label rounded-full bg-primary min-h-12 px-5 text-base inline-flex items-center justify-center font-semibold text-on-primary shadow-sm hover:bg-primary-container"
         @click="emit('retry')"
       >
         Reintentar

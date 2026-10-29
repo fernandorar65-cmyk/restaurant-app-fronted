@@ -8,13 +8,18 @@ import { usePageTitle } from '@/composables/usePageTitle'
 import { fetchRestaurants, isRestaurantOpen } from '@/modules/restaurants/api'
 import RestaurantMap from '@/modules/restaurants/components/RestaurantMap.vue'
 import type { MapPoint } from '@/modules/restaurants/components/RestaurantMap.vue'
+import SiteServiceInfo from '@/modules/restaurants/components/SiteServiceInfo.vue'
 import type { RestaurantSite } from '@/modules/restaurants/types'
 import { useDinerStore } from '@/stores/diner'
+import { getInitials } from '@/utils/string'
 
 usePageTitle('Restaurantes')
 
 const diner = useDinerStore()
 const router = useRouter()
+
+/** Saludo cercano cuando el comensal inició sesión. */
+const firstName = computed(() => diner.customer?.name.trim().split(/\s+/)[0] ?? null)
 
 const restaurants = ref<RestaurantSite[]>([])
 const hasLoadError = ref(false)
@@ -202,22 +207,32 @@ onMounted(async () => {
 <template>
   <div class="mx-auto w-full space-y-6 py-1">
     <header class="space-y-1">
-      <h1 class="font-headline text-3xl font-semibold tracking-tight text-on-surface">¿Dónde comemos hoy?</h1>
-      <p class="text-sm text-on-surface-variant">
+      <p v-if="firstName" class="text-base font-medium text-on-surface-variant">Hola, {{ firstName }} 👋</p>
+      <h1 class="font-headline text-4xl leading-[1.05] font-semibold tracking-tight text-on-surface">
+        ¿Dónde comemos <span class="text-heading-accent">hoy?</span>
+      </h1>
+      <p class="pt-1 text-sm text-on-surface-variant">
         Encuentra una sede cerca y mira su carta.
       </p>
     </header>
 
     <RouterLink
       v-if="diner.isReadyToOrder"
-      class="flex min-h-20 items-center justify-between gap-3 rounded-3xl bg-primary px-5 py-4 text-on-primary shadow-md hover:bg-primary-container"
+      class="group flex min-h-20 items-center justify-between gap-3 rounded-3xl bg-deep px-5 py-4 text-on-deep shadow-md"
       :to="diner.attentionId ? { name: 'order-status', params: { attentionId: diner.attentionId } } : diner.menuRoute"
     >
       <span>
-        <span class="font-label block text-xs font-bold tracking-widest uppercase opacity-80">Continuar en tu mesa</span>
-        <span class="font-headline text-lg font-semibold">{{ diner.restaurantName }} · Mesa {{ diner.tableNumber }}</span>
+        <span class="font-label block text-xs font-bold tracking-widest text-deep-accent uppercase">Continuar en tu mesa</span>
+        <span class="font-headline text-lg font-bold">{{ diner.restaurantName }} · Mesa {{ diner.tableNumber }}</span>
       </span>
-      <span aria-hidden="true">→</span>
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary transition-transform group-hover:translate-x-0.5"
+        aria-hidden="true"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </svg>
+      </span>
     </RouterLink>
 
     <!-- Mapa con buscador flotante -->
@@ -280,7 +295,7 @@ onMounted(async () => {
         class="font-label min-h-10 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors"
         :class="
           category === option
-            ? 'bg-on-surface text-surface'
+            ? 'bg-primary text-on-primary shadow-sm'
             : 'bg-surface-container-lowest text-on-surface-variant ring-1 ring-outline-variant/60 hover:bg-surface-container-low'
         "
         :aria-pressed="category === option"
@@ -293,7 +308,7 @@ onMounted(async () => {
     <!-- Resultados -->
     <section aria-labelledby="results-title" class="space-y-3">
       <div class="flex items-baseline justify-between">
-        <h2 id="results-title" class="font-headline text-xl font-semibold text-on-surface">
+        <h2 id="results-title" class="font-headline text-xl text-on-surface">
           {{ userLocation ? 'Cerca de ti' : 'Restaurantes' }}
         </h2>
         <span v-if="!isLoading && !hasLoadError" class="font-label text-xs text-on-surface-variant">
@@ -306,33 +321,49 @@ onMounted(async () => {
       <p v-else-if="results.length === 0" class="rounded-2xl bg-surface-container-low px-4 py-6 text-center text-sm text-on-surface-variant">
         {{ openRestaurants.length === 0 ? 'No hay sedes disponibles en este momento.' : 'No encontramos sedes con esa búsqueda.' }}
       </p>
-      <ul v-else class="space-y-3">
+      <ul v-else class="grid gap-4 sm:grid-cols-2">
         <li v-for="{ site, distance } in results" :id="`restaurant-${site.id}`" :key="site.id">
+          <!-- Ficha al estilo de las apps de delivery: portada, insignia superpuesta y datos de servicio. -->
           <article
-            class="flex cursor-pointer gap-4 rounded-2xl bg-surface-container-lowest p-3 shadow-sm ring-1 transition"
+            class="group h-full cursor-pointer overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm ring-1 transition"
             :class="selectedId === site.id ? 'ring-2 ring-primary' : 'ring-outline-variant/40 hover:shadow-md'"
             @click="selectedId = site.id"
           >
-            <img :src="site.imageUrl" :alt="site.name" class="h-24 w-24 shrink-0 rounded-xl object-cover sm:h-28 sm:w-32" loading="lazy" />
-            <div class="flex min-w-0 flex-1 flex-col justify-between gap-2">
+            <div class="relative h-36 overflow-hidden bg-surface-container">
+              <img
+                :src="site.imageUrl"
+                :alt="site.name"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <span
+                v-if="distance !== null"
+                class="font-label absolute top-3 left-3 rounded-full bg-surface-container-lowest/95 px-2.5 py-1 text-xs font-bold text-on-surface shadow-sm backdrop-blur"
+              >
+                {{ formatDistance(distance) }}
+              </span>
+              <span
+                class="font-label absolute top-3 right-3 rounded-full bg-surface-container-lowest/95 px-2.5 py-1 text-xs font-semibold text-on-surface-variant shadow-sm backdrop-blur"
+              >
+                {{ site.categoryLabel }}
+              </span>
+            </div>
+            <div class="relative space-y-2.5 px-4 pt-8 pb-4">
+              <span
+                class="font-label absolute -top-7 left-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-on-primary shadow-md ring-4 ring-surface-container-lowest"
+                aria-hidden="true"
+              >
+                {{ getInitials(site.name) }}
+              </span>
               <div class="min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <h3 class="font-headline truncate text-base font-semibold text-on-surface">{{ site.name }}</h3>
-                  <span
-                    v-if="distance !== null"
-                    class="font-label shrink-0 rounded-full bg-primary-fixed px-2 py-0.5 text-xs font-semibold text-on-primary-fixed"
-                  >
-                    {{ formatDistance(distance) }}
-                  </span>
-                </div>
-                <p class="font-label truncate text-xs font-semibold tracking-wide text-tertiary uppercase">{{ site.cuisine }}</p>
-                <p class="mt-1 line-clamp-1 text-xs text-on-surface-variant">{{ site.address }}</p>
+                <h3 class="truncate text-base font-bold text-on-surface">{{ site.name }}</h3>
+                <p class="truncate text-sm text-on-surface-variant">{{ site.cuisine }} · {{ site.city }}</p>
               </div>
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs text-on-surface-variant">{{ site.categoryLabel }}</span>
+              <div class="flex items-end justify-between gap-3">
+                <SiteServiceInfo :site="site" />
                 <button
                   type="button"
-                  class="font-label min-h-10 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
+                  class="font-label min-h-10 shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary shadow-sm hover:bg-primary-container"
                   @click.stop="browseMenu(site)"
                 >
                   Ver carta
@@ -346,11 +377,11 @@ onMounted(async () => {
 
     <!-- Recientes -->
     <section aria-labelledby="recent-title" class="space-y-3">
-      <h2 id="recent-title" class="font-headline text-xl font-semibold text-on-surface">Recientes</h2>
+      <h2 id="recent-title" class="font-headline text-xl text-on-surface">Recientes</h2>
       <p v-if="recents.length === 0" class="rounded-2xl border border-dashed border-outline-variant px-4 py-6 text-center text-sm text-on-surface-variant">
         Aquí verás las sedes que visites o cuya carta consultes.
       </p>
-      <ul v-else class="divide-y divide-outline-variant/50 overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/40">
+      <ul v-else class="divide-y divide-outline-variant/50 overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/40">
         <li v-for="{ site, visitedAt } in recents" :key="site.id">
           <button
             type="button"

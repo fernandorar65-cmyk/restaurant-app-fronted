@@ -319,14 +319,14 @@ onMounted(async () => {
         <span class="font-headline text-lg font-semibold">{{ formatMoney(total, restaurant.currency) }}</span>
         <button
           type="button"
-          class="font-label ml-auto rounded-xl bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
+          class="font-label ml-auto rounded-full bg-surface-container min-h-11 px-4 py-2.5 text-sm font-semibold text-on-surface hover:bg-surface-container-high"
           @click="closeDialog"
         >
           Cancelar
         </button>
         <button
           type="button"
-          class="font-label rounded-xl bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
+          class="font-label rounded-full bg-primary min-h-11 px-4 py-2.5 text-sm font-semibold text-on-primary hover:bg-primary-container disabled:opacity-50"
           :disabled="isSubmitting || !tableNumber || lines.length === 0"
           @click="submit"
         >

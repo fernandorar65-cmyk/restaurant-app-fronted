@@ -110,9 +110,9 @@ const isFinance = computed(() => typeof route.name === 'string' && route.name.st
 const showFinance = computed(() => session.can('reports.view'))
 
 const itemClass =
-  'font-label flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-colors'
+  'font-label flex min-h-11 items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold transition-colors'
 const idleClass = 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-const activeClass = 'bg-primary-container text-on-primary-container'
+const activeClass = 'bg-deep text-on-deep shadow-sm'
 
 function isActive(item: NavItem): boolean {
   return typeof route.name === 'string' && item.activeNames.includes(route.name)

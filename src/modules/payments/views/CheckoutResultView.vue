@@ -44,7 +44,7 @@ onMounted(() => {
           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
         </svg>
       </span>
-      <h1 class="font-headline text-3xl font-semibold text-on-surface">¡Pedido confirmado!</h1>
+      <h1 class="font-headline text-4xl font-semibold text-on-surface">¡Pedido <span class="text-heading-accent">confirmado!</span></h1>
       <p class="text-base text-on-surface-variant">{{ headline }}</p>
       <p class="font-label rounded-full bg-surface-container px-4 py-1.5 text-sm font-bold tracking-widest text-on-surface">
         Pedido {{ receipt.code }}

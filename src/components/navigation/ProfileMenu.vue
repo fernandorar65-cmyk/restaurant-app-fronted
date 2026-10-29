@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
           <RouterLink
             :to="{ name: 'access' }"
             role="menuitem"
-            class="font-label flex min-h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-on-primary hover:bg-primary-container"
+            class="font-label flex min-h-11 items-center justify-center rounded-full bg-primary text-sm font-semibold text-on-primary hover:bg-primary-container"
             @click="close"
           >
             Iniciar sesión
@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
           <RouterLink
             :to="{ name: 'access', query: { modo: 'registro' } }"
             role="menuitem"
-            class="font-label flex min-h-11 items-center justify-center rounded-xl text-sm font-semibold text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
+            class="font-label flex min-h-11 items-center justify-center rounded-full text-sm font-semibold text-on-surface ring-1 ring-outline-variant hover:bg-surface-container-low"
             @click="close"
           >
             Crear cuenta

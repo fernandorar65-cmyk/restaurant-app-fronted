@@ -38,7 +38,7 @@ const SIZE: Record<ButtonSize, string> = {
 }
 
 const classes = computed(() => [
-  'font-label inline-flex items-center justify-center font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50',
+  'base-button font-label inline-flex items-center justify-center font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50',
   VARIANT[props.variant],
   SIZE[props.size],
   props.block ? 'w-full' : '',
