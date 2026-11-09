@@ -40,6 +40,35 @@ export function isPermission(value: unknown): value is Permission {
   return typeof value === 'string' && (PERMISSIONS as readonly string[]).includes(value)
 }
 
+/**
+ * Permisos del API → permisos del front. El front conserva sus permisos por pantalla
+ * y los deriva de los del rol en el API.
+ */
+const API_PERMISSION_MAP: Record<string, readonly Permission[]> = {
+  'organizations.manage': ['org.manage'],
+  'restaurants.manage': ['sites.manage'],
+  'staff.manage': ['staff.manage', 'users.manage'],
+  'attentions.manage': ['orders.manage'],
+  'kitchen.manage': ['kitchen.manage'],
+  'catalog.manage': ['menu.manage'],
+  'payments.manage': ['payments.manage'],
+  'inventory.manage': ['inventory.manage'],
+  'finance.read': ['reports.view'],
+  'finance.manage': ['reports.view'],
+}
+
+export function fromApiPermissions(codes: readonly string[]): Permission[] {
+  const granted = new Set<Permission>()
+
+  for (const code of codes) {
+    for (const permission of API_PERMISSION_MAP[code] ?? []) {
+      granted.add(permission)
+    }
+  }
+
+  return PERMISSIONS.filter((permission) => granted.has(permission))
+}
+
 export const ADMIN_PERMISSIONS: readonly Permission[] = [
   'org.manage',
   'users.manage',

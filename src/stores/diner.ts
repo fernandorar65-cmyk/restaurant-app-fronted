@@ -2,6 +2,10 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
+import { logoutCustomer } from '@/modules/diners/api'
+import { getAccessToken, getRefreshToken } from '@/modules/auth/storage'
+import { SESSION_EXPIRED_EVENT } from '@/services/http'
+
 const DINER_KEY = 'restaurant-cmr:diner'
 const RECENT_KEY = 'restaurant-cmr:recent-restaurants'
 const RECENT_LIMIT = 6
@@ -137,7 +141,10 @@ export const useDinerStore = defineStore('diner', () => {
   const entry = ref<DinerEntry | null>(stored.entry)
   const confirmed = ref(stored.confirmed)
   const attentionId = ref<string | null>(stored.attentionId)
-  const customer = ref<DinerCustomer | null>(stored.customer)
+  // Sin tokens del comensal no hay sesión, aunque quede el perfil guardado.
+  const customer = ref<DinerCustomer | null>(
+    getAccessToken('customer') || getRefreshToken('customer') ? stored.customer : null,
+  )
   const recentRestaurants = ref<RecentRestaurant[]>(readRecentRestaurants())
   const storedTableCode = ref<StoredTableCode | null>(readTableCode())
 
@@ -219,8 +226,13 @@ export const useDinerStore = defineStore('diner', () => {
     attentionId.value = id
   }
 
+  /** `null` cierra la sesión del comensal (también en el servidor). */
   function setCustomer(next: DinerCustomer | null): void {
     customer.value = next
+
+    if (!next) {
+      void logoutCustomer()
+    }
   }
 
   function leaveTable(): void {
@@ -256,6 +268,14 @@ export const useDinerStore = defineStore('diner', () => {
     },
     { deep: true },
   )
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener(SESSION_EXPIRED_EVENT, (event) => {
+      if ((event as CustomEvent<{ scope: string }>).detail?.scope === 'customer') {
+        customer.value = null
+      }
+    })
+  }
 
   watch(recentRestaurants, (items) => {
     try {

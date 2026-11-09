@@ -1,8 +1,13 @@
 import type {
+  AccountStatus,
+  ApiPermission,
   Employee,
-  EmployeeArea,
   EmployeeDraft,
   EmployeeStatus,
+  JobPosition,
+  MembershipStatus,
+  NewSystemUserDraft,
+  WorkArea,
   InventoryItem,
   InventoryItemDraft,
   InventoryStatus,
@@ -11,93 +16,17 @@ import type {
   SystemUser,
   SystemUserDraft,
 } from '@/modules/administration/types'
-import { isPermission } from '@/modules/auth/permissions'
-import { http } from '@/services/http'
+import { fullName, type ApiUser } from '@/modules/auth/api'
+import { http, httpAll, requireOrganizationId } from '@/services/http'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
-const AREAS: readonly EmployeeArea[] = ['kitchen', 'floor', 'support', 'management']
-const EMPLOYEE_STATUSES: readonly EmployeeStatus[] = ['active', 'on-leave', 'inactive']
 const INVENTORY_STATUSES: readonly InventoryStatus[] = ['ok', 'low', 'critical']
-
-function isEmployeeArea(value: unknown): value is EmployeeArea {
-  return typeof value === 'string' && (AREAS as readonly string[]).includes(value)
-}
-
-function isEmployeeStatus(value: unknown): value is EmployeeStatus {
-  return typeof value === 'string' && (EMPLOYEE_STATUSES as readonly string[]).includes(value)
-}
 
 function isInventoryStatus(value: unknown): value is InventoryStatus {
   return typeof value === 'string' && (INVENTORY_STATUSES as readonly string[]).includes(value)
-}
-
-function isEmployee(value: unknown): value is Employee {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  const userId = value.userId
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.email === 'string' &&
-    typeof value.phone === 'string' &&
-    (typeof value.roleId === 'string' || typeof value.roleId === 'number') &&
-    typeof value.roleName === 'string' &&
-    (typeof value.restaurantId === 'string' || typeof value.restaurantId === 'number') &&
-    typeof value.restaurantName === 'string' &&
-    isEmployeeArea(value.area) &&
-    isEmployeeStatus(value.status) &&
-    typeof value.hiredAt === 'string' &&
-    (userId === null ||
-      userId === undefined ||
-      typeof userId === 'string' ||
-      typeof userId === 'number')
-  )
-}
-
-function isSystemUser(value: unknown): value is SystemUser {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.email === 'string' &&
-    typeof value.isActive === 'boolean'
-  )
-}
-
-function toSystemUser(value: SystemUser): SystemUser {
-  return {
-    id: String(value.id),
-    name: value.name,
-    email: value.email,
-    isActive: value.isActive,
-    isBlocked: value.isBlocked === true,
-    roleId: typeof value.roleId === 'string' ? value.roleId : null,
-    restaurantIds: Array.isArray(value.restaurantIds) ? value.restaurantIds.map(String) : [],
-    employeeId: typeof value.employeeId === 'string' ? value.employeeId : null,
-  }
-}
-
-function isRole(value: unknown): value is Role {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.description === 'string' &&
-    Array.isArray(value.permissions) &&
-    value.permissions.every((permission) => typeof permission === 'string')
-  )
 }
 
 function isInventoryItem(value: unknown): value is InventoryItem {
@@ -118,25 +47,6 @@ function isInventoryItem(value: unknown): value is InventoryItem {
   )
 }
 
-function toEmployee(value: Employee): Employee {
-  return {
-    ...value,
-    id: String(value.id),
-    roleId: String(value.roleId),
-    restaurantId: String(value.restaurantId),
-    userId: value.userId === null || value.userId === undefined ? null : String(value.userId),
-  }
-}
-
-function toRole(value: Role): Role {
-  return {
-    id: String(value.id),
-    name: value.name,
-    description: value.description,
-    permissions: value.permissions.filter(isPermission),
-  }
-}
-
 function toInventoryItem(value: InventoryItem): InventoryItem {
   return {
     ...value,
@@ -155,26 +65,6 @@ export function inventoryStatusFor(stock: number, minStock: number): InventorySt
   return stock < minStock ? 'low' : 'ok'
 }
 
-export async function fetchEmployees(): Promise<Employee[]> {
-  const payload = await http<unknown>('/employees')
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.filter(isEmployee).map(toEmployee)
-}
-
-export async function fetchRoles(): Promise<Role[]> {
-  const payload = await http<unknown>('/roles')
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.filter(isRole).map(toRole)
-}
-
 export async function fetchInventoryItems(): Promise<InventoryItem[]> {
   const payload = await http<unknown>('/inventoryItems')
 
@@ -183,62 +73,6 @@ export async function fetchInventoryItems(): Promise<InventoryItem[]> {
   }
 
   return payload.filter(isInventoryItem).map(toInventoryItem)
-}
-
-export async function updateEmployee(
-  id: string,
-  draft: EmployeeDraft & { roleName: string; restaurantName: string },
-): Promise<Employee> {
-  const payload = await http<unknown>(`/employees/${id}`, {
-    method: 'PATCH',
-    body: draft,
-  })
-
-  if (!isEmployee(payload)) {
-    throw new Error('No se pudo actualizar el empleado.')
-  }
-
-  return toEmployee(payload)
-}
-
-export async function createEmployee(draft: EmployeeDraft & { roleName: string; restaurantName: string }): Promise<Employee> {
-  const payload = await http<unknown>('/employees', {
-    method: 'POST',
-    body: { ...draft, hiredAt: new Date().toISOString().slice(0, 10) },
-  })
-
-  if (!isEmployee(payload)) {
-    throw new Error('No se pudo crear el empleado.')
-  }
-
-  return toEmployee(payload)
-}
-
-/** Mantiene el vínculo usuario ↔ empleado en ambos sentidos al cambiarlo desde el empleado. */
-export async function syncEmployeeUserLink(
-  employeeId: string,
-  previousUserId: string | null,
-  nextUserId: string | null,
-): Promise<void> {
-  if (previousUserId === nextUserId) {
-    return
-  }
-
-  if (previousUserId) {
-    await http<unknown>(`/users/${previousUserId}`, { method: 'PATCH', body: { employeeId: null } })
-  }
-
-  if (nextUserId) {
-    await http<unknown>(`/users/${nextUserId}`, { method: 'PATCH', body: { employeeId } })
-  }
-}
-
-export async function deleteEmployee(employee: Employee): Promise<void> {
-  if (employee.userId) {
-    await http<unknown>(`/users/${employee.userId}`, { method: 'PATCH', body: { employeeId: null } })
-  }
-
-  await http<unknown>(`/employees/${employee.id}`, { method: 'DELETE' })
 }
 
 async function patchInventoryItem(id: string, body: Record<string, unknown>): Promise<InventoryItem> {
@@ -283,77 +117,374 @@ export async function updateInventoryItem(id: string, draft: InventoryItemDraft)
   return patchInventoryItem(id, { ...draft, status: inventoryStatusFor(draft.stock, draft.minStock) })
 }
 
+// ---------------------------------------------------------------------------
+// Personal y accesos: empleados, áreas, puestos, usuarios (membresías), roles y permisos
+// ---------------------------------------------------------------------------
+
+/** EmployeeResponseDto */
+interface ApiEmployee {
+  id: string
+  organizationId: string
+  userId?: string | null
+  employeeCode: string
+  documentNumber?: string | null
+  jobPositionId?: string | null
+  status: 'ACTIVE' | 'INACTIVE' | 'TERMINATED'
+  hiredAt?: string | null
+  terminatedAt?: string | null
+}
+
+/** WorkAreaResponseDto */
+interface ApiWorkArea {
+  id: string
+  name: string
+  description?: string | null
+  isActive: boolean
+}
+
+/** JobPositionResponseDto */
+interface ApiJobPosition {
+  id: string
+  workAreaId: string
+  name: string
+  description?: string | null
+  isActive: boolean
+}
+
+type ApiMembershipStatus = 'ACTIVE' | 'INACTIVE' | 'INVITED' | 'SUSPENDED'
+
+/** MembershipResponseDto */
+interface ApiMembership {
+  id: string
+  organizationId: string
+  userId: string
+  roleId: string
+  allRestaurants: boolean
+  restaurantIds: string[]
+  status: ApiMembershipStatus
+}
+
+/** MembershipWithPeopleResponseDto */
+interface ApiMembershipWithPeople extends ApiMembership {
+  user: {
+    id: string
+    email: string
+    firstName: string
+    lastName?: string | null
+    status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
+  }
+  role: { id: string; code: string; name: string }
+  employeeId?: string | null
+}
+
+/** RoleWithAccessResponseDto */
+interface ApiRole {
+  id: string
+  code: string
+  name: string
+  description?: string | null
+  isSystem: boolean
+  isActive: boolean
+  permissions: string[]
+  memberCount: number
+}
+
+/** PermissionResponseDto */
+interface ApiPermissionDto {
+  id: string
+  code: string
+  name: string
+  description?: string | null
+  isActive: boolean
+}
+
+/** Rol del dueño: siempre tiene todos los permisos y el API no deja editarlo. */
+export const OWNER_ROLE_CODE = 'OWNER'
+
+function emptyToUndefined(value: string): string | undefined {
+  const trimmed = value.trim()
+  return trimmed === '' ? undefined : trimmed
+}
+
+function toEmployee(dto: ApiEmployee): Employee {
+  return {
+    id: dto.id,
+    employeeCode: dto.employeeCode,
+    documentNumber: dto.documentNumber ?? null,
+    jobPositionId: dto.jobPositionId ?? null,
+    status: dto.status.toLowerCase() as EmployeeStatus,
+    hiredAt: dto.hiredAt ?? null,
+    terminatedAt: dto.terminatedAt ?? null,
+    userId: dto.userId ?? null,
+  }
+}
+
+function toWorkArea(dto: ApiWorkArea): WorkArea {
+  return { id: dto.id, name: dto.name, description: dto.description ?? null, isActive: dto.isActive }
+}
+
+function toJobPosition(dto: ApiJobPosition): JobPosition {
+  return {
+    id: dto.id,
+    workAreaId: dto.workAreaId,
+    name: dto.name,
+    description: dto.description ?? null,
+    isActive: dto.isActive,
+  }
+}
+
+function toSystemUser(dto: ApiMembershipWithPeople): SystemUser {
+  return {
+    id: dto.id,
+    userId: dto.userId,
+    name: fullName(dto.user) || dto.user.email,
+    email: dto.user.email,
+    status: dto.status.toLowerCase() as MembershipStatus,
+    accountStatus: dto.user.status.toLowerCase() as AccountStatus,
+    roleId: dto.roleId,
+    roleName: dto.role.name,
+    roleCode: dto.role.code,
+    allRestaurants: dto.allRestaurants,
+    restaurantIds: dto.allRestaurants ? [] : dto.restaurantIds,
+    employeeId: dto.employeeId ?? null,
+  }
+}
+
+function toRole(dto: ApiRole): Role {
+  return {
+    id: dto.id,
+    code: dto.code,
+    name: dto.name,
+    description: dto.description ?? '',
+    isSystem: dto.isSystem,
+    permissions: dto.permissions,
+    memberCount: dto.memberCount,
+  }
+}
+
+/** "Jefe de sala" → "JEFE_DE_SALA": código único del rol dentro de la organización. */
+function roleCodeFrom(name: string): string {
+  const code = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 40)
+
+  return code || 'ROL'
+}
+
+export async function fetchEmployees(): Promise<Employee[]> {
+  const items = await httpAll<ApiEmployee>('/employees', { query: { organizationId: requireOrganizationId() } })
+  return items.map(toEmployee)
+}
+
+/** Catálogo de áreas de la organización (activas e inactivas, para mostrar nombres históricos). */
+export async function fetchWorkAreas(): Promise<WorkArea[]> {
+  const items = await httpAll<ApiWorkArea>('/work-areas', { query: { organizationId: requireOrganizationId() } })
+  return items.map(toWorkArea)
+}
+
+/** Catálogo de puestos de la organización (activos e inactivos). */
+export async function fetchJobPositions(): Promise<JobPosition[]> {
+  const items = await httpAll<ApiJobPosition>('/job-positions', {
+    query: { organizationId: requireOrganizationId() },
+  })
+  return items.map(toJobPosition)
+}
+
+export async function createWorkArea(name: string): Promise<WorkArea> {
+  const dto = await http<ApiWorkArea>('/work-areas', {
+    method: 'POST',
+    body: { organizationId: requireOrganizationId(), name: name.trim() },
+  })
+  return toWorkArea(dto)
+}
+
+export async function createJobPosition(workAreaId: string, name: string): Promise<JobPosition> {
+  const dto = await http<ApiJobPosition>('/job-positions', {
+    method: 'POST',
+    body: { workAreaId, name: name.trim() },
+  })
+  return toJobPosition(dto)
+}
+
+export async function createEmployee(draft: EmployeeDraft): Promise<Employee> {
+  const dto = await http<ApiEmployee>('/employees', {
+    method: 'POST',
+    body: {
+      organizationId: requireOrganizationId(),
+      employeeCode: draft.employeeCode.trim(),
+      documentNumber: emptyToUndefined(draft.documentNumber),
+      jobPositionId: draft.jobPositionId ?? undefined,
+      hiredAt: emptyToUndefined(draft.hiredAt),
+      userId: draft.userId ?? undefined,
+    },
+  })
+  return toEmployee(dto)
+}
+
+/**
+ * Actualiza la ficha. El vínculo con la cuenta no se toca aquí: se cambia desde
+ * la membresía (ver `syncEmployeeUserLink`). El API no permite vaciar documento
+ * ni puesto: si vienen vacíos se dejan como estaban.
+ */
+export async function updateEmployee(id: string, draft: EmployeeDraft): Promise<Employee> {
+  const dto = await http<ApiEmployee>(`/employees/${id}`, {
+    method: 'PATCH',
+    body: {
+      employeeCode: draft.employeeCode.trim(),
+      documentNumber: emptyToUndefined(draft.documentNumber),
+      jobPositionId: draft.jobPositionId ?? undefined,
+      hiredAt: emptyToUndefined(draft.hiredAt),
+      status: draft.status.toUpperCase(),
+    },
+  })
+  return toEmployee(dto)
+}
+
+/**
+ * Cambia la cuenta vinculada a un empleado. El vínculo vive en la membresía del
+ * usuario (`employeeId`): se desvincula la anterior y se vincula la nueva.
+ */
+export async function syncEmployeeUserLink(
+  employeeId: string,
+  previousMembershipId: string | null,
+  nextMembershipId: string | null,
+): Promise<void> {
+  if (previousMembershipId === nextMembershipId) {
+    return
+  }
+
+  if (previousMembershipId) {
+    await http<unknown>(`/memberships/${previousMembershipId}`, { method: 'PATCH', body: { employeeId: null } })
+  }
+
+  if (nextMembershipId) {
+    await http<unknown>(`/memberships/${nextMembershipId}`, { method: 'PATCH', body: { employeeId } })
+  }
+}
+
+/** Baja lógica: el empleado queda inactivo para conservar el historial. */
+export async function deleteEmployee(employee: Employee): Promise<void> {
+  await http<unknown>(`/employees/${employee.id}`, { method: 'DELETE' })
+}
+
+/** Roles activos de la organización, con sus permisos efectivos y usuarios asignados. */
+export async function fetchRoles(): Promise<Role[]> {
+  const items = await httpAll<ApiRole>('/roles', { query: { organizationId: requireOrganizationId() } })
+  return items.filter((role) => role.isActive).map(toRole)
+}
+
+/** Catálogo de permisos del API (código + nombre legible). */
+export async function fetchPermissions(): Promise<ApiPermission[]> {
+  const items = await httpAll<ApiPermissionDto>('/permissions')
+  return items
+    .filter((permission) => permission.isActive)
+    .map((permission) => ({
+      id: permission.id,
+      code: permission.code,
+      name: permission.name,
+      description: permission.description ?? null,
+    }))
+}
+
 export async function createRole(draft: RoleDraft): Promise<Role> {
-  const payload = await http<unknown>('/roles', { method: 'POST', body: draft })
-
-  if (!isRole(payload)) {
-    throw new Error('No se pudo crear el rol.')
-  }
-
-  return toRole(payload)
+  const dto = await http<ApiRole>('/roles', {
+    method: 'POST',
+    body: {
+      organizationId: requireOrganizationId(),
+      code: roleCodeFrom(draft.name),
+      name: draft.name,
+      description: emptyToUndefined(draft.description),
+      permissions: draft.permissions,
+    },
+  })
+  return toRole(dto)
 }
 
+/** `permissions` reemplaza los permisos del rol en la misma petición. */
 export async function updateRole(id: string, draft: RoleDraft): Promise<Role> {
-  const payload = await http<unknown>(`/roles/${id}`, { method: 'PATCH', body: draft })
-
-  if (!isRole(payload)) {
-    throw new Error('No se pudo actualizar el rol.')
-  }
-
-  return toRole(payload)
+  const dto = await http<ApiRole>(`/roles/${id}`, {
+    method: 'PATCH',
+    body: { name: draft.name, description: draft.description, permissions: draft.permissions },
+  })
+  return toRole(dto)
 }
 
+/** Baja lógica. Con usuarios asignados el API responde 422 ROLE_IN_USE. */
 export async function deleteRole(id: string): Promise<void> {
   await http<unknown>(`/roles/${id}`, { method: 'DELETE' })
 }
 
+/** Usuarios de la organización: membresías con su cuenta, rol, sedes y empleado. */
 export async function fetchUsers(): Promise<SystemUser[]> {
-  const payload = await http<unknown>('/users')
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.filter(isSystemUser).map(toSystemUser)
+  const items = await httpAll<ApiMembershipWithPeople>('/memberships', {
+    query: { organizationId: requireOrganizationId() },
+  })
+  return items.map(toSystemUser)
 }
 
-async function patchUser(id: string, body: Record<string, unknown>): Promise<SystemUser> {
-  const payload = await http<unknown>(`/users/${id}`, { method: 'PATCH', body })
-
-  if (!isSystemUser(payload)) {
-    throw new Error('No se pudo actualizar la cuenta.')
-  }
-
-  return toSystemUser(payload)
+async function patchMembership(id: string, body: Record<string, unknown>): Promise<SystemUser> {
+  const dto = await http<ApiMembershipWithPeople>(`/memberships/${id}`, { method: 'PATCH', body })
+  return toSystemUser(dto)
 }
 
+/** Activa o desactiva el acceso a la organización (la cuenta sigue existiendo). */
 export async function updateUserActive(id: string, isActive: boolean): Promise<SystemUser> {
-  return patchUser(id, { isActive })
-}
-
-export async function updateUserBlocked(id: string, isBlocked: boolean): Promise<SystemUser> {
-  return patchUser(id, { isBlocked })
+  return patchMembership(id, { status: isActive ? 'ACTIVE' : 'INACTIVE' })
 }
 
 /**
- * Asigna rol, sedes y empleado a una cuenta. Mantiene el vínculo en ambos
- * sentidos (empleado.userId ↔ usuario.employeeId).
+ * Suspende o reactiva el acceso a la organización. Bloquear la cuenta global
+ * (`PATCH /users`) es solo de la plataforma.
  */
+export async function updateUserBlocked(id: string, isBlocked: boolean): Promise<SystemUser> {
+  return patchMembership(id, { status: isBlocked ? 'SUSPENDED' : 'ACTIVE' })
+}
+
+/** Rol, sedes y empleado vinculado en una sola transacción. */
 export async function updateUserAccess(user: SystemUser, draft: SystemUserDraft): Promise<SystemUser> {
-  if (user.employeeId && user.employeeId !== draft.employeeId) {
-    await http<unknown>(`/employees/${user.employeeId}`, { method: 'PATCH', body: { userId: null } })
+  return patchMembership(user.id, {
+    roleId: draft.roleId,
+    allRestaurants: draft.allRestaurants,
+    restaurantIds: draft.allRestaurants ? [] : draft.restaurantIds,
+    employeeId: draft.employeeId,
+  })
+}
+
+/**
+ * Da de alta una cuenta nueva y la vincula a la organización. El API no tiene
+ * invitaciones: se crea la cuenta con contraseña temporal (debe cambiarla al
+ * entrar) y luego su membresía. Si el correo ya existe responde 409 DUPLICATE_EMAIL.
+ */
+export async function createSystemUser(draft: NewSystemUserDraft): Promise<SystemUser> {
+  const account = await http<ApiUser>('/users', {
+    method: 'POST',
+    body: {
+      email: draft.email.trim(),
+      password: draft.password,
+      firstName: draft.firstName.trim(),
+      lastName: emptyToUndefined(draft.lastName),
+      mustChangePassword: true,
+    },
+  })
+
+  const membership = await http<ApiMembership>('/memberships', {
+    method: 'POST',
+    body: {
+      organizationId: requireOrganizationId(),
+      userId: account.id,
+      roleId: draft.roleId,
+      allRestaurants: draft.allRestaurants,
+      restaurantIds: draft.allRestaurants ? [] : draft.restaurantIds,
+    },
+  })
+
+  if (draft.employeeId) {
+    return patchMembership(membership.id, { employeeId: draft.employeeId })
   }
 
-  if (draft.employeeId && draft.employeeId !== user.employeeId) {
-    const employees = await fetchEmployees()
-    const previousOwner = employees.find((employee) => employee.id === draft.employeeId)?.userId
-
-    if (previousOwner && previousOwner !== user.id) {
-      await http<unknown>(`/users/${previousOwner}`, { method: 'PATCH', body: { employeeId: null } })
-    }
-
-    await http<unknown>(`/employees/${draft.employeeId}`, { method: 'PATCH', body: { userId: user.id } })
-  }
-
-  return patchUser(user.id, { ...draft })
+  return toSystemUser(await http<ApiMembershipWithPeople>(`/memberships/${membership.id}`))
 }

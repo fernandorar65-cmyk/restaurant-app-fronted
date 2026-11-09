@@ -1,3 +1,4 @@
+import { emptyMethodTotals } from '@/modules/finance/methods'
 import type { DailyFinancial, FinancePeriod, FinanceTotals } from '@/modules/finance/types'
 
 /** Fechas locales en formato YYYY-MM-DD (sin desfases de zona horaria). */
@@ -110,31 +111,32 @@ export function timeBuckets(period: FinancePeriod, anchor: string): TimeBucket[]
 export function emptyTotals(): FinanceTotals {
   return {
     revenue: 0,
+    grossSales: 0,
+    refunded: 0,
     costs: 0,
-    foodCost: 0,
-    laborCost: 0,
-    operatingCost: 0,
     profit: 0,
     orders: 0,
-    guests: 0,
+    cancelled: 0,
     days: 0,
-    expenses: { rent: 0, utilities: 0, maintenance: 0, marketing: 0, other: 0 },
-    byMethod: { card: 0, yape: 0, plin: 0, transfer: 0, cash: 0 },
+    byMethod: emptyMethodTotals(),
   }
+}
+
+/** ¿Hubo actividad ese día? El API devuelve también los días sin movimiento (en cero). */
+export function hasActivity(row: DailyFinancial): boolean {
+  return row.grossSales !== 0 || row.orders !== 0 || row.cancelled !== 0 || row.expenses !== 0 || row.refunded !== 0
 }
 
 export function sumTotals(rows: DailyFinancial[]): FinanceTotals {
   return rows.reduce((acc, row) => {
     acc.revenue += row.revenue
-    acc.foodCost += row.foodCost
-    acc.laborCost += row.laborCost
-    acc.operatingCost += row.operatingCost
-    acc.costs += row.foodCost + row.laborCost + row.operatingCost
+    acc.grossSales += row.grossSales
+    acc.refunded += row.refunded
+    acc.costs += row.expenses
     acc.profit += row.profit
     acc.orders += row.orders
-    acc.guests += row.guests
-    acc.days += 1
-    for (const key of Object.keys(acc.expenses) as Array<keyof typeof acc.expenses>) acc.expenses[key] += row.expenses[key]
+    acc.cancelled += row.cancelled
+    if (hasActivity(row)) acc.days += 1
     for (const key of Object.keys(acc.byMethod) as Array<keyof typeof acc.byMethod>) acc.byMethod[key] += row.byMethod[key]
     return acc
   }, emptyTotals())

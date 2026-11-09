@@ -1,6 +1,12 @@
 import type { StatusTone } from '@/components/base/StatusBadge.vue'
-import type { EmployeeArea, EmployeeStatus, InventoryStatus } from '@/modules/administration/types'
+import type {
+  EmployeeArea,
+  EmployeeStatus,
+  InventoryStatus,
+  MembershipStatus,
+} from '@/modules/administration/types'
 
+/** Traducción de nombres de área conocidos; las áreas reales vienen del catálogo `/work-areas`. */
 export const employeeAreaLabel: Record<EmployeeArea, string> = {
   kitchen: 'Cocina',
   floor: 'Sala',
@@ -10,14 +16,14 @@ export const employeeAreaLabel: Record<EmployeeArea, string> = {
 
 export const employeeStatusLabel: Record<EmployeeStatus, string> = {
   active: 'Activo',
-  'on-leave': 'Excedencia',
   inactive: 'Inactivo',
+  terminated: 'Cesado',
 }
 
 export const employeeStatusClass: Record<EmployeeStatus, string> = {
   active: 'bg-primary/10 text-primary',
-  'on-leave': 'bg-tertiary-fixed text-on-tertiary-container',
-  inactive: 'bg-surface-container-high text-on-surface-variant',
+  inactive: 'bg-tertiary-fixed text-on-tertiary-container',
+  terminated: 'bg-surface-container-high text-on-surface-variant',
 }
 
 export const inventoryStatusLabel: Record<InventoryStatus, string> = {
@@ -40,6 +46,20 @@ export const inventoryStatusTone: Record<InventoryStatus, StatusTone> = {
 
 export const employeeStatusTone: Record<EmployeeStatus, StatusTone> = {
   active: 'success',
-  'on-leave': 'warning',
+  inactive: 'warning',
+  terminated: 'muted',
+}
+
+export const membershipStatusLabel: Record<MembershipStatus, string> = {
+  active: 'Activo',
+  inactive: 'Inactivo',
+  invited: 'Invitado',
+  suspended: 'Suspendido',
+}
+
+export const membershipStatusTone: Record<MembershipStatus, StatusTone> = {
+  active: 'success',
   inactive: 'muted',
+  invited: 'info',
+  suspended: 'danger',
 }

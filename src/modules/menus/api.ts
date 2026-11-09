@@ -1,393 +1,581 @@
-import { http } from '@/services/http'
+/**
+ * Catálogo y carta.
+ *
+ * Mapeo entre el modelo del front y el API:
+ * - `Menu`          ↔ `/menus` (estado en MAYÚSCULAS). Activar un menú deja inactivo al anterior
+ *                     en el servidor, en la misma transacción.
+ * - `MenuCategory`  ↔ sección del menú: `/menus/{menuId}/sections` (`position` = `sortOrder`).
+ *                     El API no guarda descripción de sección. Reordenar = `PUT .../sections/order`.
+ * - `MenuProduct`   ↔ producto del catálogo (`/products`) + su colocación en el menú
+ *                     (`/menus/{id}/products`: sección, orden y visibilidad). `id` = id del producto.
+ *     - `categoryId` = `menuSectionId` (`UNSECTIONED_ID` si no tiene sección).
+ *     - `position`   = `sortOrder` dentro de la sección. Reordenar = `PUT .../products/order`.
+ *     - `isActive`   = `isVisible` de la colocación en el menú (ocultar sin quitarlo).
+ *     - `isAvailable`, precio, textos, etiquetas, foto = campos del producto (`PATCH /products/{id}`).
+ *     - `ingredients` = `/products/{id}/ingredients` (solo gestión; se cargan al editar).
+ *     - `allergens` y `longDescription` no existen en el API: siempre vacíos.
+ * - Crear producto en la carta = `POST /products` con `menu` (lo coloca en el menú en la misma llamada).
+ * - Eliminar producto de la carta = `DELETE /products/{id}` (baja lógica: deja de salir en la carta,
+ *   se conserva el historial de pedidos). Los productos inactivos no se listan en la gestión.
+ * - Carta del comensal = `GET /api/v1/restaurants/{id}/menu` (público) y buscador
+ *   `GET /api/v1/restaurants/{id}/menu/search`.
+ * - Fotos = `POST /uploads/images` (multipart) → URL pública que se guarda en `imageUrl`.
+ */
+import { http, httpAll } from '@/services/http'
+import { useSessionStore } from '@/stores/session'
 import { normalizeSearch } from '@/utils/string'
 import type { Menu, MenuCategory, MenuCategoryDraft, MenuProduct, MenuProductDraft, MenuStatus } from '@/modules/menus/types'
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+/** `categoryId` de los productos que no tienen sección en el menú. */
+export const UNSECTIONED_ID = 'sin-seccion'
+
+/** Nombre de la categoría sintética que agrupa los productos sin sección en la carta. */
+const UNSECTIONED_NAME = 'Otros'
+
+/* ------------------------------------------------------------------ DTOs */
+
+type ApiMenuStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE'
+
+interface MenuDto {
+  id: string
+  restaurantId: string
+  name: string
+  status: ApiMenuStatus
 }
 
-const MENU_STATUSES: readonly MenuStatus[] = ['draft', 'active', 'inactive']
-
-function isMenuStatus(value: unknown): value is MenuStatus {
-  return typeof value === 'string' && (MENU_STATUSES as readonly string[]).includes(value)
+interface MenuSectionDto {
+  id: string
+  menuId: string
+  name: string
+  sortOrder: number
+  isActive: boolean
 }
 
-function isMenu(value: unknown): value is Menu {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    (typeof value.restaurantId === 'string' || typeof value.restaurantId === 'number') &&
-    typeof value.name === 'string' &&
-    isMenuStatus(value.status)
-  )
+interface ProductDto {
+  id: string
+  restaurantId: string
+  name: string
+  description?: string | null
+  imageUrl?: string | null
+  price: number
+  preparationMinutes?: number | null
+  tags?: string[] | null
+  portion?: string | null
+  presentation?: string | null
+  isAvailable: boolean
+  isTakeawayAllowed?: boolean
+  isDeliveryAllowed?: boolean
+  status: 'ACTIVE' | 'INACTIVE'
 }
 
-function toMenu(value: Menu): Menu {
-  return { ...value, id: String(value.id), restaurantId: String(value.restaurantId) }
+interface MenuProductPlacementDto {
+  menuId: string
+  productId: string
+  menuSectionId?: string | null
+  sortOrder: number
+  isVisible: boolean
 }
 
-function isMenuCategory(value: unknown): value is MenuCategory {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    (typeof value.restaurantId === 'string' || typeof value.restaurantId === 'number') &&
-    (typeof value.menuId === 'string' || typeof value.menuId === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.description === 'string' &&
-    typeof value.position === 'number'
-  )
+interface MenuProductDetailDto extends MenuProductPlacementDto {
+  product: ProductDto
 }
 
-function isMenuProduct(value: unknown): value is MenuProduct {
-  if (!isRecord(value)) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    (typeof value.restaurantId === 'string' || typeof value.restaurantId === 'number') &&
-    (typeof value.categoryId === 'string' || typeof value.categoryId === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.description === 'string' &&
-    typeof value.price === 'number' &&
-    typeof value.imageUrl === 'string' &&
-    typeof value.isAvailable === 'boolean' &&
-    Array.isArray(value.tags) &&
-    value.tags.every((tag) => typeof tag === 'string') &&
-    Array.isArray(value.allergens) &&
-    value.allergens.every((allergen) => typeof allergen === 'string')
-  )
+interface StorefrontProductDto {
+  id: string
+  name: string
+  description?: string | null
+  imageUrl?: string | null
+  price: number
+  preparationMinutes?: number | null
+  tags?: string[] | null
+  portion?: string | null
+  presentation?: string | null
+  isAvailable: boolean
+  isTakeawayAllowed?: boolean
+  isDeliveryAllowed?: boolean
+  menuSectionId?: string | null
 }
 
-function toMenuCategory(value: MenuCategory): MenuCategory {
-  return { ...value, id: String(value.id), restaurantId: String(value.restaurantId), menuId: String(value.menuId) }
+interface StorefrontMenuDto {
+  restaurantId: string
+  menu: MenuDto | null
+  sections: MenuSectionDto[]
+  products: StorefrontProductDto[]
 }
 
-function toMenuProduct(value: MenuProduct): MenuProduct {
+interface IngredientDto {
+  id: string
+  productId: string
+  name: string
+  sortOrder: number
+  isVisible: boolean
+}
+
+interface UploadedFileDto {
+  key: string
+  url: string
+}
+
+/* ------------------------------------------------------------- Mapeos */
+
+const STATUS_FROM_API: Record<ApiMenuStatus, MenuStatus> = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
+const STATUS_TO_API: Record<MenuStatus, ApiMenuStatus> = { draft: 'DRAFT', active: 'ACTIVE', inactive: 'INACTIVE' }
+
+function toMenu(dto: MenuDto): Menu {
+  return { id: dto.id, restaurantId: dto.restaurantId, name: dto.name, status: STATUS_FROM_API[dto.status] ?? 'draft' }
+}
+
+function toMenuCategory(dto: MenuSectionDto): MenuCategory {
+  return { id: dto.id, menuId: dto.menuId, name: dto.name, position: dto.sortOrder, isActive: dto.isActive }
+}
+
+function sectionIdFromApi(menuSectionId: string | null | undefined): string {
+  return menuSectionId ?? UNSECTIONED_ID
+}
+
+function sectionIdToApi(categoryId: string): string | null {
+  return categoryId && categoryId !== UNSECTIONED_ID ? categoryId : null
+}
+
+/** Campos comunes a `ProductDto` y `StorefrontProductDto`. */
+function productFields(dto: ProductDto | StorefrontProductDto): Omit<
+  MenuProduct,
+  'id' | 'restaurantId' | 'menuId' | 'categoryId' | 'isActive' | 'position'
+> {
   return {
-    ...value,
-    id: String(value.id),
-    restaurantId: String(value.restaurantId),
-    categoryId: String(value.categoryId),
-    isActive: typeof value.isActive === 'boolean' ? value.isActive : true,
-    position: typeof value.position === 'number' ? value.position : 0,
-    ingredients: Array.isArray(value.ingredients) ? value.ingredients.filter((item) => typeof item === 'string') : [],
-    portion: typeof value.portion === 'string' ? value.portion : '',
-    presentation: typeof value.presentation === 'string' ? value.presentation : '',
-    longDescription: typeof value.longDescription === 'string' ? value.longDescription : '',
-    prepMinutes: typeof value.prepMinutes === 'number' && value.prepMinutes > 0 ? value.prepMinutes : null,
+    name: dto.name,
+    description: dto.description ?? '',
+    price: Number(dto.price) || 0,
+    imageUrl: dto.imageUrl ?? '',
+    isAvailable: dto.isAvailable,
+    isTakeawayAllowed: dto.isTakeawayAllowed ?? true,
+    isDeliveryAllowed: dto.isDeliveryAllowed ?? true,
+    tags: Array.isArray(dto.tags) ? dto.tags : [],
+    allergens: [],
+    ingredients: [],
+    portion: dto.portion ?? '',
+    presentation: dto.presentation ?? '',
+    longDescription: '',
+    prepMinutes: typeof dto.preparationMinutes === 'number' && dto.preparationMinutes > 0 ? dto.preparationMinutes : null,
+  }
+}
+
+/** Producto del catálogo, sin datos de menú. */
+function toCatalogProduct(dto: ProductDto): MenuProduct {
+  return {
+    ...productFields(dto),
+    id: dto.id,
+    restaurantId: dto.restaurantId,
+    menuId: '',
+    categoryId: '',
+    isActive: dto.status === 'ACTIVE',
+    position: 0,
+  }
+}
+
+function toPlacedProduct(product: ProductDto, placement: MenuProductPlacementDto): MenuProduct {
+  return {
+    ...productFields(product),
+    id: product.id,
+    restaurantId: product.restaurantId,
+    menuId: placement.menuId,
+    categoryId: sectionIdFromApi(placement.menuSectionId),
+    isActive: placement.isVisible,
+    position: placement.sortOrder,
+  }
+}
+
+function toStorefrontProduct(dto: StorefrontProductDto, restaurantId: string, menuId: string): MenuProduct {
+  return {
+    ...productFields(dto),
+    id: dto.id,
+    restaurantId,
+    menuId,
+    categoryId: sectionIdFromApi(dto.menuSectionId),
+    isActive: true,
+    position: 0,
   }
 }
 
 function compareProducts(a: MenuProduct, b: MenuProduct): number {
-  return a.position - b.position || a.name.localeCompare(b.name)
+  return a.position - b.position || a.name.localeCompare(b.name, 'es')
 }
 
+/* --------------------------------------------------------------- Menús */
+
+/** GET /menus?restaurantId */
 export async function fetchMenus(restaurantId: string): Promise<Menu[]> {
-  const payload = await http<unknown>('/menus')
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.filter(isMenu).map(toMenu).filter((menu) => menu.restaurantId === restaurantId)
+  const items = await httpAll<MenuDto>('/menus', { query: { restaurantId } })
+  return items.map(toMenu)
 }
 
-export async function fetchActiveMenu(restaurantId: string): Promise<Menu | null> {
-  const menus = await fetchMenus(restaurantId)
-  return menus.find((menu) => menu.status === 'active') ?? null
-}
-
+/** POST /menus (nace en borrador). */
 export async function createMenu(restaurantId: string, name: string): Promise<Menu> {
-  const payload = await http<unknown>('/menus', {
-    method: 'POST',
-    body: { restaurantId, name, status: 'draft' },
-  })
-
-  if (!isMenu(payload)) {
-    throw new Error('No se pudo crear el menú.')
-  }
-
-  return toMenu(payload)
-}
-
-async function patchMenuStatus(id: string, status: MenuStatus): Promise<Menu> {
-  const payload = await http<unknown>(`/menus/${id}`, {
-    method: 'PATCH',
-    body: { status },
-  })
-
-  if (!isMenu(payload)) {
-    throw new Error('No se pudo actualizar el estado del menú.')
-  }
-
-  return toMenu(payload)
+  return toMenu(await http<MenuDto>('/menus', { method: 'POST', body: { restaurantId, name } }))
 }
 
 /**
- * Cambia el estado de un menú. Solo puede haber un menú activo por sede:
- * al activar uno, el que estaba activo pasa a inactivo. Devuelve los menús afectados.
+ * PATCH /menus/{id} con el estado. Solo hay un menú activo por sede: al activar uno, el servidor
+ * deja inactivo al anterior. Devuelve el menú cambiado; quien llama ajusta los demás en pantalla.
  */
-export async function updateMenuStatus(menu: Menu, status: MenuStatus): Promise<Menu[]> {
-  const changed: Menu[] = []
-
-  if (status === 'active') {
-    const others = (await fetchMenus(menu.restaurantId)).filter(
-      (item) => item.id !== menu.id && item.status === 'active',
-    )
-
-    for (const other of others) {
-      changed.push(await patchMenuStatus(other.id, 'inactive'))
-    }
-  }
-
-  changed.push(await patchMenuStatus(menu.id, status))
-  return changed
+export async function updateMenuStatus(menu: Menu, status: MenuStatus): Promise<Menu> {
+  return toMenu(await http<MenuDto>(`/menus/${menu.id}`, { method: 'PATCH', body: { status: STATUS_TO_API[status] } }))
 }
 
-export async function fetchMenuCategories(restaurantId: string): Promise<MenuCategory[]> {
-  const payload = await http<unknown>('/menuCategories')
+/* ----------------------------------------------- Secciones (categorías) */
 
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload
-    .filter(isMenuCategory)
-    .map(toMenuCategory)
-    .filter((category) => category.restaurantId === restaurantId)
-    .sort((a, b) => a.position - b.position)
+/** GET /menus/{menuId}/sections (incluye las ocultas, en orden). */
+export async function fetchMenuCategories(menuId: string): Promise<MenuCategory[]> {
+  const sections = await http<MenuSectionDto[]>(`/menus/${menuId}/sections`)
+  return (Array.isArray(sections) ? sections : []).map(toMenuCategory).sort((a, b) => a.position - b.position)
 }
 
-export async function fetchActiveMenuCategories(restaurantId: string): Promise<MenuCategory[]> {
-  const activeMenu = await fetchActiveMenu(restaurantId)
-
-  if (!activeMenu) {
-    return []
-  }
-
-  const categories = await fetchMenuCategories(restaurantId)
-  return categories.filter((category) => category.menuId === activeMenu.id)
+/** POST /menus/{menuId}/sections */
+export async function createMenuCategory(menuId: string, draft: MenuCategoryDraft, position: number): Promise<MenuCategory> {
+  const section = await http<MenuSectionDto>(`/menus/${menuId}/sections`, {
+    method: 'POST',
+    body: { name: draft.name, sortOrder: position },
+  })
+  return toMenuCategory(section)
 }
 
+/** PATCH /menus/{menuId}/sections/{id} */
+export async function updateMenuCategory(category: MenuCategory, draft: MenuCategoryDraft): Promise<MenuCategory> {
+  const section = await http<MenuSectionDto>(`/menus/${category.menuId}/sections/${category.id}`, {
+    method: 'PATCH',
+    body: { name: draft.name },
+  })
+  return toMenuCategory(section)
+}
+
+/**
+ * DELETE /menus/{menuId}/sections/{id} (baja lógica). Si tiene productos, el servidor exige
+ * `moveProductsTo` (otra sección activa del mismo menú); sin él responde 422 SECTION_HAS_PRODUCTS.
+ */
+export async function deleteMenuCategory(category: MenuCategory, moveProductsTo?: string): Promise<void> {
+  await http<unknown>(`/menus/${category.menuId}/sections/${category.id}`, {
+    method: 'DELETE',
+    query: { moveProductsTo },
+  })
+}
+
+/**
+ * PUT /menus/{menuId}/sections/order en una sola petición. El API exige todas las secciones
+ * del menú (también las ocultas): `categories` va en el nuevo orden y las ocultas que falten
+ * se agregan al final.
+ */
+export async function reorderMenuCategories(
+  menuId: string,
+  categories: MenuCategory[],
+  hidden: MenuCategory[] = [],
+): Promise<MenuCategory[]> {
+  const ids = [...categories, ...hidden.filter((item) => !categories.some((category) => category.id === item.id))].map(
+    (category) => category.id,
+  )
+  const sections = await http<MenuSectionDto[]>(`/menus/${menuId}/sections/order`, { method: 'PUT', body: { ids } })
+  return sections.map(toMenuCategory).sort((a, b) => a.position - b.position)
+}
+
+/* ------------------------------------------------------------ Productos */
+
+/**
+ * Catálogo de productos activos de la sede (GET /products?restaurantId), sin datos de menú.
+ * Ruta del panel: requiere sesión del personal.
+ */
 export async function fetchMenuProducts(restaurantId: string): Promise<MenuProduct[]> {
-  const payload = await http<unknown>('/menuProducts')
+  const items = await httpAll<ProductDto>('/products', { query: { restaurantId } })
+  return items
+    .filter((product) => product.status === 'ACTIVE')
+    .map(toCatalogProduct)
+    .sort((a, b) => a.name.localeCompare(b.name, 'es'))
+}
 
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload
-    .filter(isMenuProduct)
-    .map(toMenuProduct)
-    .filter((product) => product.restaurantId === restaurantId)
+/**
+ * Productos de un menú con su sección, orden y visibilidad (GET /menus/{id}/products).
+ * Omite los productos dados de baja.
+ */
+export async function fetchMenuProductsByMenu(menuId: string): Promise<MenuProduct[]> {
+  const entries = await http<MenuProductDetailDto[]>(`/menus/${menuId}/products`)
+  return (Array.isArray(entries) ? entries : [])
+    .filter((entry) => entry.product.status === 'ACTIVE')
+    .map((entry) => toPlacedProduct(entry.product, entry))
     .sort(compareProducts)
 }
 
-/** Carta que ve el comensal: categorías del menú activo y solo productos activos. */
-export async function fetchCustomerMenu(
-  restaurantId: string,
-): Promise<{ categories: MenuCategory[]; products: MenuProduct[] }> {
-  const [categories, products] = await Promise.all([
-    fetchActiveMenuCategories(restaurantId),
-    fetchMenuProducts(restaurantId),
-  ])
-  const categoryIds = new Set(categories.map((category) => category.id))
+/** Ingredientes del producto, en orden (GET /products/{id}/ingredients). Solo gestión. */
+export async function fetchProductIngredients(productId: string): Promise<string[]> {
+  const items = await fetchIngredientRecords(productId)
+  return items.map((item) => item.name)
+}
 
+async function fetchIngredientRecords(productId: string): Promise<IngredientDto[]> {
+  const items = await http<IngredientDto[]>(`/products/${productId}/ingredients`)
+  return (Array.isArray(items) ? items : []).sort((a, b) => a.sortOrder - b.sortOrder)
+}
+
+/**
+ * Deja los ingredientes del producto iguales a `names` (en ese orden): reutiliza los que ya
+ * existen con el mismo nombre, crea los nuevos y elimina los que sobran. El API no tiene
+ * un reemplazo en bloque, así que son varias peticiones (solo cuando la lista cambió).
+ */
+async function syncIngredients(productId: string, names: string[], current: IngredientDto[]): Promise<void> {
+  const pending = [...current]
+
+  for (const [sortOrder, name] of names.entries()) {
+    const index = pending.findIndex((item) => normalizeSearch(item.name) === normalizeSearch(name))
+
+    if (index >= 0) {
+      const [existing] = pending.splice(index, 1)
+
+      if (existing && (existing.sortOrder !== sortOrder || existing.name !== name)) {
+        await http<IngredientDto>(`/products/${productId}/ingredients/${existing.id}`, {
+          method: 'PATCH',
+          body: { name, sortOrder },
+        })
+      }
+      continue
+    }
+
+    await http<IngredientDto>(`/products/${productId}/ingredients`, { method: 'POST', body: { name, sortOrder } })
+  }
+
+  for (const leftover of pending) {
+    await http<unknown>(`/products/${productId}/ingredients/${leftover.id}`, { method: 'DELETE' })
+  }
+}
+
+function sameList(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((item, index) => item === b[index])
+}
+
+/** Código interno obligatorio y único por sede. La UI no lo pide: se genera a partir del nombre. */
+function generateProductCode(name: string): string {
+  const base = normalizeSearch(name)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 20)
+  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase()
+  return `${base || 'PROD'}-${suffix}`
+}
+
+/** Campos del producto que viajan en POST/PATCH /products. */
+function productBody(draft: MenuProductDraft): Record<string, unknown> {
   return {
-    categories,
-    products: products.filter((product) => product.isActive && categoryIds.has(product.categoryId)),
+    name: draft.name,
+    description: draft.description,
+    price: draft.price,
+    imageUrl: draft.imageUrl || undefined,
+    isAvailable: draft.isAvailable,
+    tags: draft.tags,
+    portion: draft.portion || null,
+    presentation: draft.presentation || null,
+    preparationMinutes: draft.prepMinutes ?? undefined,
   }
-}
-
-export async function reorderMenuCategories(categories: MenuCategory[]): Promise<MenuCategory[]> {
-  const updated: MenuCategory[] = []
-
-  for (const [index, category] of categories.entries()) {
-    const position = index + 1
-
-    if (category.position === position) {
-      updated.push(category)
-      continue
-    }
-
-    const payload = await http<unknown>(`/menuCategories/${category.id}`, { method: 'PATCH', body: { position } })
-    updated.push(isMenuCategory(payload) ? toMenuCategory(payload) : { ...category, position })
-  }
-
-  return updated
-}
-
-export async function reorderMenuProducts(products: MenuProduct[]): Promise<MenuProduct[]> {
-  const updated: MenuProduct[] = []
-
-  for (const [index, product] of products.entries()) {
-    const position = index + 1
-
-    if (product.position === position) {
-      updated.push(product)
-      continue
-    }
-
-    updated.push(await patchMenuProduct(product.id, { position }))
-  }
-
-  return updated
-}
-
-export async function createMenuCategory(
-  restaurantId: string,
-  menuId: string,
-  draft: MenuCategoryDraft,
-  position: number,
-): Promise<MenuCategory> {
-  const payload = await http<unknown>('/menuCategories', {
-    method: 'POST',
-    body: { restaurantId, menuId, position, ...draft },
-  })
-
-  if (!isMenuCategory(payload)) {
-    throw new Error('No se pudo crear la categoría.')
-  }
-
-  return toMenuCategory(payload)
-}
-
-export async function updateMenuCategory(id: string, draft: MenuCategoryDraft): Promise<MenuCategory> {
-  const payload = await http<unknown>(`/menuCategories/${id}`, {
-    method: 'PATCH',
-    body: draft,
-  })
-
-  if (!isMenuCategory(payload)) {
-    throw new Error('No se pudo actualizar la categoría.')
-  }
-
-  return toMenuCategory(payload)
-}
-
-export async function deleteMenuCategory(id: string): Promise<void> {
-  await http<unknown>(`/menuCategories/${id}`, { method: 'DELETE' })
 }
 
 /**
- * Texto de búsqueda sin tildes que se guarda junto al producto. json-server solo
- * compara en minúsculas; con este campo "jamon" encuentra "Jamón". En el backend
- * real esto lo resolverá la base de datos (p. ej. unaccent + ILIKE en Postgres).
+ * Crea el producto y lo coloca en el menú en una sola llamada (POST /products con `menu`).
+ * Si el producto debe quedar oculto o tiene ingredientes, se completan después.
  */
-function productSearchText(draft: Pick<MenuProductDraft, 'name' | 'description' | 'tags' | 'ingredients'>): string {
-  return normalizeSearch([draft.name, draft.description, ...draft.tags, ...draft.ingredients].join(' '))
-}
-
-/**
- * Sugerencias para el buscador predictivo de la carta del comensal.
- * Contrato pensado para el backend: GET /restaurants/:id/menu/suggestions?q=…&limit=…
- */
-export async function searchMenuSuggestions(restaurantId: string, query: string, limit = 6): Promise<MenuProduct[]> {
-  const term = normalizeSearch(query)
-
-  if (!term) {
-    return []
-  }
-
-  const where = {
-    restaurantId: { eq: restaurantId },
-    isActive: { eq: true },
-    searchText: { contains: term },
-  }
-  const payload = await http<unknown>(`/menuProducts?_where=${encodeURIComponent(JSON.stringify(where))}`)
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  const products = payload.filter(isMenuProduct).map(toMenuProduct)
-
-  /* Primero los que empiezan por el término, luego los que lo contienen en el nombre, luego el resto. */
-  const rank = (product: MenuProduct): number => {
-    const name = normalizeSearch(product.name)
-    return name.startsWith(term) ? 0 : name.includes(term) ? 1 : 2
-  }
-
-  return products.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'es')).slice(0, limit)
-}
-
 export async function createMenuProduct(
   restaurantId: string,
+  menuId: string,
   draft: MenuProductDraft,
   position = 0,
 ): Promise<MenuProduct> {
-  const payload = await http<unknown>('/menuProducts', {
+  const menuSectionId = sectionIdToApi(draft.categoryId)
+  const product = await http<ProductDto>('/products', {
     method: 'POST',
     body: {
+      ...productBody(draft),
       restaurantId,
-      position,
-      ...draft,
-      searchText: productSearchText(draft),
-      imageUrl: draft.imageUrl || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=640&h=480&fit=crop&auto=format&q=70',
+      code: generateProductCode(draft.name),
+      menu: { menuId, menuSectionId, sortOrder: position },
     },
   })
 
-  if (!isMenuProduct(payload)) {
-    throw new Error('No se pudo crear el producto.')
+  if (!draft.isActive) {
+    await http<MenuProductPlacementDto>(`/menus/${menuId}/products/${product.id}`, {
+      method: 'PATCH',
+      body: { isVisible: false },
+    })
   }
 
-  return toMenuProduct(payload)
-}
-
-export async function patchMenuProduct(
-  id: string,
-  changes: Partial<MenuProductDraft & { position: number; searchText: string }>,
-): Promise<MenuProduct> {
-  const payload = await http<unknown>(`/menuProducts/${id}`, {
-    method: 'PATCH',
-    body: changes,
-  })
-
-  if (!isMenuProduct(payload)) {
-    throw new Error('No se pudo actualizar el producto.')
+  if (draft.ingredients.length > 0) {
+    await syncIngredients(product.id, draft.ingredients, [])
   }
 
-  return toMenuProduct(payload)
-}
-
-export async function updateMenuProduct(id: string, draft: MenuProductDraft): Promise<MenuProduct> {
-  return patchMenuProduct(id, { ...draft, searchText: productSearchText(draft) })
+  return {
+    ...toPlacedProduct(product, { menuId, productId: product.id, menuSectionId, sortOrder: position, isVisible: draft.isActive }),
+    ingredients: [...draft.ingredients],
+  }
 }
 
 /**
- * Convierte una imagen elegida por el usuario en un data URL reducido, para
- * guardarla directamente en db.json mientras no haya almacenamiento de archivos.
+ * Guarda el formulario del producto: PATCH /products/{id} con sus datos y, si cambió la sección
+ * o la visibilidad, PATCH /menus/{menuId}/products/{id}. Los ingredientes se sincronizan
+ * solo si cambiaron respecto de `current.ingredients` (cargados al abrir el formulario).
  */
-export function imageFileToDataUrl(file: File, maxSize = 640): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
+export async function updateMenuProduct(current: MenuProduct, draft: MenuProductDraft): Promise<MenuProduct> {
+  const product = await http<ProductDto>(`/products/${current.id}`, { method: 'PATCH', body: productBody(draft) })
+  let placement: MenuProductPlacementDto = {
+    menuId: current.menuId,
+    productId: current.id,
+    menuSectionId: sectionIdToApi(current.categoryId),
+    sortOrder: current.position,
+    isVisible: current.isActive,
+  }
 
-    reader.onerror = () => reject(new Error('No se pudo leer la imagen.'))
-    reader.onload = () => {
-      const image = new Image()
+  const sectionChanged = draft.categoryId !== current.categoryId
+  if (current.menuId && (sectionChanged || draft.isActive !== current.isActive)) {
+    placement = await http<MenuProductPlacementDto>(`/menus/${current.menuId}/products/${current.id}`, {
+      method: 'PATCH',
+      body: {
+        ...(sectionChanged ? { menuSectionId: sectionIdToApi(draft.categoryId) } : {}),
+        isVisible: draft.isActive,
+      },
+    })
+  }
 
-      image.onerror = () => reject(new Error('El archivo no es una imagen válida.'))
-      image.onload = () => {
-        const scale = Math.min(1, maxSize / Math.max(image.width, image.height))
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.round(image.width * scale)
-        canvas.height = Math.round(image.height * scale)
-        canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
-        resolve(canvas.toDataURL('image/jpeg', 0.8))
-      }
-      image.src = String(reader.result)
-    }
-    reader.readAsDataURL(file)
-  })
+  if (!sameList(draft.ingredients, current.ingredients)) {
+    await syncIngredients(current.id, draft.ingredients, await fetchIngredientRecords(current.id))
+  }
+
+  return { ...toPlacedProduct(product, placement), ingredients: [...draft.ingredients] }
 }
 
+/** Disponible / agotado (PATCH /products/{id}). */
+export async function setMenuProductAvailability(product: MenuProduct, isAvailable: boolean): Promise<MenuProduct> {
+  const updated = await http<ProductDto>(`/products/${product.id}`, { method: 'PATCH', body: { isAvailable } })
+  return { ...product, ...productFields(updated), ingredients: product.ingredients }
+}
+
+/** Visible / oculto en la carta (PATCH /menus/{menuId}/products/{id}). */
+export async function setMenuProductVisibility(product: MenuProduct, isVisible: boolean): Promise<MenuProduct> {
+  const placement = await http<MenuProductPlacementDto>(`/menus/${product.menuId}/products/${product.id}`, {
+    method: 'PATCH',
+    body: { isVisible },
+  })
+  return { ...product, isActive: placement.isVisible, position: placement.sortOrder }
+}
+
+/**
+ * PUT /menus/{menuId}/products/order en una sola petición. `products` deben ser todos los
+ * productos de una misma sección del menú, en el nuevo orden.
+ */
+export async function reorderMenuProducts(menuId: string, products: MenuProduct[]): Promise<MenuProduct[]> {
+  const first = products[0]
+
+  if (!first) {
+    return []
+  }
+
+  const placements = await http<MenuProductPlacementDto[]>(`/menus/${menuId}/products/order`, {
+    method: 'PUT',
+    body: { menuSectionId: sectionIdToApi(first.categoryId), productIds: products.map((product) => product.id) },
+  })
+  const order = new Map((Array.isArray(placements) ? placements : []).map((item) => [item.productId, item.sortOrder]))
+
+  return products.map((product, index) => ({ ...product, position: order.get(product.id) ?? index }))
+}
+
+/** Baja lógica del producto (DELETE /products/{id}): deja de salir en la carta. */
 export async function deleteMenuProduct(id: string): Promise<void> {
-  await http<unknown>(`/menuProducts/${id}`, { method: 'DELETE' })
+  await http<unknown>(`/products/${id}`, { method: 'DELETE' })
+}
+
+/* ------------------------------------------------------- Carta pública */
+
+/**
+ * Carta que ve el comensal (GET /api/v1/restaurants/{id}/menu, público): secciones activas del
+ * menú vigente y sus productos visibles. Los productos sin sección van en una categoría "Otros".
+ */
+export async function fetchCustomerMenu(
+  restaurantId: string,
+): Promise<{ categories: MenuCategory[]; products: MenuProduct[] }> {
+  const data = await http<StorefrontMenuDto>(`/api/v1/restaurants/${restaurantId}/menu`, { auth: 'none' })
+
+  if (!data?.menu) {
+    return { categories: [], products: [] }
+  }
+
+  const menuId = data.menu.id
+  const categories = data.sections.map(toMenuCategory)
+  const products = data.products.map((dto, index) => ({
+    ...toStorefrontProduct(dto, restaurantId, menuId),
+    position: index,
+  }))
+
+  if (products.some((product) => product.categoryId === UNSECTIONED_ID)) {
+    categories.push({
+      id: UNSECTIONED_ID,
+      menuId,
+      name: UNSECTIONED_NAME,
+      position: Number.MAX_SAFE_INTEGER,
+      isActive: true,
+    })
+  }
+
+  return { categories, products }
+}
+
+/**
+ * Sugerencias del buscador predictivo de la carta del comensal
+ * (GET /api/v1/restaurants/{id}/menu/search?q&limit). El servidor ignora tildes y mayúsculas
+ * y ordena primero las coincidencias por inicio del nombre.
+ */
+export async function searchMenuSuggestions(restaurantId: string, query: string, limit = 6): Promise<MenuProduct[]> {
+  const q = query.trim()
+
+  if (!q) {
+    return []
+  }
+
+  const items = await http<StorefrontProductDto[]>(`/api/v1/restaurants/${restaurantId}/menu/search`, {
+    auth: 'none',
+    query: { q, limit },
+  })
+
+  return (Array.isArray(items) ? items : []).map((dto, index) => ({
+    ...toStorefrontProduct(dto, restaurantId, ''),
+    position: index,
+  }))
+}
+
+/* -------------------------------------------------------------- Imágenes */
+
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+
+/**
+ * Sube una imagen de la sede (POST /uploads/images?restaurantId, multipart con el campo `file`)
+ * y devuelve su URL pública para guardarla en el registro (p. ej. `imageUrl` del producto).
+ * Sin `restaurantId` usa la sede activa del personal. Requiere `catalog.manage`.
+ */
+export async function uploadImage(file: File, restaurantId?: string): Promise<string> {
+  const siteId = restaurantId ?? useSessionStore().restaurantId
+
+  if (!siteId) {
+    throw new Error('No hay una sede seleccionada para subir la imagen.')
+  }
+
+  if (!IMAGE_TYPES.includes(file.type)) {
+    throw new Error('Elige una imagen JPG, PNG, WebP o AVIF.')
+  }
+
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error('La imagen pesa más de 5 MB.')
+  }
+
+  const body = new FormData()
+  body.append('file', file)
+
+  const uploaded = await http<UploadedFileDto>('/uploads/images', {
+    method: 'POST',
+    query: { restaurantId: siteId },
+    body,
+  })
+
+  return uploaded.url
 }

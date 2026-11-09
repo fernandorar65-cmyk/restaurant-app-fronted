@@ -15,7 +15,7 @@ const cart = useCartStore()
 const router = useRouter()
 
 async function logout(): Promise<void> {
-  session.clearAuth()
+  await session.signOut()
   await router.push({ name: 'login' })
 }
 </script>

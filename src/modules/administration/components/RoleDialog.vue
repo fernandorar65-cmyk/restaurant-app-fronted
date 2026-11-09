@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
 
-import type { Role, RoleDraft } from '@/modules/administration/types'
-import { PERMISSIONS, permissionLabel } from '@/modules/auth/permissions'
-import type { Permission } from '@/modules/auth/permissions'
+import type { ApiPermission, Role, RoleDraft } from '@/modules/administration/types'
 
 const props = defineProps<{
   role: Role | null
+  /** Catálogo de permisos del API (`GET /permissions`). */
+  catalog: ApiPermission[]
 }>()
 
 const emit = defineEmits<{
@@ -17,10 +17,10 @@ const emit = defineEmits<{
 const dialogEl = ref<HTMLDialogElement | null>(null)
 const name = ref(props.role?.name ?? '')
 const description = ref(props.role?.description ?? '')
-const permissions = ref<Permission[]>([...(props.role?.permissions ?? [])])
+const permissions = ref<string[]>([...(props.role?.permissions ?? [])])
 const formError = ref<string | null>(null)
 
-function togglePermission(permission: Permission): void {
+function togglePermission(permission: string): void {
   permissions.value = permissions.value.includes(permission)
     ? permissions.value.filter((item) => item !== permission)
     : [...permissions.value, permission]
@@ -39,7 +39,10 @@ function submit(): void {
   emit('save', {
     name: name.value.trim(),
     description: description.value.trim(),
-    permissions: PERMISSIONS.filter((permission) => permissions.value.includes(permission)),
+    // Solo códigos del catálogo, en su orden.
+    permissions: props.catalog
+      .map((permission) => permission.code)
+      .filter((code) => permissions.value.includes(code)),
   })
 }
 
@@ -83,15 +86,19 @@ onMounted(async () => {
       <fieldset class="space-y-2">
         <legend class="font-label text-xs font-semibold tracking-wide text-on-surface-variant uppercase">Permisos</legend>
         <div class="grid gap-1.5 rounded-lg bg-surface p-3">
-          <label v-for="permission in PERMISSIONS" :key="permission" class="flex items-center gap-2 text-sm">
+          <label v-for="permission in catalog" :key="permission.id" class="flex items-start gap-2 text-sm">
             <input
               type="checkbox"
-              class="h-4 w-4 accent-primary"
-              :checked="permissions.includes(permission)"
-              @change="togglePermission(permission)"
+              class="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+              :checked="permissions.includes(permission.code)"
+              @change="togglePermission(permission.code)"
             />
-            {{ permissionLabel[permission] }}
+            <span>
+              {{ permission.name }}
+              <span v-if="permission.description" class="block text-xs text-on-surface-variant">{{ permission.description }}</span>
+            </span>
           </label>
+          <p v-if="catalog.length === 0" class="text-xs text-on-surface-variant">No se pudo cargar el catálogo de permisos.</p>
         </div>
       </fieldset>
 

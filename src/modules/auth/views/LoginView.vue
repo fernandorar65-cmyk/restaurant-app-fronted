@@ -67,7 +67,7 @@ async function onSubmit(): Promise<void> {
     const authSession = await login({
       email: form.email.trim(),
       password: form.password,
-    })
+    }, { persist: rememberSession.value })
 
     session.setSession(authSession, { persist: rememberSession.value })
     // La primera vista puede ser una sede: con el directorio cargado, su URL ya lleva el nombre del local.

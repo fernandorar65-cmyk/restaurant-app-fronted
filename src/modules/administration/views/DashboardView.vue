@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 
 import { siteLandingRoute } from '@/app/router/landing'
 import { ensureSiteDirectory } from '@/app/router/site-directory'
-import { grantRestaurantAccess } from '@/modules/auth/api'
 import type { NewRestaurantDraft } from '@/modules/restaurants/api'
 import RestaurantEditDialog from '@/modules/restaurants/components/RestaurantEditDialog.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -93,11 +92,8 @@ async function createSite(draft: NewRestaurantDraft): Promise<void> {
   try {
     const site = await createRestaurant(draft)
 
-    // Quien la creó con acceso restringido a algunas sedes, pasa a tener acceso a esta.
-    if (session.user) {
-      await grantRestaurantAccess(session.user.id, site.id)
-      await session.refreshUser()
-    }
+    // El API da acceso a la sede a quien la crea: se relee el perfil para verla.
+    await session.refreshUser()
 
     await ensureSiteDirectory(true)
     isCreatingSite.value = false

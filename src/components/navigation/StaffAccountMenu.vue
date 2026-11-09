@@ -22,7 +22,7 @@ function close(): void {
 async function logout(): Promise<void> {
   close()
   activity.watchSite(null)
-  session.clearAuth()
+  await session.signOut()
   await router.push({ name: 'login' })
 }
 

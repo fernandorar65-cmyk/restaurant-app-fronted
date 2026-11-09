@@ -18,12 +18,14 @@ const session = useSessionStore()
 
 const form = reactive({
   name: '',
+  organizationName: '',
   email: '',
   password: '',
 })
 
 const fieldErrors = reactive({
   name: undefined as string | undefined,
+  organizationName: undefined as string | undefined,
   email: undefined as string | undefined,
   password: undefined as string | undefined,
 })
@@ -33,10 +35,11 @@ const isSubmitting = ref(false)
 
 function validateForm(): boolean {
   fieldErrors.name = validateName(form.name)
+  fieldErrors.organizationName = form.organizationName.trim() ? undefined : 'El nombre del restaurante es obligatorio'
   fieldErrors.email = validateEmail(form.email)
   fieldErrors.password = validatePassword(form.password)
 
-  return !fieldErrors.name && !fieldErrors.email && !fieldErrors.password
+  return !fieldErrors.name && !fieldErrors.organizationName && !fieldErrors.email && !fieldErrors.password
 }
 
 async function onSubmit(): Promise<void> {
@@ -51,6 +54,7 @@ async function onSubmit(): Promise<void> {
   try {
     const authSession = await registerAccount({
       name: form.name.trim(),
+      organizationName: form.organizationName.trim(),
       email: form.email.trim(),
       password: form.password,
     })
@@ -74,6 +78,14 @@ async function onSubmit(): Promise<void> {
       <p v-if="formError" class="rounded-xl bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">{{ formError }}</p>
 
       <AuthTextField id="register-name" v-model="form.name" label="Nombre" autocomplete="name" placeholder="Ana Pérez" :error="fieldErrors.name" />
+      <AuthTextField
+        id="register-organization"
+        v-model="form.organizationName"
+        label="Nombre del restaurante"
+        autocomplete="organization"
+        placeholder="Grupo Sabores"
+        :error="fieldErrors.organizationName"
+      />
       <AuthTextField
         id="register-email"
         v-model="form.email"

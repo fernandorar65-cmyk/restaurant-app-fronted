@@ -1,155 +1,133 @@
+import { fullName, splitName } from '@/modules/auth/api'
+import { clearTokens, getRefreshToken, storeTokens } from '@/modules/auth/storage'
 import type { CustomerProfile, CustomerProfileDraft } from '@/modules/diners/types'
 import type { DinerCustomer } from '@/stores/diner'
-import { http, HttpError } from '@/services/http'
+import { http } from '@/services/http'
 
-interface JsonCustomer {
-  id: string | number
-  name: string
+/** UserResponseDto (lo que trae el login/registro del comensal). */
+interface ApiCustomerUser {
+  id: string
   email: string
-  password: string
+  firstName: string
+  lastName?: string | null
+}
+
+interface ApiCustomerAuth {
+  accessToken: string
+  refreshToken: string
+  user: ApiCustomerUser
+}
+
+/** CustomerMeResponseDto */
+interface ApiCustomerMe extends ApiCustomerUser {
   phone?: string | null
-  birthday?: string | null
-  dietaryPreferences?: string[]
-  allergens?: string[]
-  marketingOptIn?: boolean
-  createdAt?: string | null
+  createdAt: string
+  dietaryPreferences?: string | null
+  allergies?: string | null
+  birthDate?: string | null
+  marketingOptIn: boolean
 }
 
-function isJsonCustomer(value: unknown): value is JsonCustomer {
-  if (typeof value !== 'object' || value === null) {
-    return false
+function toCustomer(user: ApiCustomerUser): DinerCustomer {
+  return { id: user.id, name: fullName(user) || user.email, email: user.email }
+}
+
+/** El API guarda preferencias y alergias como texto libre: "Vegano, Sin gluten". */
+function splitList(value: string | null | undefined): string[] {
+  return (value ?? '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function joinList(values: string[]): string | null {
+  const text = values.map((item) => item.trim()).filter(Boolean).join(', ')
+  return text || null
+}
+
+function toProfile(value: ApiCustomerMe): CustomerProfile {
+  return {
+    id: value.id,
+    name: fullName(value) || value.email,
+    email: value.email,
+    phone: value.phone || null,
+    birthday: value.birthDate || null,
+    dietaryPreferences: splitList(value.dietaryPreferences),
+    allergens: splitList(value.allergies),
+    marketingOptIn: value.marketingOptIn === true,
+    createdAt: value.createdAt ?? null,
   }
-
-  const record = value as Record<string, unknown>
-
-  return (
-    (typeof record.id === 'string' || typeof record.id === 'number') &&
-    typeof record.name === 'string' &&
-    typeof record.email === 'string' &&
-    typeof record.password === 'string'
-  )
 }
 
-function toCustomer(value: JsonCustomer): DinerCustomer {
-  return { id: String(value.id), name: value.name, email: value.email }
-}
-
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
-}
-
-async function findCustomers(email: string): Promise<JsonCustomer[]> {
-  const payload = await http<unknown>(`/customers?email=${encodeURIComponent(email)}`)
-  return Array.isArray(payload) ? payload.filter(isJsonCustomer) : []
-}
-
-/** Cuenta opcional del comensal. Es independiente de las cuentas del personal. */
+/** Cuenta opcional del comensal. Su sesión es independiente de la del personal. */
 export async function loginCustomer(email: string, password: string): Promise<DinerCustomer> {
-  const normalized = normalizeEmail(email)
-  const match = (await findCustomers(normalized)).find(
-    (customer) => normalizeEmail(customer.email) === normalized && customer.password === password,
-  )
+  const data = await http<ApiCustomerAuth>('/api/v1/customer/auth/login', {
+    method: 'POST',
+    auth: 'none',
+    body: { email: email.trim().toLowerCase(), password },
+  })
 
-  if (!match) {
-    throw new HttpError('Correo o contraseña incorrectos', 401)
-  }
-
-  return toCustomer(match)
+  storeTokens('customer', data, { persist: true })
+  return toCustomer(data.user)
 }
 
 export async function registerCustomer(name: string, email: string, password: string): Promise<DinerCustomer> {
-  const normalized = normalizeEmail(email)
-
-  if ((await findCustomers(normalized)).length > 0) {
-    throw new HttpError('Ya existe una cuenta con este correo', 409)
-  }
-
-  const created = await http<unknown>('/customers', {
+  const data = await http<ApiCustomerAuth>('/api/v1/customer/auth/register', {
     method: 'POST',
-    body: {
-      name: name.trim(),
-      email: normalized,
-      password,
-      phone: null,
-      birthday: null,
-      dietaryPreferences: [],
-      allergens: [],
-      marketingOptIn: false,
-      createdAt: new Date().toISOString(),
-    },
+    auth: 'none',
+    body: { ...splitName(name), email: email.trim().toLowerCase(), password },
   })
 
-  if (!isJsonCustomer(created)) {
-    throw new HttpError('No se pudo crear la cuenta', 500)
-  }
-
-  return toCustomer(created)
+  storeTokens('customer', data, { persist: true })
+  return toCustomer(data.user)
 }
 
-function stringList(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
-}
+/** Invalida el refresh token en el servidor y borra la sesión del comensal. */
+export async function logoutCustomer(): Promise<void> {
+  const refreshToken = getRefreshToken('customer')
 
-function toProfile(value: JsonCustomer): CustomerProfile {
-  return {
-    id: String(value.id),
-    name: value.name,
-    email: value.email,
-    phone: typeof value.phone === 'string' && value.phone ? value.phone : null,
-    birthday: typeof value.birthday === 'string' && value.birthday ? value.birthday : null,
-    dietaryPreferences: stringList(value.dietaryPreferences),
-    allergens: stringList(value.allergens),
-    marketingOptIn: value.marketingOptIn === true,
-    createdAt: typeof value.createdAt === 'string' ? value.createdAt : null,
+  try {
+    if (refreshToken) {
+      await http<void>('/api/v1/customer/auth/logout', { method: 'POST', body: { refreshToken } })
+    }
+  } catch {
+    // Se cierra en el cliente aunque el servidor no responda.
+  } finally {
+    clearTokens('customer')
   }
 }
 
-async function fetchJsonCustomer(id: string): Promise<JsonCustomer> {
-  const payload = await http<unknown>(`/customers/${id}`)
-
-  if (!isJsonCustomer(payload)) {
-    throw new HttpError('No encontramos tu cuenta', 404)
-  }
-
-  return payload
+export async function forgotCustomerPassword(email: string): Promise<void> {
+  await http<void>('/api/v1/customer/auth/forgot-password', { method: 'POST', auth: 'none', body: { email } })
 }
 
-/** Contrato pensado para el backend: GET /customers/me */
-export async function fetchCustomerProfile(id: string): Promise<CustomerProfile> {
-  return toProfile(await fetchJsonCustomer(id))
+export async function resetCustomerPassword(token: string, newPassword: string): Promise<void> {
+  await http<void>('/api/v1/customer/auth/reset-password', { method: 'POST', auth: 'none', body: { token, newPassword } })
 }
 
-/** Contrato pensado para el backend: PATCH /customers/me */
-export async function updateCustomerProfile(id: string, draft: CustomerProfileDraft): Promise<CustomerProfile> {
-  const payload = await http<unknown>(`/customers/${id}`, {
+/** GET /api/v1/customer/me. El id se ignora: el API usa el de la sesión. */
+export async function fetchCustomerProfile(_id?: string): Promise<CustomerProfile> {
+  return toProfile(await http<ApiCustomerMe>('/api/v1/customer/me'))
+}
+
+/** PATCH /api/v1/customer/me */
+export async function updateCustomerProfile(_id: string, draft: CustomerProfileDraft): Promise<CustomerProfile> {
+  const payload = await http<ApiCustomerMe>('/api/v1/customer/me', {
     method: 'PATCH',
     body: {
-      name: draft.name.trim(),
-      phone: draft.phone?.trim() || null,
-      birthday: draft.birthday || null,
-      dietaryPreferences: draft.dietaryPreferences,
-      allergens: draft.allergens,
+      ...splitName(draft.name),
+      phone: draft.phone?.trim() || undefined,
+      birthDate: draft.birthday || null,
+      dietaryPreferences: joinList(draft.dietaryPreferences) ?? '',
+      allergies: joinList(draft.allergens),
       marketingOptIn: draft.marketingOptIn,
     },
   })
 
-  if (!isJsonCustomer(payload)) {
-    throw new HttpError('No se pudo guardar tu perfil', 500)
-  }
-
   return toProfile(payload)
 }
 
-/**
- * Contrato pensado para el backend: POST /customers/me/password. Con json-server la
- * contraseña actual se compara en el cliente; el backend real lo hará del lado servidor.
- */
-export async function changeCustomerPassword(id: string, currentPassword: string, nextPassword: string): Promise<void> {
-  const customer = await fetchJsonCustomer(id)
-
-  if (customer.password !== currentPassword) {
-    throw new HttpError('La contraseña actual no es correcta', 401)
-  }
-
-  await http<unknown>(`/customers/${id}`, { method: 'PATCH', body: { password: nextPassword } })
+/** PATCH /api/v1/customer/me/password: el servidor valida la contraseña actual. */
+export async function changeCustomerPassword(_id: string, currentPassword: string, newPassword: string): Promise<void> {
+  await http<void>('/api/v1/customer/me/password', { method: 'PATCH', body: { currentPassword, newPassword } })
 }

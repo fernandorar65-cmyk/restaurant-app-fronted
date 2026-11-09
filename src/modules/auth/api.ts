@@ -1,278 +1,266 @@
-import { isPermission } from '@/modules/auth/permissions'
-import type { Permission } from '@/modules/auth/permissions'
-import { http, HttpError } from '@/services/http'
+import { fromApiPermissions } from '@/modules/auth/permissions'
+import { clearTokens, getRefreshToken, storeTokens } from '@/modules/auth/storage'
 import type {
   AuthSession,
   AuthUser,
-  JsonUser,
   LoginPayload,
   RegisterPayload,
   StaffProfile,
   StaffProfileDraft,
+  StaffProfileSite,
 } from '@/modules/auth/types'
-import { fetchRestaurants } from '@/modules/restaurants/api'
+import { http, httpAll } from '@/services/http'
 
-function isJsonUser(value: unknown): value is JsonUser {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  if (
-    !('id' in value) ||
-    !('name' in value) ||
-    !('email' in value) ||
-    !('password' in value) ||
-    !('isActive' in value)
-  ) {
-    return false
-  }
-
-  return (
-    (typeof value.id === 'string' || typeof value.id === 'number') &&
-    typeof value.name === 'string' &&
-    typeof value.email === 'string' &&
-    typeof value.password === 'string' &&
-    typeof value.isActive === 'boolean'
-  )
+/** UserResponseDto */
+export interface ApiUser {
+  id: string
+  email: string
+  firstName: string
+  lastName?: string | null
+  phone?: string | null
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED'
+  mustChangePassword: boolean
+  lastLoginAt?: string | null
+  createdAt: string
+  updatedAt: string
 }
 
-interface RoleAccess {
+/** StaffAccessResponseDto */
+interface ApiStaffAccess {
+  membershipId: string
+  organizationId: string
+  organizationName: string
+  role: { id: string; name: string; code: string }
+  allRestaurants: boolean
+  restaurantIds: string[]
+  permissions: string[]
+}
+
+/** StaffEmploymentResponseDto */
+interface ApiStaffEmployment {
+  employeeId: string
+  organizationId: string
+  organizationName: string
+  employeeCode: string
+  status: string
+  hiredAt?: string | null
+  jobPosition?: { id: string; name: string } | null
+  workArea?: { id: string; name: string } | null
+}
+
+/** StaffProfileResponseDto (y el resto de StaffLoginResponseDto) */
+interface ApiStaffProfile {
+  user: ApiUser
+  isPlatformAdmin: boolean
+  access: ApiStaffAccess[]
+  employments: ApiStaffEmployment[]
+}
+
+interface ApiStaffLogin extends ApiStaffProfile {
+  accessToken: string
+  refreshToken: string
+}
+
+interface ApiOwnerRegistration {
+  accessToken: string
+  refreshToken: string
+  user: ApiUser
+  organization: { id: string; name: string }
+  roleId: string
+  membershipId: string
+}
+
+export function fullName(user: Pick<ApiUser, 'firstName' | 'lastName'>): string {
+  return [user.firstName, user.lastName].filter(Boolean).join(' ').trim()
+}
+
+/** El formulario pide un solo nombre: la primera palabra va a `firstName` y el resto a `lastName`. */
+export function splitName(name: string): { firstName: string; lastName?: string } {
+  const parts = name.trim().split(/\s+/)
+  const [firstName = '', ...rest] = parts
+  return rest.length > 0 ? { firstName, lastName: rest.join(' ') } : { firstName }
+}
+
+/**
+ * Organización activa: la elegida antes (si sigue disponible) o la primera.
+ * El panel trabaja con una organización a la vez.
+ */
+function pickAccess(access: ApiStaffAccess[], preferredOrganizationId?: string | null): ApiStaffAccess | null {
+  return access.find((item) => item.organizationId === preferredOrganizationId) ?? access[0] ?? null
+}
+
+function toAuthUser(profile: ApiStaffProfile, preferredOrganizationId?: string | null): AuthUser {
+  const access = pickAccess(profile.access, preferredOrganizationId)
+  const employment =
+    profile.employments.find((item) => item.organizationId === access?.organizationId) ?? profile.employments[0] ?? null
+  const apiPermissions = access?.permissions ?? []
+
+  return {
+    id: profile.user.id,
+    name: fullName(profile.user) || profile.user.email,
+    email: profile.user.email,
+    roleId: access?.role.id ?? null,
+    roleName: access?.role.name ?? null,
+    roleCode: access?.role.code ?? null,
+    permissions: fromApiPermissions(apiPermissions),
+    apiPermissions,
+    restaurantIds: access && !access.allRestaurants ? access.restaurantIds : [],
+    employeeId: employment?.employeeId ?? null,
+    organizationId: access?.organizationId ?? null,
+    organizationName: access?.organizationName ?? null,
+    membershipId: access?.membershipId ?? null,
+    isPlatformAdmin: profile.isPlatformAdmin,
+  }
+}
+
+async function fetchProfileDto(): Promise<ApiStaffProfile> {
+  return http<ApiStaffProfile>('/api/v1/owner/me/profile')
+}
+
+/**
+ * Vuelve a leer el perfil (permisos actualizados, bloqueo, desactivación).
+ * Devuelve null si la cuenta ya no puede entrar (401/403).
+ */
+export async function refreshAuthUser(preferredOrganizationId?: string | null): Promise<AuthUser | null> {
+  try {
+    const profile = await fetchProfileDto()
+    return profile.user.status === 'ACTIVE' ? toAuthUser(profile, preferredOrganizationId) : null
+  } catch (error) {
+    if (error instanceof Error && 'status' in error && (error.status === 401 || error.status === 403)) {
+      return null
+    }
+
+    throw error
+  }
+}
+
+export async function login(payload: LoginPayload, options: { persist?: boolean } = {}): Promise<AuthSession> {
+  const data = await http<ApiStaffLogin>('/api/v1/owner/auth/login', {
+    method: 'POST',
+    auth: 'none',
+    body: { email: payload.email.trim().toLowerCase(), password: payload.password },
+  })
+
+  storeTokens('staff', data, { persist: options.persist ?? true })
+  return { accessToken: data.accessToken, refreshToken: data.refreshToken, user: toAuthUser(data) }
+}
+
+/** Alta del dueño: usuario + organización + rol OWNER, en una sola transacción. */
+export async function register(payload: RegisterPayload): Promise<AuthSession> {
+  const data = await http<ApiOwnerRegistration>('/api/v1/owner/auth/register', {
+    method: 'POST',
+    auth: 'none',
+    body: {
+      ...splitName(payload.name),
+      email: payload.email.trim().toLowerCase(),
+      password: payload.password,
+      organization: { name: payload.organizationName.trim() },
+    },
+  })
+
+  storeTokens('staff', data, { persist: true })
+  // El registro no trae permisos ni sedes: se leen del perfil.
+  const user = (await refreshAuthUser(data.organization.id)) ?? toAuthUser({
+    user: data.user,
+    isPlatformAdmin: false,
+    access: [],
+    employments: [],
+  })
+
+  return { accessToken: data.accessToken, refreshToken: data.refreshToken, user }
+}
+
+export async function logout(): Promise<void> {
+  const refreshToken = getRefreshToken('staff')
+
+  try {
+    if (refreshToken) {
+      await http<void>('/api/v1/owner/auth/logout', { method: 'POST', body: { refreshToken } })
+    }
+  } catch {
+    // La sesión se cierra en el cliente aunque el servidor no responda.
+  } finally {
+    clearTokens('staff')
+  }
+}
+
+export async function forgotStaffPassword(email: string): Promise<void> {
+  await http<void>('/api/v1/owner/auth/forgot-password', { method: 'POST', auth: 'none', body: { email } })
+}
+
+export async function resetStaffPassword(token: string, newPassword: string): Promise<void> {
+  await http<void>('/api/v1/owner/auth/reset-password', { method: 'POST', auth: 'none', body: { token, newPassword } })
+}
+
+interface ApiRestaurantSummary {
+  id: string
   name: string
-  permissions: Permission[]
+  slug?: string | null
+  city?: string | null
+  address?: string | null
+  imageUrl?: string | null
 }
 
-async function fetchRoleAccess(roleId: string | null | undefined): Promise<RoleAccess | null> {
-  if (!roleId) {
-    return null
-  }
-
-  try {
-    const role = await http<unknown>(`/roles/${roleId}`)
-
-    if (typeof role !== 'object' || role === null || !('name' in role) || !('permissions' in role)) {
-      return null
-    }
-
-    const permissions = Array.isArray(role.permissions) ? role.permissions.filter(isPermission) : []
-    return { name: typeof role.name === 'string' ? role.name : '', permissions }
-  } catch (error) {
-    if (error instanceof HttpError && error.status === 404) {
-      return null
-    }
-
-    throw error
-  }
-}
-
-async function toAuthUser(user: JsonUser): Promise<AuthUser> {
-  const role = await fetchRoleAccess(user.roleId)
-
-  return {
-    id: String(user.id),
-    name: user.name,
-    email: user.email,
-    roleId: user.roleId ?? null,
-    roleName: role?.name ?? null,
-    permissions: role?.permissions ?? [],
-    restaurantIds: Array.isArray(user.restaurantIds) ? user.restaurantIds.map(String) : [],
-    employeeId: user.employeeId ?? null,
-  }
-}
-
-async function toSession(user: JsonUser): Promise<AuthSession> {
-  return {
-    accessToken: `json-${user.id}`,
-    user: await toAuthUser(user),
-  }
-}
-
-function assertCanSignIn(user: JsonUser): void {
-  if (user.isBlocked) {
-    throw new HttpError('Esta cuenta está bloqueada. Contactá a un administrador.', 403)
-  }
-
-  if (!user.isActive) {
-    throw new HttpError('Esta cuenta está desactivada. Contactá a un administrador.', 403)
-  }
-}
-
-/** Vuelve a leer el usuario y su rol (permisos actualizados, bloqueo, desactivación). */
-export async function refreshAuthUser(userId: string): Promise<AuthUser | null> {
-  try {
-    const payload = await http<unknown>(`/users/${userId}`)
-
-    if (!isJsonUser(payload) || payload.isBlocked || !payload.isActive) {
-      return null
-    }
-
-    return await toAuthUser(payload)
-  } catch (error) {
-    if (error instanceof HttpError && error.status === 404) {
-      return null
-    }
-
-    throw error
-  }
-}
-
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
-}
-
-async function findUsersByEmail(email: string): Promise<JsonUser[]> {
-  const users = await http<unknown>(`/users?email=${encodeURIComponent(email)}`)
-
-  if (!Array.isArray(users)) {
+async function fetchProfileSites(organizationId: string | null): Promise<StaffProfileSite[]> {
+  if (!organizationId) {
     return []
   }
 
-  return users.filter(isJsonUser)
-}
-
-export async function login(payload: LoginPayload): Promise<AuthSession> {
-  const email = normalizeEmail(payload.email)
-  const users = await findUsersByEmail(email)
-  const user = users.find(
-    (candidate) => normalizeEmail(candidate.email) === email && candidate.password === payload.password,
-  )
-
-  if (!user) {
-    throw new HttpError('Correo o contraseña incorrectos', 401)
-  }
-
-  assertCanSignIn(user)
-
-  return toSession(user)
-}
-
-export async function register(payload: RegisterPayload): Promise<AuthSession> {
-  const email = normalizeEmail(payload.email)
-  const existingUsers = await findUsersByEmail(email)
-
-  if (existingUsers.length > 0) {
-    throw new HttpError('Ya existe una cuenta con este correo', 409)
-  }
-
-  const created = await http<unknown>('/users', {
-    method: 'POST',
-    body: {
-      name: payload.name.trim(),
-      email,
-      password: payload.password,
-      isActive: true,
-      isBlocked: false,
-      roleId: null,
-      restaurantIds: [],
-      employeeId: null,
-    },
-  })
-
-  if (!isJsonUser(created)) {
-    throw new HttpError('No se pudo crear la cuenta', 500)
-  }
-
-  return toSession(created)
-}
-
-async function fetchJsonUser(id: string): Promise<JsonUser> {
-  const payload = await http<unknown>(`/users/${id}`)
-
-  if (!isJsonUser(payload)) {
-    throw new HttpError('No encontramos tu usuario', 404)
-  }
-
-  return payload
-}
-
-async function fetchEmployeeSummary(employeeId: string | null | undefined): Promise<StaffProfile['employee']> {
-  if (!employeeId) {
-    return null
-  }
-
   try {
-    const value = await http<unknown>(`/employees/${employeeId}`)
-
-    if (typeof value !== 'object' || value === null) {
-      return null
-    }
-
-    const record = value as Record<string, unknown>
-    return {
-      area: typeof record.area === 'string' ? record.area : '',
-      status: typeof record.status === 'string' ? record.status : '',
-      hiredAt: typeof record.hiredAt === 'string' ? record.hiredAt : null,
-      restaurantName: typeof record.restaurantName === 'string' ? record.restaurantName : null,
-    }
+    const sites = await httpAll<ApiRestaurantSummary>('/restaurants', { query: { organizationId } })
+    return sites.map((site) => ({
+      id: site.id,
+      slug: site.slug ?? site.id,
+      name: site.name,
+      city: site.city ?? site.address ?? '',
+      imageUrl: site.imageUrl ?? '',
+    }))
   } catch {
-    return null
+    return []
   }
 }
 
-/** Contrato pensado para el backend: GET /users/me/profile */
-export async function fetchStaffProfile(userId: string): Promise<StaffProfile> {
-  const user = await fetchJsonUser(userId)
-  const [authUser, restaurants, employee] = await Promise.all([
-    toAuthUser(user),
-    fetchRestaurants(),
-    fetchEmployeeSummary(user.employeeId),
-  ])
-  const allRestaurants = authUser.restaurantIds.length === 0
+/** GET /api/v1/owner/me/profile */
+export async function fetchStaffProfile(preferredOrganizationId?: string | null): Promise<StaffProfile> {
+  const profile = await fetchProfileDto()
+  const user = toAuthUser(profile, preferredOrganizationId)
+  const employment =
+    profile.employments.find((item) => item.organizationId === user.organizationId) ?? profile.employments[0] ?? null
+  const sites = await fetchProfileSites(user.organizationId)
+  const allRestaurants = user.restaurantIds.length === 0
 
   return {
-    id: authUser.id,
+    id: user.id,
     name: user.name,
     email: user.email,
-    phone: typeof user.phone === 'string' && user.phone ? user.phone : null,
-    jobTitle: typeof user.jobTitle === 'string' && user.jobTitle ? user.jobTitle : null,
-    createdAt: typeof user.createdAt === 'string' ? user.createdAt : null,
-    roleName: authUser.roleName,
-    permissions: authUser.permissions,
+    phone: profile.user.phone || null,
+    jobTitle: employment?.jobPosition?.name ?? null,
+    createdAt: profile.user.createdAt ?? null,
+    roleName: user.roleName,
+    roleCode: user.roleCode,
+    permissions: user.permissions,
     allRestaurants,
-    restaurants: restaurants
-      .filter((site) => allRestaurants || authUser.restaurantIds.includes(site.id))
-      .map((site) => ({ id: site.id, slug: site.slug, name: site.name, city: site.city, imageUrl: site.imageUrl })),
-    employee,
+    restaurants: sites.filter((site) => allRestaurants || user.restaurantIds.includes(site.id)),
+    employee: employment
+      ? {
+          area: employment.workArea?.name ?? '',
+          status: employment.status.toLowerCase(),
+          hiredAt: employment.hiredAt ?? null,
+          restaurantName: employment.organizationName,
+        }
+      : null,
   }
 }
 
-/** Contrato pensado para el backend: PATCH /users/me/profile */
-export async function updateStaffProfile(userId: string, draft: StaffProfileDraft): Promise<void> {
-  await http<unknown>(`/users/${userId}`, {
+/** PATCH /api/v1/owner/me (nombre, apellido y teléfono; el cargo sale del puesto del empleado). */
+export async function updateStaffProfile(draft: StaffProfileDraft): Promise<void> {
+  await http<ApiUser>('/api/v1/owner/me', {
     method: 'PATCH',
-    body: {
-      name: draft.name.trim(),
-      phone: draft.phone?.trim() || null,
-      jobTitle: draft.jobTitle?.trim() || null,
-    },
+    body: { ...splitName(draft.name), phone: draft.phone?.trim() || undefined },
   })
 }
 
-/**
- * Contrato pensado para el backend: POST /users/me/password. Con json-server la
- * contraseña actual se compara en el cliente; el backend real lo hará del lado servidor.
- */
-export async function changeStaffPassword(userId: string, currentPassword: string, nextPassword: string): Promise<void> {
-  const user = await fetchJsonUser(userId)
-
-  if (user.password !== currentPassword) {
-    throw new HttpError('La contraseña actual no es correcta', 401)
-  }
-
-  await http<unknown>(`/users/${userId}`, { method: 'PATCH', body: { password: nextPassword } })
-}
-
-/**
- * Agrega una sede a las sedes de un usuario con acceso restringido (p. ej. el dueño
- * que acaba de crearla). Un usuario sin restricción (lista vacía) ya ve todas.
- * Contrato pensado para el backend: lo hará el propio POST /restaurants.
- */
-export async function grantRestaurantAccess(userId: string, restaurantId: string): Promise<void> {
-  const user = await fetchJsonUser(userId)
-  const current = Array.isArray(user.restaurantIds) ? user.restaurantIds.map(String) : []
-
-  if (current.length === 0 || current.includes(restaurantId)) {
-    return
-  }
-
-  await http<unknown>(`/users/${userId}`, { method: 'PATCH', body: { restaurantIds: [...current, restaurantId] } })
+/** PATCH /api/v1/owner/me/password: el servidor valida la contraseña actual. */
+export async function changeStaffPassword(currentPassword: string, newPassword: string): Promise<void> {
+  await http<void>('/api/v1/owner/me/password', { method: 'PATCH', body: { currentPassword, newPassword } })
 }

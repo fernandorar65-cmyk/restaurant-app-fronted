@@ -18,9 +18,20 @@ const menuId = useId()
 const isOpen = ref(false)
 const root = ref<HTMLElement | null>(null)
 
-/** Quién tiene sesión en este navegador: un cliente, alguien del personal, ambos o nadie. */
+/**
+ * Tipo de cuenta que muestra el menú: solo uno a la vez. Si en el navegador hay sesión de
+ * cliente y de personal, en el área del comensal manda la del cliente.
+ */
+const account = computed<'customer' | 'staff' | null>(() => {
+  if (diner.customer) {
+    return 'customer'
+  }
+
+  return session.isAuthenticated ? 'staff' : null
+})
+
 const initials = computed(() => {
-  const name = diner.customer?.name ?? (session.isAuthenticated ? session.user?.name : null)
+  const name = account.value === 'customer' ? diner.customer?.name : account.value === 'staff' ? session.user?.name : null
   return name ? getInitials(name) : null
 })
 
@@ -42,7 +53,7 @@ async function logoutCustomer(): Promise<void> {
 function logoutStaff(): void {
   close()
   activity.watchSite(null)
-  session.clearAuth()
+  void session.signOut()
 }
 
 function onPointerDown(event: PointerEvent): void {
@@ -103,7 +114,7 @@ onBeforeUnmount(() => {
       class="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-2xl bg-surface-container-lowest py-2 shadow-xl ring-1 ring-outline-variant/50"
     >
       <!-- Sin sesión: iniciar sesión o registrarse; el tipo de cuenta se elige en /acceso -->
-      <template v-if="!diner.customer && !session.isAuthenticated">
+      <template v-if="!account">
         <div class="px-4 pt-2 pb-3">
           <p class="font-headline text-lg font-semibold text-on-surface">Bienvenido a RentaSol</p>
           <p class="text-sm text-on-surface-variant">Guarda tus pedidos y preferencias, o gestiona tu restaurante.</p>
@@ -136,8 +147,8 @@ onBeforeUnmount(() => {
         </RouterLink>
       </template>
 
-      <!-- Cliente con sesión -->
-      <template v-if="diner.customer">
+      <!-- Cliente con sesión: solo sus opciones -->
+      <template v-if="account === 'customer' && diner.customer">
         <p class="font-label px-4 pt-1 pb-1 text-xs font-semibold tracking-wider text-outline uppercase">Cliente</p>
         <p class="truncate px-4 pb-1 text-sm text-on-surface-variant">{{ diner.customer.name }}</p>
         <RouterLink :to="{ name: 'diner-profile' }" role="menuitem" class="flex min-h-11 items-center gap-3 px-4 text-sm text-on-surface hover:bg-surface-container-low" @click="close">
@@ -154,10 +165,8 @@ onBeforeUnmount(() => {
         </button>
       </template>
 
-      <div v-if="diner.customer && session.isAuthenticated" class="my-2 border-t border-outline-variant/50" />
-
-      <!-- Dueño / personal con sesión -->
-      <template v-if="session.isAuthenticated">
+      <!-- Dueño / personal con sesión: solo sus datos -->
+      <template v-if="account === 'staff'">
         <p class="font-label px-4 pt-1 pb-1 text-xs font-semibold tracking-wider text-outline uppercase">Restaurante</p>
         <p class="truncate px-4 pb-1 text-sm text-on-surface-variant">{{ session.user?.name }}</p>
         <RouterLink :to="{ name: 'staff-profile' }" role="menuitem" class="flex min-h-11 items-center gap-3 px-4 text-sm text-on-surface hover:bg-surface-container-low" @click="close">
@@ -174,14 +183,6 @@ onBeforeUnmount(() => {
         </button>
       </template>
 
-      <!-- Con una sola sesión: entrar también con el otro tipo de cuenta -->
-      <template v-if="Boolean(diner.customer) !== session.isAuthenticated">
-        <div class="my-2 border-t border-outline-variant/50" />
-        <RouterLink :to="{ name: 'access' }" role="menuitem" class="flex min-h-11 items-center gap-3 px-4 text-sm text-on-surface hover:bg-surface-container-low" @click="close">
-          <svg class="h-5 w-5 shrink-0 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
-          Iniciar sesión con otra cuenta
-        </RouterLink>
-      </template>
     </div>
   </div>
 </template>

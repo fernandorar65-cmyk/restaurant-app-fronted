@@ -1,49 +1,67 @@
-import type { DailyFinancial, OperatingExpenses, RevenueByMethod } from '@/modules/finance/types'
+import { toMethodTotals } from '@/modules/finance/methods'
+import { parseDateKey, toDateKey } from '@/modules/finance/period'
+import type { DailyFinancial } from '@/modules/finance/types'
 import { http } from '@/services/http'
 
-function isDailyFinancial(value: unknown): value is DailyFinancial {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
+/** El API acepta como máximo 366 días por consulta. */
+const MAX_DAYS = 366
 
-  const record = value as Record<string, unknown>
-  return (
-    typeof record.id === 'string' &&
-    (typeof record.restaurantId === 'string' || typeof record.restaurantId === 'number') &&
-    typeof record.date === 'string' &&
-    ['revenue', 'orders', 'foodCost', 'laborCost', 'operatingCost', 'profit'].every((key) => typeof record[key] === 'number')
-  )
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
 }
 
-function toNumbers<T extends object>(value: unknown, keys: Array<keyof T>, fallback: Partial<T>): T {
-  const record = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null
-  return Object.fromEntries(
-    keys.map((key) => {
-      const raw = record?.[key as string]
-      return [key, typeof raw === 'number' ? raw : record ? 0 : ((fallback[key] as number | undefined) ?? 0)]
-    }),
-  ) as T
+const num = (value: unknown) => (typeof value === 'number' ? value : 0)
+
+function toDailyFinancial(restaurantId: string, value: Record<string, unknown>): DailyFinancial {
+  return {
+    restaurantId,
+    date: String(value.businessDate),
+    revenue: num(value.netSales),
+    grossSales: num(value.grossSales),
+    refunded: num(value.refundedAmount),
+    orders: num(value.closedAttentions),
+    cancelled: num(value.cancelledAttentions),
+    expenses: num(value.expenseAmount),
+    profit: num(value.profit),
+    byMethod: toMethodTotals(value.byMethod),
+  }
+}
+
+/** Parte [from, to] en tramos de como mucho 366 días. */
+function chunks(from: string, to: string): Array<{ from: string; to: string }> {
+  const result: Array<{ from: string; to: string }> = []
+  let start = from
+
+  while (start <= to) {
+    const end = parseDateKey(start)
+    end.setDate(end.getDate() + MAX_DAYS - 1)
+    const endKey = toDateKey(end) < to ? toDateKey(end) : to
+    result.push({ from: start, to: endKey })
+    const next = parseDateKey(endKey)
+    next.setDate(next.getDate() + 1)
+    start = toDateKey(next)
+  }
+
+  return result
+}
+
+/** Serie diaria de una sede. GET /reports/daily-financials */
+async function fetchSiteFinancials(restaurantId: string, from: string, to: string): Promise<DailyFinancial[]> {
+  const payload = await http<unknown>('/reports/daily-financials', { query: { restaurantId, from, to } })
+  const days = isRecord(payload) && Array.isArray(payload.days) ? payload.days : []
+  return days.filter(isRecord).map((day) => toDailyFinancial(restaurantId, day))
 }
 
 /**
- * Cierres diarios entre dos fechas (inclusive), de todas las sedes.
- * Contrato pensado para el backend: GET /finance/daily?from=…&to=…&restaurantIds=…
- * (allí se calculará desde las atenciones y pagos cerrados; hoy viene de db.json).
+ * Cifras diarias de varias sedes entre dos fechas comerciales (inclusive).
+ * Una consulta por sede y tramo de 366 días; el servidor calcula todo desde atenciones,
+ * pagos y gastos (cada día coincide con el preview del cierre de ese día).
  */
-export async function fetchDailyFinancials(from: string, to: string): Promise<DailyFinancial[]> {
-  const params = new URLSearchParams({ 'date:gte': from, 'date:lte': to })
-  const payload = await http<unknown>(`/dailyFinancials?${params.toString()}`)
-
-  if (!Array.isArray(payload)) {
-    return []
-  }
-
-  return payload.filter(isDailyFinancial).map((row) => ({
-    ...row,
-    restaurantId: String(row.restaurantId),
-    guests: typeof row.guests === 'number' ? row.guests : 0,
-    // Sin desglose guardado, todo el gasto de operación cuenta como "otros".
-    expenses: toNumbers<OperatingExpenses>(row.expenses, ['rent', 'utilities', 'maintenance', 'marketing', 'other'], { other: row.operatingCost }),
-    byMethod: toNumbers<RevenueByMethod>(row.byMethod, ['card', 'yape', 'plin', 'transfer', 'cash'], { card: row.revenue }),
-  }))
+export async function fetchDailyFinancials(restaurantIds: string[], from: string, to: string): Promise<DailyFinancial[]> {
+  if (restaurantIds.length === 0 || from > to) return []
+  const ranges = chunks(from, to)
+  const results = await Promise.all(
+    restaurantIds.flatMap((id) => ranges.map((range) => fetchSiteFinancials(id, range.from, range.to))),
+  )
+  return results.flat()
 }

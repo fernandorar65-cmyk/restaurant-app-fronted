@@ -31,15 +31,14 @@ const form = reactive<StaffProfileDraft>({ name: '', phone: null, jobTitle: null
 const formError = ref<string | null>(null)
 const isSaving = ref(false)
 
-const isOwner = computed(() => profile.value?.roleName === 'Propietario')
+const isOwner = computed(() => profile.value?.roleCode === 'OWNER')
 
 const isDirty = computed(() => {
   const current = profile.value
   return (
     current !== null &&
     (form.name.trim() !== current.name ||
-      (form.phone?.trim() || null) !== current.phone ||
-      (form.jobTitle?.trim() || null) !== current.jobTitle)
+      (form.phone?.trim() || null) !== current.phone)
   )
 })
 
@@ -69,7 +68,7 @@ async function load(): Promise<void> {
   loadError.value = null
 
   try {
-    profile.value = await fetchStaffProfile(session.user.id)
+    profile.value = await fetchStaffProfile(session.user.organizationId)
     fillForm(profile.value)
   } catch (error) {
     loadError.value = errorMessage(error, 'No pudimos cargar tu perfil.')
@@ -88,7 +87,7 @@ async function save(): Promise<void> {
   isSaving.value = true
 
   try {
-    await updateStaffProfile(session.user.id, form)
+    await updateStaffProfile(form)
     // El nombre también aparece en el encabezado y la barra lateral.
     await session.refreshUser()
     await load()
@@ -102,7 +101,7 @@ async function save(): Promise<void> {
 
 async function changePassword(current: string, next: string): Promise<void> {
   if (session.user) {
-    await changeStaffPassword(session.user.id, current, next)
+    await changeStaffPassword(current, next)
   }
 }
 
@@ -163,7 +162,13 @@ const cardClass = 'space-y-4 rounded-2xl bg-surface-container-lowest p-5 ring-1 
             <div class="grid gap-3 sm:grid-cols-2">
               <label class="block space-y-1">
                 <span class="text-xs font-semibold text-on-surface-variant">Cargo</span>
-                <input v-model="form.jobTitle" :class="inputClass" type="text" placeholder="Ej: Fundador y propietario" />
+                <input
+                  :value="profile.jobTitle ?? 'Sin puesto asignado'"
+                  :class="[inputClass, 'opacity-70']"
+                  type="text"
+                  disabled
+                  title="El cargo es el puesto de tu ficha de empleado"
+                />
               </label>
               <label class="block space-y-1">
                 <span class="text-xs font-semibold text-on-surface-variant">Teléfono</span>

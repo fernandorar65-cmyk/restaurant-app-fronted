@@ -1,8 +1,7 @@
 import type {
   RestaurantOperationalStatus,
-  StaffArea,
-  StaffShiftStatus,
   TableFloorStatus,
+  TableServiceStatus,
   TableStatus,
 } from '@/modules/restaurants/types'
 
@@ -13,16 +12,10 @@ export const floorStatusLabel: Record<TableFloorStatus, string> = {
   cleaning: 'Limpieza',
 }
 
-export const staffAreaLabel: Record<StaffArea, string> = {
-  kitchen: 'Cocina',
-  floor: 'Sala',
-  support: 'Soporte',
-}
-
-export const staffStatusLabel: Record<StaffShiftStatus, string> = {
-  'on-shift': 'En turno',
-  break: 'Descanso',
-  absent: 'Ausente',
+export const tableServiceStatusLabel: Record<TableServiceStatus, string> = {
+  available: 'Disponible',
+  reserved: 'Reservada',
+  cleaning: 'En limpieza',
 }
 
 export const tableStatusLabel: Record<TableStatus, string> = {
@@ -37,11 +30,11 @@ export const restaurantStatusLabel: Record<RestaurantOperationalStatus, string> 
   suspended: 'Suspendida',
 }
 
-export const CURRENCY_OPTIONS = ['EUR', 'PEN', 'USD', 'MXN', 'COP', 'CLP', 'ARS'] as const
+export const CURRENCY_OPTIONS = ['PEN', 'USD', 'EUR', 'MXN', 'COP', 'CLP', 'ARS'] as const
 
 export const TIMEZONE_OPTIONS = [
-  'Europe/Madrid',
   'America/Lima',
+  'Europe/Madrid',
   'America/Bogota',
   'America/Mexico_City',
   'America/Santiago',
